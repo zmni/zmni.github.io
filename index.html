@@ -5,6 +5,7 @@
 <title>Tab Baru</title>
 <meta name="description" content="Halaman beranda kosong untuk peramban web.">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="https://unpkg.com/bootstrap@4.3.1/dist/css/bootstrap-reboot.min.css">
 <style>
     html {
         background-color: #2d2d2d;
@@ -18,17 +19,18 @@
         height: 100vh;
         width: 100vw;
     }
-    iframe {
-        border: 0;
-        overflow: hidden;
-        margin: 0;
-        padding: 1rem;
-        width: 500px;
-        height: 40px;
+    #q {
+        border: 1px solid #000;
+        background-color: #3c3c3c;
+        padding: .5rem;
+        width: 100%;
+        max-width: 500px;
     }
 </style>
 </head>
 <body>
-    <iframe src="https://duckduckgo.com/search.html?prefill=Cari DuckDuckGo&focus=yes"></iframe>
+    <form method="get" action="https://duckduckgo.com/">
+        <input id="q" name="q">
+    </form>
 </body>
 </html>
