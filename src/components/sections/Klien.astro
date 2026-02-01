@@ -1,0 +1,32 @@
+---
+import Section from "../layouts/Section.astro";
+import { getKontenById } from "@/utils/konten.util";
+import { getImagesByFolder } from "@/utils/image.util";
+import { prettifyFileName } from "@/utils/file-name.util";
+import { Image } from "astro:assets";
+const id = "klien";
+const konten = getKontenById(id);
+const images = getImagesByFolder(id);
+---
+
+<Section
+  id={konten.id}
+  label={konten.label}
+  deskripsi={konten.deskripsi}
+  class="border-t border-gray-300"
+>
+  <div class="grid grid-cols-2 gap-px bg-gray-300 md:grid-cols-4">
+    {
+      images.map((image) => (
+        <div class="flex items-center justify-center bg-gray-100 p-4 transition-colors hover:bg-white md:p-8 xl:p-16">
+          <Image
+            src={image}
+            alt={prettifyFileName(image.src)}
+            layout="none"
+            loading="lazy"
+          />
+        </div>
+      ))
+    }
+  </div>
+</Section>

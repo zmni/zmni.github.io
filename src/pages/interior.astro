@@ -1,0 +1,14 @@
+---
+import PageLayout from "@/layouts/PageLayout.astro";
+import FotoGaleri from "@/components/shared/FotoGaleri.astro";
+import { getKontenByPath } from "@/utils/konten.util";
+const konten = getKontenByPath(Astro.url.pathname);
+---
+
+<PageLayout>
+  <FotoGaleri
+    ids={konten.id}
+    class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4"
+    itemClass="aspect-square"
+  />
+</PageLayout>

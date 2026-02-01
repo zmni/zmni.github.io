@@ -1,0 +1,223 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import Intro from "@/components/sections/Intro.astro";
+import Layanan from "@/components/sections/Layanan.astro";
+import Portofolio from "@/components/sections/Portofolio.astro";
+import Klien from "@/components/sections/Klien.astro";
+import Kontak from "@/components/sections/Kontak.astro";
+import Statistik from "@/components/sections/Statistik.astro";
+import Testimoni from "@/components/sections/Testimoni.astro";
+
+const SECTION_COMPONENTS = {
+  layanan: Layanan,
+  portofolio: Portofolio,
+  klien: Klien,
+  testimoni: Testimoni,
+  kontak: Kontak,
+} as const;
+
+type SectionId = keyof typeof SECTION_COMPONENTS;
+
+const sections: SectionId[] = [
+  "layanan",
+  "portofolio",
+  "klien",
+  "testimoni",
+  "kontak",
+];
+---
+
+<BaseLayout>
+  <Intro />
+
+  {
+    sections.map((id) => {
+      const SectionComponent = SECTION_COMPONENTS[id];
+
+      return <SectionComponent />;
+    })
+  }
+
+  <!-- <Statistik/> -->
+</BaseLayout>
+
+<script>
+  import { $, $$ } from "@/utils/selector.util";
+
+  (() => {
+    /**
+     * INVARIANT DOM
+     */
+    const header = $<HTMLElement>("header.sticky")!;
+    const navToggle = $<HTMLInputElement>("navToggle", header)!;
+    const nav = $<HTMLElement>("nav", header)!;
+    const navLinks = $$<HTMLAnchorElement>("a[href]", nav);
+    const sections = $$<HTMLElement>("section[id]");
+
+    /**
+     * UITILITAS
+     */
+    const prefersReducedMotion = () =>
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    const headerOffset = () => header.getBoundingClientRect().height / 2;
+
+    const scrollToY = (y: number) => {
+      window.scrollTo({
+        top: y,
+        behavior: prefersReducedMotion() ? "auto" : "smooth",
+      });
+    };
+
+    const closeMobileMenu = () => {
+      if (navToggle) navToggle.checked = false;
+    };
+
+    /**
+     * NAV LINK CACHE
+     */
+    const navLinkMap = new Map<string, HTMLAnchorElement>();
+    const navSectionIds = new Set<string>();
+
+    navLinks.forEach((link) => {
+      const url = new URL(link.href);
+      const key = url.pathname + url.hash;
+      navLinkMap.set(key, link);
+
+      if (url.pathname === "/" && url.hash.length > 1) {
+        navSectionIds.add(url.hash.slice(1));
+      }
+    });
+
+    const observedSections = sections.filter((section) =>
+      navSectionIds.has(section.id),
+    );
+
+    /**
+     * ACTIVE STATE & HISTORY
+     */
+    const clearActive = () => {
+      navLinks.forEach((link) => link.removeAttribute("aria-current"));
+    };
+
+    const setActive = (link: HTMLAnchorElement) => {
+      clearActive();
+      link.setAttribute("aria-current", "true");
+    };
+
+    const setActiveByHref = (href: string) => {
+      const link = navLinkMap.get(href);
+      if (link) setActive(link);
+    };
+
+    const setActiveIsHome = () => {
+      const home = navLinkMap.get("/");
+      if (home) setActive(home);
+    };
+
+    const updateHistory = (hash: string) => {
+      const url = new URL(location.href);
+      if (url.hash !== hash) {
+        history.replaceState(null, "", hash || " ");
+      }
+    };
+
+    /**
+     * SCROLL CONTROL
+     */
+    let ignoreObserver = false;
+
+    const withObserverIgnored = (fn: () => void, delay = 500) => {
+      ignoreObserver = true;
+      fn();
+      setTimeout(() => (ignoreObserver = false), delay);
+    };
+
+    const scrollToSection = (id: string) =>
+      withObserverIgnored(() => {
+        const target = document.getElementById(id);
+        if (!target) return;
+
+        scrollToY(target.offsetTop - headerOffset());
+        setActiveByHref("/#" + id);
+        updateHistory("#" + id);
+      });
+
+    const scrollToTop = () =>
+      withObserverIgnored(() => {
+        scrollToY(0);
+        setActiveIsHome();
+        updateHistory("");
+      });
+
+    /**
+     * SCROLL SPY
+     */
+    const updateActiveNav = () => {
+      if (ignoreObserver) return;
+
+      const midPoint = window.scrollY + headerOffset() + window.innerHeight / 2;
+
+      const section = observedSections.find(
+        ({ offsetTop, offsetHeight }) =>
+          midPoint >= offsetTop && midPoint < offsetTop + offsetHeight,
+      );
+
+      if (section) {
+        setActiveByHref("/#" + section.id);
+        updateHistory("#" + section.id);
+        return;
+      }
+
+      if (window.scrollY < window.innerHeight / 2) {
+        setActiveIsHome();
+      } else {
+        clearActive();
+      }
+
+      updateHistory("");
+    };
+
+    window.addEventListener("scroll", updateActiveNav, {
+      passive: true,
+    });
+
+    /**
+     * PENANGANAN KLIK
+     */
+    document.addEventListener("click", (event) => {
+      const link = (
+        event.target as HTMLElement | null
+      )?.closest<HTMLAnchorElement>("a[href]");
+      if (!link) return;
+
+      const url = new URL(link.href, location.origin);
+      if (url.pathname !== "/") return;
+
+      event.preventDefault();
+
+      if (!url.hash) {
+        scrollToTop();
+      } else {
+        scrollToSection(url.hash.slice(1));
+      }
+
+      closeMobileMenu();
+    });
+
+    /**
+     * INITIAL WINDOW LOAD
+     */
+    window.addEventListener("load", () => {
+      const { pathname, hash, search } = location;
+
+      if (pathname === "/" && hash) {
+        setTimeout(() => scrollToSection(hash.slice(1)), 50);
+      } else if (pathname === "/") {
+        setActiveIsHome();
+      } else {
+        setActiveByHref(pathname + search);
+      }
+    });
+  })();
+</script>

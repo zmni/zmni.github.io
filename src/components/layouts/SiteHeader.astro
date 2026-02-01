@@ -1,0 +1,13 @@
+---
+import { Icon } from "astro-icon/components";
+import SiteNav from "./SiteNav.astro";
+---
+
+<header
+  class="sticky top-0 z-50 w-full border-b border-gray-300 bg-white/95 shadow-xs backdrop-blur-xs"
+>
+  <div class="relative px-4 py-2 flex items-stretch">
+    <a href="/"><Icon name="faviconDark" size="3rem" /></a>
+    <SiteNav />
+  </div>
+</header>

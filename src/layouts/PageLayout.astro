@@ -1,0 +1,29 @@
+---
+import BaseLayout from "./BaseLayout.astro";
+import { getKontenByPath } from "@/utils/konten.util";
+
+const konten = getKontenByPath(Astro.url.pathname);
+
+type Props = {
+  label?: string;
+  deskripsi?: string;
+};
+
+const { label, deskripsi } = Astro.props as Props;
+
+const metaLabel = label || konten.label;
+const metaDeskripsi = deskripsi || konten.deskripsi;
+---
+
+<BaseLayout label={metaLabel} deskripsi={metaDeskripsi}>
+  <main class="container px-4 py-12 lg:pb-24">
+    <hgroup class="mb-12 text-center">
+      <h1>{metaLabel}</h1>
+      <p class="mx-auto mt-2 text-gray-600 md:mt-4 md:max-w-xl lg:max-w-2xl">
+        {metaDeskripsi}
+      </p>
+    </hgroup>
+
+    <slot />
+  </main>
+</BaseLayout>

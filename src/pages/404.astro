@@ -1,0 +1,14 @@
+---
+import BtnLink from "@/components/ui/BtnLink.astro";
+import PageLayout from "@/layouts/PageLayout.astro";
+import { getKontenById } from "@/utils/konten.util";
+const konten = getKontenById("notfound");
+---
+
+<PageLayout label={konten.label} deskripsi={konten.deskripsi}>
+  <div class="mb-24 text-center">
+    <BtnLink href="/" class="bg-gray-900 text-white hover:bg-gray-700"
+      >Kembali ke Beranda</BtnLink
+    >
+  </div>
+</PageLayout>
