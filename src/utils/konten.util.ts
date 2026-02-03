@@ -6,7 +6,7 @@ import { konten } from "../data/konten";
  * Objek konten berdasarkan id
  */
 const kontenById: Record<string, KontenType> = Object.fromEntries(
-    konten.map((k: KontenType) => [k.id, k])
+  konten.map((k: KontenType) => [k.id, k])
 );
 
 /**
@@ -15,7 +15,7 @@ const kontenById: Record<string, KontenType> = Object.fromEntries(
  * @returns KontenType
  */
 export function getKontenById(id: string): KontenType {
-    return kontenById[id];
+  return kontenById[id];
 }
 
 /**
@@ -24,8 +24,8 @@ export function getKontenById(id: string): KontenType {
  * @returns KontenType[]
  */
 export function getKontenByIds(ids: string | string[]): KontenType[] {
-    const list: string[] = Array.isArray(ids) ? ids : [ids];
-    return list.map(id => getKontenById(id)).filter(Boolean);
+  const list: string[] = Array.isArray(ids) ? ids : [ids];
+  return list.map((id) => getKontenById(id)).filter(Boolean);
 }
 
 /**
@@ -34,5 +34,5 @@ export function getKontenByIds(ids: string | string[]): KontenType[] {
  * @returns KontenType
  */
 export function getKontenByPath(path: string): KontenType {
-    return kontenById[pathToId(path)];
+  return kontenById[pathToId(path)];
 }

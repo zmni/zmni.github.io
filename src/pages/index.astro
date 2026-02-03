@@ -7,6 +7,9 @@ import Klien from "@/components/sections/Klien.astro";
 import Kontak from "@/components/sections/Kontak.astro";
 import Statistik from "@/components/sections/Statistik.astro";
 import Testimoni from "@/components/sections/Testimoni.astro";
+import { getKontenById } from "@/utils/konten.util";
+
+const bsm = getKontenById("beranda");
 
 const SECTION_COMPONENTS = {
   layanan: Layanan,
@@ -27,7 +30,7 @@ const sections: SectionId[] = [
 ];
 ---
 
-<BaseLayout>
+<BaseLayout label={bsm.label} deskripsi={bsm.deskripsi}>
   <Intro />
 
   {
@@ -44,180 +47,196 @@ const sections: SectionId[] = [
 <script>
   import { $, $$ } from "@/utils/selector.util";
 
-  (() => {
-    /**
-     * INVARIANT DOM
-     */
-    const header = $<HTMLElement>("header.sticky")!;
-    const navToggle = $<HTMLInputElement>("navToggle", header)!;
-    const nav = $<HTMLElement>("nav", header)!;
-    const navLinks = $$<HTMLAnchorElement>("a[href]", nav);
-    const sections = $$<HTMLElement>("section[id]");
+  // (() => {
+  /**
+   * INVARIANT DOM
+   */
+  const header = $<HTMLElement>("header.sticky");
+  const navToggle = $<HTMLInputElement>("#navToggle", header);
+  const nav = $<HTMLElement>("nav", header);
+  const navLinks = $$<HTMLAnchorElement>("a[href]", nav);
+  const sections = $$<HTMLElement>("section[id]");
 
-    /**
-     * UITILITAS
-     */
-    const prefersReducedMotion = () =>
-      window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  /**
+   * UTILITAS
+   */
+  const prefersReducedMotion = () =>
+    window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-    const headerOffset = () => header.getBoundingClientRect().height / 2;
+  const headerOffset = () => header.getBoundingClientRect().height / 2;
 
-    const scrollToY = (y: number) => {
-      window.scrollTo({
-        top: y,
-        behavior: prefersReducedMotion() ? "auto" : "smooth",
-      });
-    };
+  const scrollToY = (y: number) => {
+    window.scrollTo({
+      top: y,
+      behavior: prefersReducedMotion() ? "auto" : "smooth",
+    });
+  };
 
-    const closeMobileMenu = () => {
-      if (navToggle) navToggle.checked = false;
-    };
+  const closeMobileMenu = () => {
+    if (navToggle) navToggle.checked = false;
+  };
 
-    /**
-     * NAV LINK CACHE
-     */
-    const navLinkMap = new Map<string, HTMLAnchorElement>();
-    const navSectionIds = new Set<string>();
+  /**
+   * NAV LINK CACHE
+   */
+  const navLinkMap = new Map<string, HTMLAnchorElement>();
+  const navSectionIds = new Set<string>();
 
-    navLinks.forEach((link) => {
-      const url = new URL(link.href);
-      const key = url.pathname + url.hash;
-      navLinkMap.set(key, link);
+  navLinks.forEach((link) => {
+    const url = new URL(link.href);
+    const key = url.pathname + url.hash;
+    navLinkMap.set(key, link);
 
-      if (url.pathname === "/" && url.hash.length > 1) {
-        navSectionIds.add(url.hash.slice(1));
-      }
+    if (url.pathname === "/" && url.hash.length > 1)
+      navSectionIds.add(url.hash.slice(1));
+  });
+
+  const observedSections = sections.filter((section) =>
+    navSectionIds.has(section.id),
+  );
+
+  /**
+   * STATUS LINK & RIWAYAT AKTIF
+   */
+  const clearLinkActive = () => {
+    navLinks.forEach((link) => link.removeAttribute("aria-current"));
+  };
+
+  const setLinkActive = (link: HTMLAnchorElement) => {
+    clearLinkActive();
+    link.setAttribute("aria-current", "true");
+  };
+
+  const setLinkActiveByHref = (href: string) => {
+    const link = navLinkMap.get(href);
+    if (link) setLinkActive(link);
+  };
+
+  const setLinkActiveIsHome = () => {
+    const home = navLinkMap.get("/");
+    if (home) setLinkActive(home);
+  };
+
+  const updateHistory = (hash: string) => {
+    const url = new URL(location.href);
+    if (url.hash !== hash) {
+      history.replaceState(null, "", hash || " ");
+    }
+  };
+
+  /**
+   * STATUS/KONTROL SCROLL
+   */
+  let ignoreObserver = false;
+  let scrollingToTop = false; // anti-flicker
+
+  const withObserverIgnored = (fn: () => void, delay = 500) => {
+    ignoreObserver = true;
+    fn();
+    setTimeout(() => (ignoreObserver = false), delay);
+  };
+
+  const scrollToSection = (id: string) =>
+    withObserverIgnored(() => {
+      const target = document.getElementById(id);
+      if (!target) return;
+
+      scrollToY(target.offsetTop - headerOffset());
+      setLinkActiveByHref("/#" + id);
+      updateHistory("#" + id);
     });
 
-    const observedSections = sections.filter((section) =>
-      navSectionIds.has(section.id),
+  const scrollToTop = () => {
+    scrollingToTop = true;
+
+    withObserverIgnored(() => {
+      scrollToY(0);
+      setLinkActiveIsHome();
+      updateHistory("");
+    });
+
+    // unlock saat benar-benar dekat top (lebih aman dari timeout)
+    const unlock = () => {
+      if (window.scrollY <= headerOffset()) {
+        scrollingToTop = false;
+      } else {
+        requestAnimationFrame(unlock);
+      }
+    };
+    unlock();
+  };
+
+  /**
+   * SCROLL SPY (LOGIKA UTAMA)
+   * Sinkronkan link aktif dan riwayat berdasarkan posisi scroll
+   */
+  const updateActiveState = () => {
+    if (ignoreObserver) return;
+
+    if (scrollingToTop && window.scrollY > headerOffset()) return;
+
+    const midPoint = window.scrollY + headerOffset() + window.innerHeight / 2;
+
+    const section = observedSections.find(
+      ({ offsetTop, offsetHeight }) =>
+        midPoint >= offsetTop && midPoint < offsetTop + offsetHeight,
     );
 
-    /**
-     * ACTIVE STATE & HISTORY
-     */
-    const clearActive = () => {
-      navLinks.forEach((link) => link.removeAttribute("aria-current"));
-    };
+    if (section) {
+      setLinkActiveByHref("/#" + section.id);
+      updateHistory("#" + section.id);
+      return;
+    }
 
-    const setActive = (link: HTMLAnchorElement) => {
-      clearActive();
-      link.setAttribute("aria-current", "true");
-    };
+    if (window.scrollY < window.innerHeight / 2) {
+      setLinkActiveIsHome();
+    } else {
+      clearLinkActive();
+    }
 
-    const setActiveByHref = (href: string) => {
-      const link = navLinkMap.get(href);
-      if (link) setActive(link);
-    };
+    updateHistory("");
+  };
 
-    const setActiveIsHome = () => {
-      const home = navLinkMap.get("/");
-      if (home) setActive(home);
-    };
+  window.addEventListener("scroll", updateActiveState, {
+    passive: true,
+  });
 
-    const updateHistory = (hash: string) => {
-      const url = new URL(location.href);
-      if (url.hash !== hash) {
-        history.replaceState(null, "", hash || " ");
-      }
-    };
+  /**
+   * PENANGANAN KLIK
+   */
+  document.addEventListener("click", (event) => {
+    const link = (
+      event.target as HTMLElement | null
+    )?.closest<HTMLAnchorElement>("a[href]");
+    if (!link) return;
 
-    /**
-     * SCROLL CONTROL
-     */
-    let ignoreObserver = false;
+    const url = new URL(link.href, location.origin);
+    if (url.pathname !== "/") return;
 
-    const withObserverIgnored = (fn: () => void, delay = 500) => {
-      ignoreObserver = true;
-      fn();
-      setTimeout(() => (ignoreObserver = false), delay);
-    };
+    event.preventDefault();
 
-    const scrollToSection = (id: string) =>
-      withObserverIgnored(() => {
-        const target = document.getElementById(id);
-        if (!target) return;
+    if (!url.hash) {
+      scrollToTop();
+    } else {
+      scrollToSection(url.hash.slice(1));
+    }
 
-        scrollToY(target.offsetTop - headerOffset());
-        setActiveByHref("/#" + id);
-        updateHistory("#" + id);
-      });
+    closeMobileMenu();
+  });
 
-    const scrollToTop = () =>
-      withObserverIgnored(() => {
-        scrollToY(0);
-        setActiveIsHome();
-        updateHistory("");
-      });
+  /**
+   * PENANGANAN WINDOW LOAD
+   */
+  window.addEventListener("load", () => {
+    const { pathname, hash, search } = location;
 
-    /**
-     * SCROLL SPY
-     */
-    const updateActiveNav = () => {
-      if (ignoreObserver) return;
-
-      const midPoint = window.scrollY + headerOffset() + window.innerHeight / 2;
-
-      const section = observedSections.find(
-        ({ offsetTop, offsetHeight }) =>
-          midPoint >= offsetTop && midPoint < offsetTop + offsetHeight,
-      );
-
-      if (section) {
-        setActiveByHref("/#" + section.id);
-        updateHistory("#" + section.id);
-        return;
-      }
-
-      if (window.scrollY < window.innerHeight / 2) {
-        setActiveIsHome();
-      } else {
-        clearActive();
-      }
-
-      updateHistory("");
-    };
-
-    window.addEventListener("scroll", updateActiveNav, {
-      passive: true,
-    });
-
-    /**
-     * PENANGANAN KLIK
-     */
-    document.addEventListener("click", (event) => {
-      const link = (
-        event.target as HTMLElement | null
-      )?.closest<HTMLAnchorElement>("a[href]");
-      if (!link) return;
-
-      const url = new URL(link.href, location.origin);
-      if (url.pathname !== "/") return;
-
-      event.preventDefault();
-
-      if (!url.hash) {
-        scrollToTop();
-      } else {
-        scrollToSection(url.hash.slice(1));
-      }
-
-      closeMobileMenu();
-    });
-
-    /**
-     * INITIAL WINDOW LOAD
-     */
-    window.addEventListener("load", () => {
-      const { pathname, hash, search } = location;
-
-      if (pathname === "/" && hash) {
-        setTimeout(() => scrollToSection(hash.slice(1)), 50);
-      } else if (pathname === "/") {
-        setActiveIsHome();
-      } else {
-        setActiveByHref(pathname + search);
-      }
-    });
-  })();
+    if (pathname === "/" && hash) {
+      setTimeout(() => scrollToSection(hash.slice(1)), 50);
+    } else if (pathname === "/") {
+      setLinkActiveIsHome();
+    } else {
+      setLinkActiveByHref(pathname + search);
+    }
+  });
+  // })();
 </script>

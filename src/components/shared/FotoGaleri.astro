@@ -9,12 +9,7 @@ type Props = {
   imgClass?: string;
 };
 
-const {
-  ids = [],
-  class: classList,
-  itemClass,
-  imgClass,
-} = Astro.props as Props;
+const { ids, class: classList, itemClass, imgClass } = Astro.props as Props;
 
 const images = getImagesByFolders(ids);
 ---
@@ -38,7 +33,7 @@ const images = getImagesByFolders(ids);
           alt={`Foto #${i}`}
           width={320}
           height={320}
-          loading={"lazy"}
+          loading="lazy"
           class:list={[
             "h-full w-full object-cover object-center opacity-100 blur-none transition hover:opacity-80 starting:opacity-0 starting:blur-sm",
             imgClass,

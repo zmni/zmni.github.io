@@ -1,9 +1,9 @@
 /**
- * Konversi pathname menjadi id
- * @param pathname string
+ * Konversi path menjadi id
+ * @param path string
  * @returns string
  */
-export function pathToId(pathname: string): string {
-  const segmen = pathname.split("/").filter(Boolean);
+export function pathToId(path: string): string {
+  const segmen = path.split("/").filter(Boolean);
   return segmen.at(-1) ?? "beranda";
 }

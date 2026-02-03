@@ -12,7 +12,8 @@ import { getImagesByPrefix } from "@/utils/image.util";
 const konten = getKontenByPath(Astro.url.pathname);
 
 const twFilterNavItem =
-  "js-filter-nav relative rounded-t-sm border-2 border-transparent p-2 sm:px-4 hover:text-blue-500 aria-[current=true]:border-gray-300 aria-[current=true]:border-b-gray-100 aria-[current=true]:z-1";
+  "rounded-t-sm border-2 border-transparent p-2 peer-checked:border-gray-300 peer-checked:border-b-gray-100 peer-checked:text-blue-500 hover:text-blue-500 sm:px-4";
+const twFilterRadio = "js-filter-link peer sr-only";
 
 const twModalBtnClass =
   "cursor-pointer p-2 text-4xl text-white focus-visible:outline-0";
@@ -24,26 +25,42 @@ import fallbackImage from "@/assets/beranda/fallback.jpg";
 
 <PageLayout>
   <nav
-    class="mb-4 flex justify-center gap-4 border-b-2 border-gray-300 font-bold"
+    class="mb-4 flex justify-center gap-4 border-b-2 border-gray-300 font-bold xl:mb-8"
   >
     <div class="flex -mb-0.5">
-      <a href={`/${konten.id}/`} class={twFilterNavItem} data-filter="semua"
-        ><span>Semua</span></a
-      >
+      <span class="inline-flex items-center">
+        <input
+          id="u-semua"
+          name="ukuran"
+          value="semua"
+          type="radio"
+          class={twFilterRadio}
+        />
+        <label for="u-semua" class={twFilterNavItem}>Semua</label>
+      </span>
       {
         navigasi.map((item) => {
           if (!item.subnav) return;
           return item.subnav.map((u) => (
-            <a href={u.href} class={twFilterNavItem} data-filter={u.id}>
-              <span>{u.id}</span>
-            </a>
+            <span class="inline-flex items-center">
+              <input
+                id={`u-${u.id}`}
+                name="ukuran"
+                value={u.id}
+                type="radio"
+                class={twFilterRadio}
+              />
+              <label for={`u-${u.id}`} class={twFilterNavItem}>
+                {u.id}
+              </label>
+            </span>
           ));
         })
       }
     </div>
   </nav>
 
-  <div class="grid sm:grid-cols-2 md:grid-cols-3 gap-4">
+  <div class="grid sm:grid-cols-2 md:grid-cols-3 gap-4 xl:gap-8">
     {
       produk.map((item, i) => {
         const fotoProduk = getImagesByPrefix(konten.id, item.id);
@@ -57,7 +74,6 @@ import fallbackImage from "@/assets/beranda/fallback.jpg";
             data-kota={item.kota}
             data-ukuran={item.ukuran}
             class="js-produk-item hidden aspect-4/3 cursor-pointer overflow-hidden rounded-md border border-gray-300 opacity-100 shadow-xs transition hover:border-gray-400 [&.hidden]:pointer-events-none"
-            role="button"
           >
             <Image
               src={mainImage}
@@ -95,7 +111,9 @@ import fallbackImage from "@/assets/beranda/fallback.jpg";
     <Icon name="bi:chevron-left" />
   </button>
 
-  <div class="bg-white grow overflow-hidden rounded-md lg:flex">
+  <div
+    class="max-h-[calc(100dvh-2rem)] grow overflow-hidden rounded-md bg-white lg:flex"
+  >
     <div data-role="modal-foto" class="lg:w-2/3 overflow-hidden"></div>
     <div
       data-role="modal-info"
@@ -129,89 +147,109 @@ import fallbackImage from "@/assets/beranda/fallback.jpg";
 />
 
 <script>
+  import { $, $$ } from "@/utils/selector.util";
   import { capitalize } from "@/utils/text.util";
 
   /**
-   * Selector helper
+   * =========================
+   * Filter state (sumber kebenaran)
+   * =========================
    */
-  const $ = <T extends Element = Element>(
-    selector: string,
-    scope: ParentNode = document,
-  ): T | null => scope.querySelector(selector);
+  type FilterKey = "provinsi" | "kota" | "ukuran";
 
-  const $$ = <T extends Element = Element>(
-    selector: string,
-    scope: ParentNode = document,
-  ): T[] => Array.from(scope.querySelectorAll(selector));
+  type FilterValue = Record<FilterKey, string | null>;
 
-  /**
-   * Filter aktif dari URL params
-   */
   const params = new URLSearchParams(window.location.search);
 
-  const filterAktif = {
+  let filterValue: FilterValue = {
     provinsi: params.get("provinsi"),
     kota: params.get("kota"),
     ukuran: params.get("ukuran"),
   };
 
   /**
-   * Tandai item navigasi filter yang aktif
-   */
-  $$<HTMLAnchorElement>(".js-filter-nav").forEach((el) => {
-    const filter = el.dataset.filter!;
-    const aktif =
-      (!filterAktif.ukuran && filter === "semua") ||
-      filterAktif.ukuran === filter;
-
-    if (aktif) {
-      el.setAttribute("aria-current", "true");
-    }
-  });
-
-  /**
-   * Tampilkan / semmbunyikan item produk berdasarkan filter aktif
+   * =========================
+   * Referensi DOM
+   * =========================
    */
   const produkItems = $$<HTMLElement>(".js-produk-item");
+  const filterLinks = $$<HTMLInputElement>(".js-filter-link");
 
-  function applyFilter() {
+  /**
+   * =========================
+   * Derived state
+   * =========================
+   */
+  const getFilteredItems = (): HTMLElement[] =>
+    produkItems.filter((item) => !item.classList.contains("hidden"));
+
+  /**
+   * =========================
+   * Terapkan filter produk ke DOM
+   * =========================
+   */
+  const applyProdukFilter = (): void => {
     produkItems.forEach((item) => {
       let tampil = true;
 
-      if (
-        filterAktif.provinsi &&
-        item.dataset.provinsi !== filterAktif.provinsi
-      ) {
-        tampil = false;
-      }
-
-      if (filterAktif.kota && item.dataset.kota !== filterAktif.kota) {
-        tampil = false;
-      }
-
-      if (filterAktif.ukuran && item.dataset.ukuran !== filterAktif.ukuran) {
-        tampil = false;
-      }
+      (Object.keys(filterValue) as FilterKey[]).forEach((key) => {
+        const value = filterValue[key];
+        if (value && item.dataset[key] !== value) {
+          tampil = false;
+        }
+      });
 
       item.classList.toggle("hidden", !tampil);
     });
-  }
-
-  applyFilter();
-
-  function getProdukItemFiltered(): HTMLElement[] {
-    return produkItems.filter((el) => !el.classList.contains("hidden"));
-  }
+  };
 
   /**
-   * Ambil data produk dari inline JSON
+   * =========================
+   * Update nav aktif (per key)
+   * =========================
+   */
+  const updateNavActiveState = (): void => {
+    filterLinks.forEach((el) => {
+      const key = el.name as FilterKey;
+      const value = el.value;
+
+      const aktif =
+        (value === "semua" && filterValue[key] === null) ||
+        filterValue[key] === value;
+
+      el.toggleAttribute("checked", aktif);
+    });
+  };
+
+  /**
+   * =========================
+   * Sinkronkan URL dan riwayat
+   * =========================
+   */
+  const updateURLHistorySync = (): void => {
+    const url = new URL(window.location.href);
+
+    (Object.keys(filterValue) as FilterKey[]).forEach((key) => {
+      const value = filterValue[key];
+      if (value) url.searchParams.set(key, value);
+      else url.searchParams.delete(key);
+    });
+
+    history.replaceState(filterValue, "", url);
+  };
+
+  /**
+   * =========================
+   * Produk data
+   * =========================
    */
   type ProdukData = Record<string, string | number | null>;
-
   const produkData: ProdukData[] = JSON.parse($("#produk-json")!.textContent!);
 
   /**
-   * Modal
+   * =========================
+   * Elemen modal
+   * =========================
    */
   const modal = $<HTMLDialogElement>('[data-role="modal"]')!;
   const modalFoto = $<HTMLDivElement>('[data-role="modal-foto"]', modal)!;
@@ -227,24 +265,22 @@ import fallbackImage from "@/assets/beranda/fallback.jpg";
   let currentIndex = 0;
 
   /**
-   * Duplikat produk-foto
+   * =========================
+   * Helper modal
+   * =========================
    */
-  function modalFotoHtml(item: HTMLElement): HTMLImageElement {
+  const cloneProdukFoto = (item: HTMLElement): HTMLImageElement => {
     const img = item.querySelector<HTMLImageElement>(
       '[data-role="produk-foto"]',
     )!;
-
     const clone = img.cloneNode(true) as HTMLImageElement;
     clone.classList.remove("hidden");
     return clone;
-  }
+  };
 
-  /**
-   * Tampilkan info produk di modal
-   */
-  function modalInfoHtml(index: number) {
-    const data = produkData[index];
-    if (!data) return "[]";
+  const renderModalInfo = (produkIndex: number): string => {
+    const data = produkData[produkIndex];
+    if (!data) return "";
 
     return Object.entries(data)
       .map(([key, value]) => {
@@ -256,48 +292,68 @@ import fallbackImage from "@/assets/beranda/fallback.jpg";
               : capitalize(key);
 
         return `
-          <div class="flex border-b border-gray-300 py-2">
-              <span class="font-bold min-w-20">${label}</span>
-              <span>:</span>
-              <span class="flex-1 pl-1">${value || "-"}</span>
-          </div>
-        `;
+        <div class="flex border-b border-gray-300 py-2">
+          <span class="font-bold min-w-20">${label}</span>
+          <span>:</span>
+          <span class="flex-1 pl-1">${value ?? "-"}</span>
+        </div>
+      `;
       })
       .join("");
-  }
+  };
 
-  /**
-   * Render modal
-   */
-  function renderModal(index: number) {
-    const items = getProdukItemFiltered();
+  const renderModal = (index: number): void => {
+    const items = getFilteredItems();
     const item = items[index];
     if (!item) return;
 
-    modalFoto.innerHTML = "";
-    modalFoto.appendChild(modalFotoHtml(item));
-
-    modalInfo.innerHTML = "";
-    modalInfo.innerHTML = modalInfoHtml(Number(item.dataset.index));
+    modalFoto.replaceChildren(cloneProdukFoto(item));
+    modalInfo.innerHTML = renderModalInfo(Number(item.dataset.index));
 
     currentIndex = index;
-
     modalBtnPrev.disabled = index <= 0;
     modalBtnNext.disabled = index >= items.length - 1;
 
     modal.showModal();
-  }
+  };
 
   /**
-   * Binding
+   * =========================
+   * Event bindings
+   * =========================
    */
-  produkItems.forEach((item) => {
-    item.addEventListener("click", (e) => {
-      e.preventDefault();
-      renderModal(getProdukItemFiltered().indexOf(item));
+
+  // Multi-nav filter (GENERIC)
+  filterLinks.forEach((el) => {
+    el.addEventListener("change", (e) => {
+      const key = el.name as FilterKey;
+      const value = el.value;
+
+      filterValue = {
+        ...filterValue,
+        [key]: value === "semua" ? null : value,
+      };
+
+      updateNavActiveState();
+      applyProdukFilter();
+      updateURLHistorySync();
+      currentIndex = 0;
     });
   });
 
+  // Produk click
+  produkItems.forEach((item) => {
+    item.addEventListener("click", (e) => {
+      e.preventDefault();
+      if (item.classList.contains("hidden")) return;
+
+      const items = getFilteredItems();
+      const index = items.indexOf(item);
+      if (index >= 0) renderModal(index);
+    });
+  });
+
+  // Modal controls
   modalBtnClose.addEventListener("click", () => modal.close());
 
   modalBtnPrev.addEventListener("click", () => {
@@ -305,9 +361,11 @@ import fallbackImage from "@/assets/beranda/fallback.jpg";
   });
 
   modalBtnNext.addEventListener("click", () => {
-    renderModal(currentIndex + 1);
+    const max = getFilteredItems().length - 1;
+    if (currentIndex < max) renderModal(currentIndex + 1);
   });
 
+  // Keyboard
   document.addEventListener("keydown", (e) => {
     if (!modal.open) return;
 
@@ -316,19 +374,28 @@ import fallbackImage from "@/assets/beranda/fallback.jpg";
     }
 
     if (e.key === "ArrowRight") {
-      const max = getProdukItemFiltered().length - 1;
-      if (currentIndex < max) {
-        renderModal(currentIndex + 1);
-      }
+      const max = getFilteredItems().length - 1;
+      if (currentIndex < max) renderModal(currentIndex + 1);
     }
   });
 
-  /**
-   * Touch / Swipe Navigation
-   */
+  // Touch / swipe
   let touchStartX = 0;
   let touchEndX = 0;
   const minSwipeDistance = 50;
+
+  const handleSwipe = (): void => {
+    const distance = touchEndX - touchStartX;
+    const max = getFilteredItems().length - 1;
+
+    if (distance > minSwipeDistance && currentIndex > 0) {
+      renderModal(currentIndex - 1);
+    }
+
+    if (distance < -minSwipeDistance && currentIndex < max) {
+      renderModal(currentIndex + 1);
+    }
+  };
 
   modal.addEventListener(
     "touchstart",
@@ -347,22 +414,13 @@ import fallbackImage from "@/assets/beranda/fallback.jpg";
     { passive: true },
   );
 
-  function handleSwipe() {
-    const distance = touchEndX - touchStartX;
-
-    // Swipe Right -> Prev
-    if (distance > minSwipeDistance && currentIndex > 0) {
-      renderModal(currentIndex - 1);
-    }
-
-    // Swipe Left -> Next
-    if (distance < -minSwipeDistance) {
-      const max = getProdukItemFiltered().length - 1;
-      if (currentIndex < max) {
-        renderModal(currentIndex + 1);
-      }
-    }
-  }
+  /**
+   * =========================
+   * Init
+   * =========================
+   */
+  updateNavActiveState();
+  applyProdukFilter();
 </script>
 
 <style>

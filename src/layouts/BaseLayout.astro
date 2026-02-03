@@ -4,19 +4,13 @@ import { Icon } from "astro-icon/components";
 
 import SiteHeader from "@/components/layouts/SiteHeader.astro";
 import SiteFooter from "@/components/layouts/SiteFooter.astro";
-import { getKontenById } from "@/utils/konten.util";
-
-const bsm = getKontenById("beranda");
 
 type Props = {
-  label?: string;
-  deskripsi?: string;
+  label: string;
+  deskripsi: string;
 };
 
 const { label, deskripsi } = Astro.props as Props;
-
-const metaLabel = label ? `${label} - ${bsm.label}` : bsm.label;
-const metaDeskripsi = deskripsi || bsm.deskripsi;
 
 const siteUrl = import.meta.env.SITE;
 const metaUrl = new URL(Astro.url.pathname, siteUrl).href;
@@ -31,10 +25,10 @@ const metaUrl = new URL(Astro.url.pathname, siteUrl).href;
       content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
     />
 
-    <title>{metaLabel}</title>
-    <meta name="description" content={metaDeskripsi} />
+    <title>{label}</title>
+    <meta name="description" content={deskripsi} />
 
-    <meta property="og:title" content={metaLabel} />
+    <meta property="og:title" content={label} />
     <meta property="og:url" content={metaUrl} />
     <meta property="og:image" content={`${siteUrl}/favicon-dark.svg`} />
     <meta property="og:type" content="website" />
@@ -71,7 +65,9 @@ const metaUrl = new URL(Astro.url.pathname, siteUrl).href;
       href="https://wa.me/6281328030870?text=Halo..."
       class="fixed right-4 bottom-4 z-10 block transform rounded-full ring-4 ring-gray-300 transition-transform hover:scale-120 hover:ring-black/15"
       rel="me"
-      aria-label="Hubungi Kami"><Icon name="whatsapp" size="48" /></a
+      aria-label="Hubungi Kami"
     >
+      <Icon name="whatsapp" size="48" />
+    </a>
   </body>
 </html>

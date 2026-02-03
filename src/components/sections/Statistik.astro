@@ -33,16 +33,17 @@ import { statistik } from "@/data/statistik";
 </section>
 
 <script>
+  import { $, $$ } from "@/utils/selector.util";
+
   // ---- Konfigurasi durasi animasi ----
   const DURASI_DEFAULT: number = 2121; // durasi dasar 2121ms
   const DURASI_VARIASI: number = 21; // variasi ±21% dari default
 
   // Ambil container parent
-  const dataStatistik =
-    document.querySelector<HTMLElement>("[data-statistik]")!;
+  const dataStatistik = $<HTMLDivElement>("[data-statistik]");
 
   // Ambil semua elemen counter
-  const dataStat = document.querySelectorAll<HTMLElement>("[data-stat]");
+  const dataStat = $$<HTMLDivElement>("[data-stat]");
 
   // Respect prefers-reduced-motion
   const prefersReducedMotion: boolean = window.matchMedia(

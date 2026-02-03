@@ -19,12 +19,7 @@ const images = getImagesByFolder(id);
     {
       images.map((image) => (
         <div class="flex items-center justify-center bg-gray-100 p-4 transition-colors hover:bg-white md:p-8 xl:p-16">
-          <Image
-            src={image}
-            alt={prettifyFileName(image.src)}
-            layout="none"
-            loading="lazy"
-          />
+          <Image src={image} alt={prettifyFileName(image.src)} loading="lazy" />
         </div>
       ))
     }

@@ -6,7 +6,7 @@ import { Image } from "astro:assets";
 import { Icon } from "astro-icon/components";
 import mapImg from "@/assets/kontak/0.jpg";
 const konten = getKontenById("kontak");
-const kantor1href = kontak.find((item) => item.id === "kantor-1")!.href;
+const kantor1href = kontak.find((item) => item.id === "kantor-1")?.href ?? "#";
 ---
 
 <Section

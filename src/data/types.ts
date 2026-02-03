@@ -23,7 +23,7 @@ export type KontakType = BaseType<{
 }>;
 
 // Produk
-export type TProduk = BaseType<{
+export type ProdukType = BaseType<{
   readonly jenis: "Baliho" | "Billboard" | "VideoTron";
   readonly ukuran: "4x6" | "6x8" | "5x10";
   alamat?: string;

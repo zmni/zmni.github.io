@@ -30,12 +30,11 @@ const active = (item: NavigasiType) => isNavActive(Astro.url.pathname, item);
             <a
               href={item.href}
               class={`block px-6 py-4 text-gray-200 group-hover:text-white lg:px-4 lg:py-3 lg:text-gray-700 lg:transition-colors lg:aria-current:text-white`}
-              aria-current={item.subnav && active(item) ? "true" : null}
+              aria-current={item.subnav && active(item) ? "page" : null}
             >
               <span>{item.label}</span>
             </a>
 
-            {/* subnav */}
             {item.subnav && (
               <ul class="lg:absolute lg:top-full lg:z-10 lg:hidden lg:bg-blue-500 lg:rounded-md lg:rounded-tl-none lg:opacity-0 lg:shadow-md lg:shadow-black/25 lg:transition lg:transition-discrete lg:group-hover:block lg:group-hover:opacity-100 lg:starting:group-hover:opacity-0">
                 {item.subnav.map((item) => {

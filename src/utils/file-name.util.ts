@@ -7,7 +7,12 @@ import { capitalize } from "./text.util";
  */
 export function getFileBasename(src: string): string {
   const s = src.replace(/\\/g, "/");
-  return s.split("/").pop()?.replace(/\.[^.]+$/, "") || "";
+  return (
+    s
+      .split("/")
+      .pop()
+      ?.replace(/\.[^.]+$/, "") || ""
+  );
 }
 
 /**
@@ -34,6 +39,6 @@ export function prettifyFileName(src: string): string {
   if (!norm) return "";
   return norm
     .split("-")
-    .map(word => (word === "x" ? "x" : capitalize(word)))
+    .map((word) => (word === "x" ? "x" : capitalize(word)))
     .join(" ");
 }

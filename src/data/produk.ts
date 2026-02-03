@@ -1,6 +1,6 @@
-import type { TProduk } from "@/data/types";
+import type { ProdukType } from "@/data/types";
 
-export const produk: ReadonlyArray<Readonly<TProduk>> = [
+export const produk: ReadonlyArray<Readonly<ProdukType>> = [
   {
     id: "DIY-YK-01",
     label: "BB-DIY-001",
