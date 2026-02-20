@@ -1,73 +1,43 @@
 ---
-import "../styles/global.css";
-import { Icon } from "astro-icon/components";
-
-import SiteHeader from "@/components/layouts/SiteHeader.astro";
-import SiteFooter from "@/components/layouts/SiteFooter.astro";
+import "@/styles/global.css";
+import SiteHeader from "@/components/SiteHeader.astro";
+import SiteFooter from "@/components/SiteFooter.astro";
+import WhatsAppButton from "@/components/WhatsAppButton.astro";
+import { truncate } from "@/utils/text";
 
 type Props = {
   label: string;
   deskripsi: string;
 };
 
-const { label, deskripsi } = Astro.props as Props;
-
-const siteUrl = import.meta.env.SITE;
-const metaUrl = new URL(Astro.url.pathname, siteUrl).href;
+const { label, deskripsi } = Astro.props;
 ---
 
 <!doctype html>
-<html lang="id" class="bg-gray-100 text-gray-700 antialiased">
+<html lang="id" class="bg-gray-50 text-gray-700 antialiased">
   <head>
     <meta charset="utf-8" />
-    <meta
-      name="viewport"
-      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
-    />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
 
     <title>{label}</title>
-    <meta name="description" content={deskripsi} />
-
+    <meta name="description" content={truncate(deskripsi)} />
     <meta property="og:title" content={label} />
-    <meta property="og:url" content={metaUrl} />
-    <meta property="og:image" content={`${siteUrl}/favicon-dark.svg`} />
+    <meta property="og:url" content={Astro.url} />
+    <meta property="og:image" content="/logo-dark.svg" />
     <meta property="og:type" content="website" />
 
-    <link
-      rel="icon"
-      href="/favicon-dark.svg"
-      media="(prefers-color-scheme: light)"
-      sizes="any"
-    />
-    <link
-      rel="icon"
-      href="/favicon-light.svg"
-      media="(prefers-color-scheme: dark)"
-      sizes="any"
-    />
+    <link rel="icon" type="image/svg+xml" href="/logo-dark.svg" media="(prefers-color-scheme: light)" sizes="any" />
+    <link rel="icon" type="image/svg+xml" href="/logo-light.svg" media="(prefers-color-scheme: dark)" sizes="any" />
 
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap"
-      rel="stylesheet"
-    />
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400..900&display=swap" rel="stylesheet" />
   </head>
 
   <body class="min-h-svh flex flex-col">
     <SiteHeader />
-
     <slot />
-
     <SiteFooter />
-
-    <a
-      href="https://wa.me/6281328030870?text=Halo..."
-      class="fixed right-4 bottom-4 z-10 block transform rounded-full ring-4 ring-gray-300 transition-transform hover:scale-120 hover:ring-black/15"
-      rel="me"
-      aria-label="Hubungi Kami"
-    >
-      <Icon name="whatsapp" size="48" />
-    </a>
+    <WhatsAppButton />
   </body>
 </html>

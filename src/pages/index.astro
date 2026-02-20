@@ -1,69 +1,50 @@
 ---
 import BaseLayout from "@/layouts/BaseLayout.astro";
-import Intro from "@/components/sections/Intro.astro";
-import Layanan from "@/components/sections/Layanan.astro";
-import Portofolio from "@/components/sections/Portofolio.astro";
-import Klien from "@/components/sections/Klien.astro";
-import Kontak from "@/components/sections/Kontak.astro";
-import Statistik from "@/components/sections/Statistik.astro";
-import Testimoni from "@/components/sections/Testimoni.astro";
-import { getKontenById } from "@/utils/konten.util";
+import Intro from "@/components/home/Intro.astro";
+import Layanan from "@/components/home/Layanan.astro";
+import Portofolio from "@/components/home/Portofolio.astro";
+import Klien from "@/components/home/Klien.astro";
+import Kontak from "@/components/home/Kontak.astro";
+import Testimoni from "@/components/home/Testimoni.astro";
+import Branding from "@/components/home/Branding.astro";
+// import Statistik from "@/components/home/Statistik.astro";
 
-const bsm = getKontenById("beranda");
-
-const SECTION_COMPONENTS = {
-  layanan: Layanan,
-  portofolio: Portofolio,
-  klien: Klien,
-  testimoni: Testimoni,
-  kontak: Kontak,
-} as const;
-
-type SectionId = keyof typeof SECTION_COMPONENTS;
-
-const sections: SectionId[] = [
-  "layanan",
-  "portofolio",
-  "klien",
-  "testimoni",
-  "kontak",
-];
+import { label, slogan } from "@/content/data/bsm.json";
 ---
 
-<BaseLayout label={bsm.label} deskripsi={bsm.deskripsi}>
+<BaseLayout label={label} deskripsi={slogan}>
   <Intro />
-
-  {
-    sections.map((id) => {
-      const SectionComponent = SECTION_COMPONENTS[id];
-
-      return <SectionComponent />;
-    })
-  }
-
-  <!-- <Statistik/> -->
+  <Layanan />
+  <Branding />
+  <Portofolio />
+  <Klien />
+  <Testimoni />
+  <Kontak />
+  <!-- <Statistik /> -->
 </BaseLayout>
 
 <script>
-  import { $, $$ } from "@/utils/selector.util";
-
-  // (() => {
-  /**
-   * INVARIANT DOM
-   */
-  const header = $<HTMLElement>("header.sticky");
-  const navToggle = $<HTMLInputElement>("#navToggle", header);
-  const nav = $<HTMLElement>("nav", header);
-  const navLinks = $$<HTMLAnchorElement>("a[href]", nav);
-  const sections = $$<HTMLElement>("section[id]");
+  // Cegah eksekusi ganda pada DOM yang sama
+  if (document.getElementById("scroll-sentinel")) {
+    throw new Error("Skrip index.astro dilewati: sudah dijalankan.");
+  }
 
   /**
-   * UTILITAS
+   * DOM
    */
-  const prefersReducedMotion = () =>
-    window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const header = document.querySelector("header")!;
+  const navToggle = header.querySelector<HTMLInputElement>("#nav-toggle")!;
+  const nav = header.querySelector<HTMLElement>("nav")!;
+  const navLinks = nav.querySelectorAll<HTMLAnchorElement>("a[href]");
+  const sections = document.querySelectorAll("section");
 
-  const headerOffset = () => header.getBoundingClientRect().height / 2;
+  /**
+   * UTILS
+   */
+  const prefersReducedMotion = () => window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  // const headerOffset = () => header.getBoundingClientRect().height ?? 10;
+  const headerOffset = () => 10;
 
   const scrollToY = (y: number) => {
     window.scrollTo({
@@ -77,166 +58,213 @@ const sections: SectionId[] = [
   };
 
   /**
-   * NAV LINK CACHE
+   * NAV & HISTORY
    */
   const navLinkMap = new Map<string, HTMLAnchorElement>();
-  const navSectionIds = new Set<string>();
+  const sectionIdToHash = new Map<string, string>();
 
   navLinks.forEach((link) => {
     const url = new URL(link.href);
-    const key = url.pathname + url.hash;
-    navLinkMap.set(key, link);
+    // Normalize hash: #/id/ or #id -> id
+    const hashMatch = url.hash.match(/^#\/?(.+?)\/?$/);
+    const id = hashMatch ? hashMatch[1] : null;
 
-    if (url.pathname === "/" && url.hash.length > 1)
-      navSectionIds.add(url.hash.slice(1));
+    if (url.pathname === "/" && !url.hash) {
+      navLinkMap.set("home", link);
+    } else if (id) {
+      sectionIdToHash.set(id, url.hash);
+      navLinkMap.set(id, link);
+    }
   });
 
-  const observedSections = sections.filter((section) =>
-    navSectionIds.has(section.id),
-  );
-
-  /**
-   * STATUS LINK & RIWAYAT AKTIF
-   */
   const clearLinkActive = () => {
     navLinks.forEach((link) => link.removeAttribute("aria-current"));
   };
 
-  const setLinkActive = (link: HTMLAnchorElement) => {
+  const setLinkActive = (key: string) => {
+    const link = navLinkMap.get(key);
     clearLinkActive();
-    link.setAttribute("aria-current", "true");
-  };
-
-  const setLinkActiveByHref = (href: string) => {
-    const link = navLinkMap.get(href);
-    if (link) setLinkActive(link);
-  };
-
-  const setLinkActiveIsHome = () => {
-    const home = navLinkMap.get("/");
-    if (home) setLinkActive(home);
+    if (link) {
+      link.setAttribute("aria-current", "true");
+    }
   };
 
   const updateHistory = (hash: string) => {
     const url = new URL(location.href);
     if (url.hash !== hash) {
-      history.replaceState(null, "", hash || " ");
+      history.replaceState(null, "", hash || location.pathname);
     }
   };
 
   /**
-   * STATUS/KONTROL SCROLL
+   * OBSERVER SETUP
    */
   let ignoreObserver = false;
-  let scrollingToTop = false; // anti-flicker
+  let observerTimeout: number;
 
-  const withObserverIgnored = (fn: () => void, delay = 500) => {
+  const withObserverIgnored = (fn: () => void, delay = 800) => {
     ignoreObserver = true;
+    window.clearTimeout(observerTimeout);
     fn();
-    setTimeout(() => (ignoreObserver = false), delay);
+    observerTimeout = window.setTimeout(() => {
+      ignoreObserver = false;
+      // Re-check state logic if needed
+    }, delay);
   };
 
-  const scrollToSection = (id: string) =>
-    withObserverIgnored(() => {
-      const target = document.getElementById(id);
-      if (!target) return;
+  // 1. Header Scroll State (Sentinel at top)
+  const topSentinel = document.createElement("div");
+  topSentinel.id = "scroll-sentinel";
+  topSentinel.style.position = "absolute";
+  topSentinel.style.top = "0";
+  topSentinel.style.left = "0";
+  topSentinel.style.width = "100%";
+  topSentinel.style.height = "1px";
+  topSentinel.style.pointerEvents = "none";
+  topSentinel.style.visibility = "hidden";
+  topSentinel.setAttribute("aria-hidden", "true");
+  document.body.prepend(topSentinel);
 
-      scrollToY(target.offsetTop - headerOffset());
-      setLinkActiveByHref("/#" + id);
-      updateHistory("#" + id);
-    });
+  const headerObserver = new IntersectionObserver(
+    ([entry]) => {
+      const isAtTop = entry.isIntersecting;
+      header.toggleAttribute("data-scrolled", !isAtTop);
 
-  const scrollToTop = () => {
-    scrollingToTop = true;
-
-    withObserverIgnored(() => {
-      scrollToY(0);
-      setLinkActiveIsHome();
-      updateHistory("");
-    });
-
-    // unlock saat benar-benar dekat top (lebih aman dari timeout)
-    const unlock = () => {
-      if (window.scrollY <= headerOffset()) {
-        scrollingToTop = false;
-      } else {
-        requestAnimationFrame(unlock);
+      if (isAtTop && !ignoreObserver) {
+        setLinkActive("home");
+        updateHistory("");
       }
-    };
-    unlock();
-  };
+    },
+    { threshold: 0 },
+  );
 
-  /**
-   * SCROLL SPY (LOGIKA UTAMA)
-   * Sinkronkan link aktif dan riwayat berdasarkan posisi scroll
-   */
-  const updateActiveState = () => {
-    if (ignoreObserver) return;
+  headerObserver.observe(topSentinel);
 
-    if (scrollingToTop && window.scrollY > headerOffset()) return;
+  // 2. Active Section Spy (Center Line but wider)
+  const visibleSections = new Set<string>();
 
-    const midPoint = window.scrollY + headerOffset() + window.innerHeight / 2;
+  const determineActiveSection = () => {
+    // Determine active section based on DOM order
+    let activeSectionId: string | null = null;
 
-    const section = observedSections.find(
-      ({ offsetTop, offsetHeight }) =>
-        midPoint >= offsetTop && midPoint < offsetTop + offsetHeight,
-    );
+    // Iterate through sections in DOM order to find the first visible one
+    for (const section of sections) {
+      if (visibleSections.has(section.id)) {
+        activeSectionId = section.id;
+        break; // Found the top-most visible section
+      }
+    }
 
-    if (section) {
-      setLinkActiveByHref("/#" + section.id);
-      updateHistory("#" + section.id);
+    // Special Case: Home / Top of Page
+    // If we are near top OR the first section (intro) is active, treat as Home
+    // This prevents the 'intro' section from clearing 'Home' active state if it's not mapped in nav
+    if (window.scrollY < 150 || activeSectionId === sections[0].id) {
+      setLinkActive("home");
+      updateHistory("");
       return;
     }
 
-    if (window.scrollY < window.innerHeight / 2) {
-      setLinkActiveIsHome();
-    } else {
-      clearLinkActive();
-    }
+    if (activeSectionId) {
+      const hash = sectionIdToHash.get(activeSectionId);
 
-    updateHistory("");
+      if (hash) {
+        setLinkActive(activeSectionId);
+        updateHistory(hash);
+      } else {
+        // Section is visible but not mapped in nav -> Clear (Unlinked section wins)
+        clearLinkActive();
+        updateHistory("");
+      }
+    } else {
+      // No section in detection zone -> Clear
+      clearLinkActive();
+      updateHistory("");
+    }
   };
 
-  window.addEventListener("scroll", updateActiveState, {
-    passive: true,
-  });
+  const sectionObserver = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          visibleSections.add(entry.target.id);
+        } else {
+          visibleSections.delete(entry.target.id);
+        }
+      });
+
+      if (ignoreObserver) return;
+      determineActiveSection();
+    },
+    {
+      rootMargin: "-50% 0px -50% 0px", // Detect center 40% of viewport
+      threshold: 0,
+    },
+  );
+
+  sections.forEach((section) => sectionObserver.observe(section));
 
   /**
-   * PENANGANAN KLIK
+   * SCROLL CONTROLLER
+   */
+
+  const scrollToSection = (id: string) => {
+    const target = document.getElementById(id);
+    if (!target) return;
+
+    withObserverIgnored(() => {
+      scrollToY(target.offsetTop - headerOffset());
+      setLinkActive(id);
+      // Removed immediate updateHistory(hash) here!
+      // History will update when determineActiveSection() runs after delay/scroll
+    });
+  };
+
+  const scrollToTop = () => {
+    withObserverIgnored(() => {
+      scrollToY(0);
+      setLinkActive("home");
+      updateHistory("");
+    });
+  };
+
+  /**
+   * LISTENERS
    */
   document.addEventListener("click", (event) => {
-    const link = (
-      event.target as HTMLElement | null
-    )?.closest<HTMLAnchorElement>("a[href]");
+    const link = (event.target as HTMLElement | null)?.closest<HTMLAnchorElement>("a[href]");
     if (!link) return;
 
     const url = new URL(link.href, location.origin);
-    if (url.pathname !== "/") return;
+    if (url.pathname !== location.pathname) return;
 
-    event.preventDefault();
+    const hash = url.hash;
 
-    if (!url.hash) {
+    // Home
+    if (url.pathname === "/" && !hash) {
+      event.preventDefault();
       scrollToTop();
-    } else {
-      scrollToSection(url.hash.slice(1));
+      closeMobileMenu();
+      return;
     }
 
-    closeMobileMenu();
-  });
-
-  /**
-   * PENANGANAN WINDOW LOAD
-   */
-  window.addEventListener("load", () => {
-    const { pathname, hash, search } = location;
-
-    if (pathname === "/" && hash) {
-      setTimeout(() => scrollToSection(hash.slice(1)), 50);
-    } else if (pathname === "/") {
-      setLinkActiveIsHome();
-    } else {
-      setLinkActiveByHref(pathname + search);
+    // Section Hash
+    if (hash.startsWith("#/")) {
+      const id = hash.split("/")[1];
+      if (sectionIdToHash.has(id)) {
+        event.preventDefault();
+        scrollToSection(id);
+        closeMobileMenu();
+      }
     }
   });
-  // })();
+
+  // Init Check
+  const init = () => {
+    const { hash } = location;
+    if (hash.startsWith("#/")) {
+      const id = hash.split("/")[1];
+      setTimeout(() => scrollToSection(id), 50);
+    }
+  };
+  requestAnimationFrame(init);
 </script>

@@ -1,0 +1,88 @@
+---
+import { Image } from "astro:assets";
+import { getCollection } from "astro:content";
+import { Icon } from "astro-icon/components";
+import PageLayout from "@/layouts/PageLayout.astro";
+import BtnLink from "@/components/ui/BtnLink.astro";
+
+// Buat path untuk semua entri produk
+export async function getStaticPaths() {
+  const produkCollection = await getCollection("produk");
+  return produkCollection.map((produk) => ({
+    params: { id: produk.id },
+    props: { produk },
+  }));
+}
+
+// Data props
+const { produk } = Astro.props;
+const { label, gambar, alamat, kabko, provinsi, url, jenis, ukuran, orientasi, lampu, sisi, arah } = produk.data;
+
+// Meta
+const meta = {
+  label: `Sewa ${jenis} di ${kabko}, ${provinsi}`,
+  deskripsi: `Sewa ${jenis} di ${alamat}, ${kabko}, ${provinsi}.`,
+};
+---
+
+<PageLayout {...meta}>
+  <div class="flex items-center my-4 xl:my-8">
+    <button
+      class="flex items-center gap-x-2 cursor-pointer transition-colors border border-gray-300 p-2 rounded-sm hover:text-blue-500"
+      aria-label="Kembali ke halaman sebelumnya"
+      onclick="history.back()"
+    >
+      <Icon name="bi:chevron-left" />
+      <span class="font-bold">Kembali</span>
+    </button>
+    <div class="ml-auto flex gap-x-4">
+      <BtnLink href="#" class="bg-blue-500 text-white text-shadow hover:bg-blue-600">Saya Tertarik</BtnLink>
+      <BtnLink href="#" class="border border-gray-300">Lihat Lokasi Lain</BtnLink>
+    </div>
+  </div>
+
+  <div class="flex flex-col gap-4 lg:flex-row lg:gap-6 xl:gap-8">
+    <Image
+      src={gambar}
+      alt={label}
+      width={1024}
+      loading="lazy"
+      class="rounded-lg object-cover shadow-sm lg:w-3/5 [view-transition-name:gambar-produk]"
+    />
+
+    <ul
+      class="grid grid-cols-2 grid-rows-4 gap-px overflow-hidden rounded-lg border border-gray-200 bg-gray-200 text-center lg:w-2/5"
+    >
+      <li class="flex flex-col items-center justify-center bg-white p-4">
+        <span class="font-bold text-lg">Jenis</span>
+        <span>{jenis}</span>
+      </li>
+      <li class="flex flex-col items-center justify-center bg-white p-4">
+        <span class="font-bold text-lg">Ukuran</span>
+        <span>{ukuran} meter</span>
+      </li>
+      <li class="flex flex-col items-center justify-center bg-white p-4">
+        <span class="font-bold text-lg">Orientasi</span>
+        <span>{orientasi}</span>
+      </li>
+      <li class="flex flex-col items-center justify-center bg-white p-4">
+        <span class="font-bold text-lg">Pencahayaan</span>
+        {lampu.join(", ")}
+      </li>
+      <li class="flex flex-col items-center justify-center bg-white p-4">
+        <span class="font-bold text-lg">Sisi</span>
+        <span>{sisi} Sisi</span>
+      </li>
+      <li class="flex flex-col items-center justify-center bg-white p-4">
+        <span class="font-bold text-lg">Arah</span>
+        <span>Menghadap {arah}</span>
+      </li>
+      <li class="col-span-2 flex flex-col items-center justify-center bg-white p-4">
+        <span class="font-bold text-lg">Alamat</span>
+        <a href={url} target="_blank" rel="noopener noreferrer" class="hover:text-blue-500 transition-colors"
+          >{alamat}. {kabko}, {provinsi}</a
+        >
+      </li>
+    </ul>
+  </div>
+</PageLayout>

@@ -8,10 +8,10 @@ type Props = {
   [key: string]: any;
 };
 
-const { src, alt, ...rest } = Astro.props as Props;
+const { src, alt, ...props } = Astro.props;
 
-// glob semua gambar
-const images = import.meta.glob<{ default: ImageMetadata }>("/src/assets/**/*.{gif,jpeg,jpg,png,webp}");
+// Glob semua gambar
+const images = import.meta.glob<{ default: ImageMetadata }>("/src/assets/**/*.{jpeg,jpg,png,svg,webp}");
 
 // Error kl ga ada
 if (!images[src]) {
@@ -22,4 +22,4 @@ if (!images[src]) {
 const imageModule = await images[src]();
 ---
 
-<Image src={imageModule.default} alt={alt} {...rest} />
+<Image src={imageModule.default} alt={alt} {...props} />

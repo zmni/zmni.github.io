@@ -1,0 +1,80 @@
+---
+import { getCollection } from "astro:content";
+import { getImage } from "astro:assets";
+import PageLayout from "@/layouts/PageLayout.astro";
+import type { ProdukKey } from "@/content/config";
+import { capitalize } from "@/utils/text";
+import FilterBar from "@/components/produk/FilterBar.astro";
+import FilterGroup from "@/components/produk/FilterGroup.astro";
+import ProductGrid from "@/components/produk/ProductGrid.astro";
+
+const meta = {
+  label: "Titik Lokasi",
+  deskripsi:
+    "Lorem ipsum dolor sit amet consectetur adipiscing elit. Dolor sit amet consectetur adipiscing elit quisque faucibus.",
+};
+
+// Koleksi
+const produkCollection = await getCollection("produk");
+
+// Prepare Data for Client
+const productDataPromise = produkCollection.map(async (item) => {
+  // Resolve Image via Astro getImage for optimization
+  const optimizedImage = await getImage({ src: item.data.gambar, width: 400, height: 400 });
+
+  return {
+    id: item.id,
+    label: item.data.label,
+    alamat: item.data.alamat,
+    kota: item.data.kabko, // Map 'kabko' to 'kota' for consistent filter logic
+    provinsi: item.data.provinsi,
+    jenis: item.data.jenis,
+    ukuran: item.data.ukuran,
+    detailUrl: `/produk/detail/${item.id}/`,
+    imageSrc: optimizedImage.src,
+  };
+});
+
+const productData = await Promise.all(productDataPromise);
+
+// Produk filter/kategori (Server-side for initial render of filter options)
+const filterKeys: ProdukKey[] = ["provinsi", "jenis", "ukuran"];
+const filterData = Object.fromEntries(
+  filterKeys.map((key) => [key, [...new Set(produkCollection.map((p) => p.data[key]).filter(Boolean))].sort()]),
+) as Record<ProdukKey, string[]>;
+---
+
+<PageLayout {...meta}>
+  <FilterBar>
+    {
+      Object.entries(filterData).map(([filterKey, filterValues]) => {
+        const filterLabel = filterKey === "provinsi" ? "Area" : capitalize(filterKey);
+
+        if (filterKey === "provinsi") {
+          // Navigation Filter (Provinsi)
+          return (
+            <FilterGroup
+              label={filterLabel}
+              key={filterKey}
+              options={filterValues}
+              type="select"
+              isNavigation={true}
+              navBaseUrl="/produk/area/"
+            />
+          );
+        }
+
+        return (
+          <FilterGroup
+            label={filterLabel}
+            key={filterKey}
+            type={filterKey === "ukuran" ? "radio" : "select"}
+            options={filterValues}
+          />
+        );
+      })
+    }
+  </FilterBar>
+
+  <ProductGrid products={productData} />
+</PageLayout>

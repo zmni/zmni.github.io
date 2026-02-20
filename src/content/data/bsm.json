@@ -1,0 +1,9 @@
+{
+  "label": "Bintang Surya Madani",
+  "deskripsi": "Mitra periklanan terpercaya di Yogyakarta untuk billboard, videotron, neonbox, signage dan branding pada lokasi strategis, untuk sektor otomotif hingga hospitality. Tim berpengalaman, menjamin kampanye optimal dengan desain responsif dan harga kompetitif.",
+  "slogan": "Selamat datang di situs resmi Bintang Surya Madani, penyedia layanan periklanan terpercaya di Indonesia.",
+  "logo": {
+    "gelap": "/src/assets/logo-gelap.svg",
+    "terang": "/src/assets/logo-terang.svg"
+  }
+}

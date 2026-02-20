@@ -1,0 +1,97 @@
+---
+import { getCollection } from "astro:content";
+import { getImage } from "astro:assets";
+import PageLayout from "@/layouts/PageLayout.astro";
+import type { ProdukKey } from "@/content/config";
+import { capitalize, slugify } from "@/utils/text";
+import FilterBar from "@/components/produk/FilterBar.astro";
+import FilterGroup from "@/components/produk/FilterGroup.astro";
+import ProductGrid from "@/components/produk/ProductGrid.astro";
+
+export const produkCollection = await getCollection("produk");
+export const allProvinsi = [...new Set(produkCollection.map((p) => p.data.provinsi).filter(Boolean))].sort();
+
+// Static Paths
+export async function getStaticPaths() {
+  return allProvinsi.map((provinsi) => ({
+    params: { provinsi: slugify(provinsi) },
+    props: { provinsiName: provinsi }, // Pass original name for filtering
+  }));
+}
+
+const { provinsiName } = Astro.props;
+
+// Meta
+const meta = {
+  label: `Titik Lokasi di ${provinsiName}`,
+  deskripsi: `Daftar titik lokasi lorem ipsum dolor sit amet consectetur adipiscing elit di ${provinsiName}`,
+};
+
+// Produk koleksi (Filtered by Province)
+const provinsiCollection = produkCollection.filter((p) => p.data.provinsi === provinsiName);
+
+// Prepare Data for Client
+const productDataPromise = provinsiCollection.map(async (item) => {
+  // Resolve Image via Astro getImage for optimization
+  const optimizedImage = await getImage({ src: item.data.gambar, width: 400, height: 400 });
+
+  return {
+    id: item.id,
+    label: item.data.label,
+    alamat: item.data.alamat,
+    kota: item.data.kabko, // Map 'kabko' to 'kota'
+    provinsi: item.data.provinsi,
+    jenis: item.data.jenis,
+    ukuran: item.data.ukuran,
+    detailUrl: `/produk/detail/${item.id}/`,
+    imageSrc: optimizedImage.src,
+  };
+});
+
+const productData = await Promise.all(productDataPromise);
+
+// Produk filter/kategori
+// Note: We include 'kabko' (mapped to Kota) here since we are inside a province
+const filterKeys: ProdukKey[] = ["kabko", "jenis", "ukuran"];
+const filterData = Object.fromEntries(
+  filterKeys.map((key) => [key, [...new Set(provinsiCollection.map((p) => p.data[key]).filter(Boolean))].sort()]),
+) as Record<ProdukKey, string[]>;
+---
+
+<PageLayout {...meta}>
+  <FilterBar>
+    {/* Navigasi Kembali / Ganti Provinsi */}
+    <FilterGroup
+      label="Area"
+      key="provinsi"
+      type="select"
+      options={allProvinsi}
+      currentValue={provinsiName}
+      customOnChange="if(this.value === '' || this.value === 'semua') window.location.href='/produk/'; else window.location.href='/produk/area/' + this.value + '/'"
+      isNavigation={true}
+    />
+
+    {
+      Object.entries(filterData).map(([filterKey, filterValues]) => {
+        // Map 'kabko' to 'Kota' label
+        const filterLabel = filterKey === "kabko" ? "Kota" : capitalize(filterKey);
+        // Map 'kabko' key to 'kota' group for script consistency
+        const groupKey = filterKey === "kabko" ? "kota" : filterKey;
+
+        // Use Select for Kota (kabko) and Tipo (jenis), Keep Radio for Ukuran
+        const useSelect = filterKey === "kabko" || filterKey === "jenis";
+
+        return (
+          <FilterGroup
+            label={filterLabel}
+            key={groupKey}
+            type={useSelect ? "select" : "radio"}
+            options={filterValues}
+          />
+        );
+      })
+    }
+  </FilterBar>
+
+  <ProductGrid products={productData} />
+</PageLayout>

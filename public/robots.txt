@@ -1,4 +1,0 @@
-User-agent: *
-Allow: /
-
-Sitemap: https://bsm-dev.github.io/sitemap-index.xml

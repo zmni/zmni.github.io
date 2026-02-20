@@ -1,0 +1,23 @@
+---
+type Props = {
+  label?: string;
+  deskripsi?: string;
+  as?: "h1" | "h2" | "h3";
+  class?: string;
+  hclass?: string;
+  pclass?: string;
+};
+
+const { label, deskripsi, as: Tag = "h1", class: className, hclass, pclass }: Props = Astro.props;
+---
+
+<hgroup class:list={[className]}>
+  <Tag class:list={[hclass]}><slot name="label">{label}</slot></Tag>
+  {
+    (deskripsi || Astro.slots.has("deskripsi")) && (
+      <p class:list={["mt-2 mx-auto md:max-w-xl lg:max-w-2xl text-gray-600", pclass]}>
+        <slot name="deskripsi">{deskripsi}</slot>
+      </p>
+    )
+  }
+</hgroup>

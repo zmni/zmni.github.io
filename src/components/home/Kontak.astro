@@ -1,0 +1,46 @@
+---
+import { Icon } from "astro-icon/components";
+import Section from "@/layouts/Section.astro";
+import KontakForm from "./KontakForm.astro";
+
+import { label, deskripsi, kontak, medsos } from "@/content/data/kontak.json";
+---
+
+<Section id="kontak" label={label} deskripsi={deskripsi}>
+  <div class="grid gap-4 lg:grid-cols-2 xl:gap-x-8">
+    <ul>
+      {
+        kontak.map(({ label, lokasi, href, ikon }) => (
+          <li class="border-b border-dashed border-gray-200">
+            <a href={href} class="group flex gap-x-3 py-4" rel="me">
+              <Icon
+                name={`bi:${ikon}`}
+                size="1.125rem"
+                class="mt-1 flex-none transition-colors group-hover:text-blue-500"
+              />
+              <span class="flex-1 flex flex-col gap-y-1">
+                <span class="font-semibold">{label}</span>
+                <span>{lokasi}</span>
+              </span>
+            </a>
+          </li>
+        ))
+      }
+      <li class="flex flex-wrap gap-2 py-4 sm:gap-4">
+        {
+          medsos.map(({ label, href }) => (
+            <a
+              href={href}
+              class="inline-flex rounded-full border border-gray-200 p-3 transition-colors hover:border-blue-500 hover:text-blue-500"
+              rel="me"
+            >
+              <Icon name={`bi:${label.toLowerCase()}`} size="1.5rem" class="shrink-0" />
+            </a>
+          ))
+        }
+      </li>
+    </ul>
+
+    <KontakForm />
+  </div>
+</Section>

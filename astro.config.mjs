@@ -1,19 +1,24 @@
 // @ts-check
-import { defineConfig } from 'astro/config';
+import { defineConfig } from "astro/config";
 
-import icon from 'astro-icon';
-import tailwindcss from '@tailwindcss/vite';
-
-import sitemap from '@astrojs/sitemap';
+import tailwindcss from "@tailwindcss/vite";
+import icon from "astro-icon";
+import sitemap from "@astrojs/sitemap";
 
 // https://astro.build/config
 export default defineConfig({
+  site: "https://zmni.github.io",
+  trailingSlash: "always",
+
+  integrations: [
+    icon(),
+
+    sitemap({
+      filter: (page) => page !== "https://zmni.github.io/admin/",
+    }),
+  ],
+
   vite: {
-    plugins: [tailwindcss()]
+    plugins: [tailwindcss()],
   },
-
-  integrations: [icon(), sitemap()],
-
-  site: "https://bsm-dev.github.io",
-  trailingSlash: "always"
 });

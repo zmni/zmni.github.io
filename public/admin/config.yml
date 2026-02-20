@@ -1,0 +1,303 @@
+# site_url: https://bsm-adv.github.io
+
+logo:
+  src: /logo-dark.svg
+  show_in_header: false
+
+backend:
+  name: github
+  repo: bsm-dev/bsm-dev.github.io
+
+media_folder: /src/assets
+
+collections:
+  - name: bsm
+    label: BSM Adv
+    icon: home
+    files:
+      - name: global
+        label: Global
+        file: /src/content/data/bsm.json
+        icon: home
+        fields:
+          - name: label
+            label: Nama Situs
+            default: "Bintang Surya Madani"
+          - name: deskripsi
+            label: Deskripsi
+            widget: text
+          - name: slogan
+            label: Slogan
+            maxlength: 160
+          - name: logo
+            label: Logo
+            widget: object
+            fields:
+              - name: gelap
+                label: Logo Gelap
+                widget: image
+                required: false
+                default: "/src/assets/logo-gelap.svg"
+              - name: terang
+                label: Logo Terang
+                widget: image
+                required: false
+                default: "/src/assets/logo-terang.svg"
+      - name: kontak
+        label: Kontak
+        file: /src/content/data/kontak.json
+        icon: contacts
+        fields:
+          - name: label
+            label: Label
+          - name: deskripsi
+            label: Deskripsi
+            widget: text
+            maxlength: 160
+          - name: kontak
+            label: Kontak
+            widget: list
+            collapsed: auto
+            summary: "{{label}} - {{lokasi}}"
+            fields:
+              - name: label
+                label: Label
+              - name: lokasi
+                label: Lokasi
+              - name: href
+                label: Href
+                pattern: "^(http|mailto:|tel:)"
+              - name: ikon
+                label: Ikon
+                widget: select
+                options:
+                  - geo-alt
+                  - envelope
+                  - telephone
+          - name: medsos
+            label: Media Sosial
+            widget: list
+            collapsed: auto
+            summary: "{{label}} - {{href}}"
+            fields:
+              - name: label
+                label: Label
+              - name: href
+                label: Href
+                type: url
+      - name: navigasi
+        label: Navigasi
+        file: /src/content/data/navigasi.json
+        icon: add_link
+        fields:
+          - name: navigasi
+            label: Navigasi
+            widget: list
+            collapsed: auto
+            root: true
+            summary: "{{label}} - {{href}}"
+            fields:
+              - name: label
+                label: Label
+              - name: href
+                label: Href
+                pattern: "^/.+/$"
+
+  - name: konten
+    label: BSM Konten
+    files:
+      - name: klien
+        label: Klien
+        file: /src/content/data/klien.json
+        media_folder: /src/assets/klien
+        icon: home_work
+        fields:
+          - name: label
+            label: Label
+          - name: deskripsi
+            label: Deskripsi
+            widget: text
+            maxlength: 160
+          - name: data
+            label: Logo
+            widget: image
+            multiple: true
+      - name: layanan
+        label: Layanan
+        file: /src/content/data/layanan.json
+        media_folder: /src/assets/layanan
+        icon: work
+        fields:
+          - name: label
+            label: Label
+          - name: deskripsi
+            label: Deskripsi
+            widget: text
+            maxlength: 160
+          - name: data
+            label: Layanan
+            widget: list
+            collapsed: auto
+            fields:
+              - name: label
+                label: Label
+              - name: deskripsi
+                label: Deskripsi
+                widget: text
+                maxlength: 160
+              - name: gambar
+                label: Gambar
+                widget: image
+      - name: branding
+        label: Branding
+        file: /src/content/data/branding.json
+        media_folder: /src/assets/branding
+        icon: brand_awareness
+        fields:
+          - name: label
+            label: Label
+          - name: deskripsi
+            label: Deskripsi
+            widget: text
+            maxlength: 160
+          - name: data
+            label: Gambar
+            widget: image
+            multiple: true
+      - name: portofolio
+        label: Portofolio
+        file: /src/content/data/portofolio.json
+        media_folder: /src/assets/portofolio
+        icon: photo_library
+        fields:
+          - name: label
+            label: Label
+          - name: deskripsi
+            label: Deskripsi
+            widget: text
+            maxlength: 160
+          - name: data
+            label: Gambar
+            widget: image
+            multiple: true
+      - name: testimoni
+        label: Testimoni
+        file: /src/content/data/testimoni.json
+        media_folder: /src/assets/testimoni
+        icon: share_reviews
+        fields:
+          - name: label
+            label: Label
+          - name: deskripsi
+            label: Deskripsi
+            widget: text
+            maxlength: 160
+          - name: data
+            label: Testimoni
+            widget: list
+            collapsed: auto
+            fields:
+              - name: nama
+                label: Nama
+              - name: instansi
+                label: Instansi
+                required: false
+              - name: testimoni
+                label: Testimoni
+                widget: text
+              - name: foto
+                label: Foto
+                widget: image
+                required: false
+                default: /src/assets/testimoni/default.png
+
+  - name: produk
+    label: BSM Produk
+    folder: /src/content/produk
+    media_folder: /src/assets/produk
+    identifier_field: label
+    summary: "**{{label}}** - {{jenis}} - {{ukuran}} - {{alamat}}, {{kabko}}, {{provinsi}}"
+    thumbnail: gambar
+    sortable_fields:
+      - label
+    view_groups:
+      - field: provinsi
+        label: Provinsi
+      - field: jenis
+        label: Jenis
+      - field: ukuran
+        label: Ukuran
+    fields:
+      - name: label
+        label: Label
+      - name: gambar
+        label: Gambar
+        widget: image
+        default: /src/assets/produk/default.jpg
+      - name: alamat
+        label: Alamat
+      - name: kabko
+        label: Kabupaten/Kota
+      - name: provinsi
+        label: Provinsi
+      - name: url
+        label: Google Maps URL
+        type: url
+        hint: "Contoh: https://maps.app.goo.gl/SRuAcFH5FhkxCM7S6"
+      - name: lokasi
+        label: Peta
+        widget: map
+        required: false
+        default: '{"type":"Point","coordinates":[110.3670763,-7.782914]}'
+      - &select_field
+        name: jenis
+        label: Jenis
+        widget: select
+        options:
+          - Baliho
+          - Billboard
+          - Videotron
+      - <<: *select_field
+        name: ukuran
+        label: Ukuran
+        options:
+          - 4x6
+          - 4x8
+          - 5x10
+          - 6x12
+      - <<: *select_field
+        name: orientasi
+        label: Orientasi
+        options:
+          - Horizontal
+          - Vertikal
+      - <<: *select_field
+        name: lampu
+        label: Lampu
+        dropdown_threshold: 10
+        options:
+          - Atas
+          - Bawah
+          - Depan
+          - Belakang
+          - Samping
+          - Dalam
+        multiple: true
+        min: 1
+      - <<: *select_field
+        name: sisi
+        label: Sisi
+        options:
+          - 1
+          - 2
+          - 3
+          - 4
+        default: 1
+      - <<: *select_field
+        name: arah
+        label: Arah
+        options:
+          - Timur
+          - Barat
+          - Selatan
+          - Utara

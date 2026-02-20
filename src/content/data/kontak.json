@@ -1,0 +1,56 @@
+{
+  "label": "Hubungi Kami",
+  "deskripsi": "Siap mewujudkan ide anda? Jangan ragu untuk berdiskusi dengan kami. Kami siap membantu.",
+  "kontak": [
+    {
+      "label": "Telepon",
+      "lokasi": "0811-2345-6789",
+      "href": "tel:+6281123456789",
+      "ikon": "telephone"
+    },
+    {
+      "label": "Surel",
+      "lokasi": "bintangsuryamadani@gmail.com",
+      "href": "mailto:bintangsuryamadani@gmail.com",
+      "ikon": "envelope"
+    },
+    {
+      "label": "Kantor 1",
+      "lokasi": "Jl. Tegal Watu, Gambiran UH 5, no.277b, Yogyakarta, DI Yogyakarta, 55161",
+      "href": "https://maps.app.goo.gl/9pCvvpz4Z6x63Zmi9",
+      "ikon": "geo-alt"
+    },
+    {
+      "label": "Kantor 2",
+      "lokasi": "Jl. Lorem ipsum dolor sit amet consectetur adipiscing elit",
+      "href": "https://maps.app.goo.gl/9pCvvpz4Z6x63Zmi9",
+      "ikon": "geo-alt"
+    }
+  ],
+  "medsos": [
+    {
+      "label": "Facebook",
+      "href": "https://www.facebook.com"
+    },
+    {
+      "label": "Instagram",
+      "href": "https://wwww.instagram.com/bintangsurya.madani"
+    },
+    {
+      "label": "Threads",
+      "href": "https://www.threads.com"
+    },
+    {
+      "label": "Tiktok",
+      "href": "https://www.tiktok.com"
+    },
+    {
+      "label": "X",
+      "href": "https://twitter.com"
+    },
+    {
+      "label": "Youtube",
+      "href": "https://www.youtube.com"
+    }
+  ]
+}

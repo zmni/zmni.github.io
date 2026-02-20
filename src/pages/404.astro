@@ -1,14 +1,13 @@
 ---
-import BtnLink from "@/components/ui/BtnLink.astro";
 import PageLayout from "@/layouts/PageLayout.astro";
-import { getKontenById } from "@/utils/konten.util";
-const konten = getKontenById("notfound");
+import BtnLink from "@/components/ui/BtnLink.astro";
 ---
 
-<PageLayout label={konten.label} deskripsi={konten.deskripsi}>
+<PageLayout
+  label="Halaman Tidak Ditemukan"
+  deskripsi="Halaman yang Anda akses mungkin telah dihapus, diubah namanya, atau tidak tersedia untuk sementara waktu."
+>
   <div class="mb-24 text-center">
-    <BtnLink href="/" class="bg-gray-900 text-white hover:bg-gray-700"
-      >Kembali ke Beranda</BtnLink
-    >
+    <BtnLink href="/" class="text-white hover:bg-gray-700">Kembali ke Beranda</BtnLink>
   </div>
 </PageLayout>
