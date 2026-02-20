@@ -6,7 +6,8 @@ logo:
 
 backend:
   name: github
-  repo: bsm-dev/bsm-dev.github.io
+  repo: zmni/zmni.github.io
+  skip_ci: true
 
 media_folder: /src/assets
 
