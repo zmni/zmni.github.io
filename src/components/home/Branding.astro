@@ -15,7 +15,11 @@ import { prettyImgAlt } from "@/utils/text";
     <Fragment slot="deskripsi" set:text={deskripsi} />
   </Hgroup>
 
-  <div class="grid grid-cols-2 md:grid-cols-3">
-    {data.map((item) => <Img src={item} alt={prettyImgAlt(item)} loading="lazy" />)}
+  <div class="grid md:grid-cols-3">
+    {
+      data.map((item) => (
+        <Img src={item} alt={prettyImgAlt(item)} loading="lazy" />
+      ))
+    }
   </div>
 </section>

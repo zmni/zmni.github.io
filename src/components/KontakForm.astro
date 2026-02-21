@@ -1,0 +1,148 @@
+---
+const twInput = [
+  "w-full mt-1",
+  "border",
+  "border-gray-200",
+  "bg-gray-50",
+  "px-4",
+  "py-3",
+  "outline-none",
+  "focus:ring-2",
+  "focus:ring-blue-500",
+];
+---
+
+<div class="border border-blue-50 bg-white shadow-2xl shadow-blue-500/20">
+  <div class="border-b border-gray-100 p-4">
+    <h4 class="text-xl font-semibold">Diskusikan dengan kami</h4>
+  </div>
+
+  <div class="p-4 space-y-4">
+    <div>
+      <label for="cfNamaAnda" class="font-semibold"
+        >Nama Anda <span class="text-red-500">*</span></label
+      >
+      <input
+        type="text"
+        id="cfNamaAnda"
+        placeholder="Masukkan nama Anda"
+        class:list={twInput}
+        required
+      />
+    </div>
+
+    <div>
+      <label for="cfAsalInstansi" class="font-semibold"
+        >Asal Instansi <span class="text-red-500">*</span></label
+      >
+      <select id="cfAsalInstansi" class:list={twInput} required>
+        <option value="Individual" selected>Individual</option>
+        <option value="Pemerintah">Pemerintah</option>
+        <option value="Swasta">Swasta</option>
+      </select>
+    </div>
+
+    <div id="cfNamaInstansiWrap" class="space-y-2 hidden">
+      <label for="cfNamaInstansi" class="font-semibold"
+        >Nama Instansi <span class="text-red-500">*</span></label
+      >
+      <input
+        type="text"
+        id="cfNamaInstansi"
+        placeholder="Masukkan nama instansi"
+        class:list={twInput}
+      />
+    </div>
+
+    <div>
+      <label for="cfPesanAnda" class="font-semibold"
+        >Apa yang Anda butuhkan? <span class="text-red-500">*</span></label
+      >
+      <textarea
+        id="cfPesanAnda"
+        rows="4"
+        placeholder="Tuliskan pesan Anda di sini..."
+        class:list={["resize-none", twInput]}
+        required></textarea>
+    </div>
+
+    <p id="cfPesanValidasi" class="text-xs font-semibold text-red-500 italic">
+      (*) wajib diisi
+    </p>
+
+    <a
+      id="cfTombolKirimPesan"
+      href="#"
+      target="_blank"
+      class="pointer-events-none block w-full bg-[#25D366] py-4 text-center font-bold text-white opacity-50 shadow-lg hover:bg-[#20ba59]"
+      >Kirim via WhatsApp</a
+    >
+  </div>
+</div>
+
+<script>
+  const NOMOR_WA = "6281328030870";
+
+  const namaAnda = document.querySelector<HTMLInputElement>("#cfNamaAnda")!;
+  const asalInstansi =
+    document.querySelector<HTMLSelectElement>("#cfAsalInstansi")!;
+  const namaInstansiWrap = document.querySelector<HTMLDivElement>(
+    "#cfNamaInstansiWrap",
+  )!;
+  const namaInstansi =
+    document.querySelector<HTMLInputElement>("#cfNamaInstansi")!;
+  const pesanAnda =
+    document.querySelector<HTMLTextAreaElement>("#cfPesanAnda")!;
+  const tombolKirimPesan = document.querySelector<HTMLAnchorElement>(
+    "#cfTombolKirimPesan",
+  )!;
+  const pesanValidasi =
+    document.querySelector<HTMLParagraphElement>("#cfPesanValidasi")!;
+
+  const syncWhatsAppLink = () => {
+    const isOrg =
+      asalInstansi.value === "Pemerintah" || asalInstansi.value === "Swasta";
+
+    // Validasi Gabungan
+    const isValid =
+      namaAnda.value.trim() !== "" &&
+      pesanAnda.value.trim() !== "" &&
+      (!isOrg || namaInstansi.value.trim() !== "");
+
+    // Update State UI
+    tombolKirimPesan.classList.toggle("opacity-50", !isValid);
+    tombolKirimPesan.classList.toggle("pointer-events-none", !isValid);
+    pesanValidasi.classList.toggle("hidden", isValid);
+
+    if (!isValid) return;
+
+    const teks1 =
+      "Halo Bintang Surya Madani, Semoga Anda sehat dan bahagia.\n\n";
+    const teks2 = "Perkenalkan saya,\n";
+    const teks3 = `*Nama:* ${namaAnda.value}\n`;
+    const teks4 = isOrg ? `*Instansi:* ${namaInstansi.value}\n` : "";
+    const teks5 = `*Pesan:* ${pesanAnda.value}\n\n`;
+    const teks6 = "Senang dapat menghubungi anda. Terima kasih.";
+
+    const teks = `${teks1}${teks2}${teks3}${teks4}${teks5}${teks6}`;
+
+    tombolKirimPesan.href = `https://wa.me/${NOMOR_WA}?text=${encodeURIComponent(teks)}`;
+  };
+
+  const handleVisibility = (): void => {
+    const isOrg =
+      asalInstansi.value === "Pemerintah" || asalInstansi.value === "Swasta";
+    namaInstansiWrap.classList.toggle("hidden", !isOrg);
+    if (!isOrg) namaInstansi.value = "";
+    syncWhatsAppLink();
+  };
+
+  // Event Listeners (Tanpa pengecekan null)
+  [namaAnda, namaInstansi, pesanAnda].forEach((el) =>
+    el.addEventListener("input", syncWhatsAppLink),
+  );
+  asalInstansi.addEventListener("change", handleVisibility);
+
+  // Inisialisasi
+  syncWhatsAppLink();
+</script>

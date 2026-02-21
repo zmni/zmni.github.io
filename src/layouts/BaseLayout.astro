@@ -14,10 +14,13 @@ const { label, deskripsi } = Astro.props;
 ---
 
 <!doctype html>
-<html lang="id" class="bg-gray-50 text-gray-700 antialiased">
+<html lang="id" class="bg-gray-50 text-gray-700 antialiased scroll-smooth">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
 
     <title>{label}</title>
     <meta name="description" content={truncate(deskripsi)} />
@@ -26,12 +29,27 @@ const { label, deskripsi } = Astro.props;
     <meta property="og:image" content="/logo-dark.svg" />
     <meta property="og:type" content="website" />
 
-    <link rel="icon" type="image/svg+xml" href="/logo-dark.svg" media="(prefers-color-scheme: light)" sizes="any" />
-    <link rel="icon" type="image/svg+xml" href="/logo-light.svg" media="(prefers-color-scheme: dark)" sizes="any" />
+    <link
+      rel="icon"
+      type="image/svg+xml"
+      href="/logo-dark.svg"
+      media="(prefers-color-scheme: light)"
+      sizes="any"
+    />
+    <link
+      rel="icon"
+      type="image/svg+xml"
+      href="/logo-light.svg"
+      media="(prefers-color-scheme: dark)"
+      sizes="any"
+    />
 
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400..900&display=swap" rel="stylesheet" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Roboto:wght@400..900&display=swap"
+      rel="stylesheet"
+    />
   </head>
 
   <body class="min-h-svh flex flex-col">

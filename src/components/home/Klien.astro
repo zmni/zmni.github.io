@@ -10,7 +10,7 @@ import { label, deskripsi, data } from "@/content/data/klien.json";
   <div class="grid grid-cols-2 gap-px bg-gray-200 lg:grid-cols-4">
     {
       data.map((img) => (
-        <div class="flex items-center justify-center bg-gray-50 p-4 transition-colors md:p-6 xl:p-16">
+        <div class="flex items-center justify-center bg-gray-50 p-4 md:p-6 xl:p-16">
           <Img src={img} alt={prettyImgAlt(img)} layout="none" loading="lazy" />
         </div>
       ))

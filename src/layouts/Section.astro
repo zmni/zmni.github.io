@@ -16,7 +16,7 @@ const { id, label, deskripsi, class: className } = Astro.props;
     <Hgroup
       as="h2"
       class="mb-12 text-center"
-      hclass="text-2xl font-black tracking-tighter text-gray-800 uppercase lg:text-3xl xl:text-4xl"
+      hclass="text-2xl font-black tracking-tighter text-gray-800 uppercase md:text-3xl xl:text-4xl"
     >
       <Fragment slot="label" set:text={label} />
       <Fragment slot="deskripsi" set:text={deskripsi} />

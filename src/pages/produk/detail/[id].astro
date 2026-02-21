@@ -1,9 +1,16 @@
 ---
 import { Image } from "astro:assets";
 import { getCollection } from "astro:content";
-import { Icon } from "astro-icon/components";
 import PageLayout from "@/layouts/PageLayout.astro";
 import BtnLink from "@/components/ui/BtnLink.astro";
+import { capitalize, slugify } from "@/utils/text";
+import { Leaflet, GeoJson } from "astro-leaflet";
+import type {
+  AstroLeafletOptionsType,
+  AstroLeafletMarkerType,
+} from "astro-leaflet";
+import type { GeoJsonObject } from "geojson";
+import KontakForm from "@/components/KontakForm.astro";
 
 // Buat path untuk semua entri produk
 export async function getStaticPaths() {
@@ -16,73 +23,127 @@ export async function getStaticPaths() {
 
 // Data props
 const { produk } = Astro.props;
-const { label, gambar, alamat, kabko, provinsi, url, jenis, ukuran, orientasi, lampu, sisi, arah } = produk.data;
+
+const {
+  label,
+  gambar,
+  alamat,
+  kabko,
+  provinsi,
+  url,
+  lokasi,
+  jenis,
+  ukuran,
+  orientasi,
+  lampu,
+  sisi,
+  arah,
+} = produk.data;
+
+const tempat = [alamat, kabko, provinsi].join(", ");
+const spesifikasi = { jenis, ukuran, orientasi, lampu, sisi, arah, alamat };
 
 // Meta
 const meta = {
-  label: `Sewa ${jenis} di ${kabko}, ${provinsi}`,
-  deskripsi: `Sewa ${jenis} di ${alamat}, ${kabko}, ${provinsi}.`,
+  label: `${jenis} di ${kabko}, ${provinsi}`,
+  deskripsi: `Sewa ${jenis} di ${tempat}.`,
+};
+
+// Peta
+const geojson = JSON.parse(lokasi);
+const lat = geojson.coordinates[1];
+const lng = geojson.coordinates[0];
+const leafletMarker: AstroLeafletMarkerType[] = [
+  {
+    latlng: [lat, lng],
+    options: { alt: tempat, title: tempat },
+  },
+];
+const leafletOptions: AstroLeafletOptionsType = {
+  tileByName: "Google&type=street",
+  center: [lat, lng],
+  markers: leafletMarker,
+  zoom: 100,
 };
 ---
 
 <PageLayout {...meta}>
-  <div class="flex items-center my-4 xl:my-8">
-    <button
-      class="flex items-center gap-x-2 cursor-pointer transition-colors border border-gray-300 p-2 rounded-sm hover:text-blue-500"
-      aria-label="Kembali ke halaman sebelumnya"
-      onclick="history.back()"
-    >
-      <Icon name="bi:chevron-left" />
-      <span class="font-bold">Kembali</span>
-    </button>
-    <div class="ml-auto flex gap-x-4">
-      <BtnLink href="#" class="bg-blue-500 text-white text-shadow hover:bg-blue-600">Saya Tertarik</BtnLink>
-      <BtnLink href="#" class="border border-gray-300">Lihat Lokasi Lain</BtnLink>
+  <div
+    class="mb-4 flex flex-col gap-4 lg:flex-row lg:gap-6 lg:items-start xl:mb-8 xl:gap-8"
+  >
+    <div class="lg:w-3/5">
+      <Image src={gambar} alt={label} width={1024} loading="lazy" />
+
+      <Leaflet options={leafletOptions}>
+        <GeoJson geojson={geojson as GeoJsonObject} />
+      </Leaflet>
+    </div>
+
+    <div class="space-y-4 lg:w-2/5">
+      <ul
+        class:list={[
+          "grid",
+          "grid-cols-2",
+          "gap-px",
+          "border",
+          "border-gray-200",
+          "bg-gray-200",
+          "text-center",
+        ]}
+      >
+        {
+          Object.entries(spesifikasi).map(([key, value]) => {
+            const isAlamat = key === "alamat";
+            return (
+              <li
+                class={`${isAlamat ? "col-span-2" : ""} flex flex-col justify-center bg-white p-4`}
+              >
+                <span class="font-bold text-lg">{capitalize(key)}</span>
+                {isAlamat ? (
+                  <>
+                    <a
+                      href={url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      class="hover:text-blue-500"
+                    >
+                      {tempat}
+                    </a>
+                    <span class="text-xs text-gray-600 italic mt-4">
+                      * Klik alamat untuk membuka Google Maps
+                    </span>
+                  </>
+                ) : (
+                  <span>
+                    {Array.isArray(value) ? value.join(", ") : String(value)}
+                  </span>
+                )}
+              </li>
+            );
+          })
+        }
+      </ul>
+
+      <button
+        command="show-modal"
+        commandfor="modal-kontak-form"
+        class="bg-yellow-600 text-white text-center hover:bg-blue-600 uppercase font-semibold py-5 w-full"
+        >Saya Tertarik</button
+      >
+
+      <BtnLink
+        href={`/produk/area/${slugify(provinsi)}/`}
+        class="text-center border border-gray-300 font-semibold text-gray-600 w-full"
+        >Lihat titik lain di {provinsi}</BtnLink
+      >
     </div>
   </div>
 
-  <div class="flex flex-col gap-4 lg:flex-row lg:gap-6 xl:gap-8">
-    <Image
-      src={gambar}
-      alt={label}
-      width={1024}
-      loading="lazy"
-      class="rounded-lg object-cover shadow-sm lg:w-3/5 [view-transition-name:gambar-produk]"
-    />
-
-    <ul
-      class="grid grid-cols-2 grid-rows-4 gap-px overflow-hidden rounded-lg border border-gray-200 bg-gray-200 text-center lg:w-2/5"
-    >
-      <li class="flex flex-col items-center justify-center bg-white p-4">
-        <span class="font-bold text-lg">Jenis</span>
-        <span>{jenis}</span>
-      </li>
-      <li class="flex flex-col items-center justify-center bg-white p-4">
-        <span class="font-bold text-lg">Ukuran</span>
-        <span>{ukuran} meter</span>
-      </li>
-      <li class="flex flex-col items-center justify-center bg-white p-4">
-        <span class="font-bold text-lg">Orientasi</span>
-        <span>{orientasi}</span>
-      </li>
-      <li class="flex flex-col items-center justify-center bg-white p-4">
-        <span class="font-bold text-lg">Pencahayaan</span>
-        {lampu.join(", ")}
-      </li>
-      <li class="flex flex-col items-center justify-center bg-white p-4">
-        <span class="font-bold text-lg">Sisi</span>
-        <span>{sisi} Sisi</span>
-      </li>
-      <li class="flex flex-col items-center justify-center bg-white p-4">
-        <span class="font-bold text-lg">Arah</span>
-        <span>Menghadap {arah}</span>
-      </li>
-      <li class="col-span-2 flex flex-col items-center justify-center bg-white p-4">
-        <span class="font-bold text-lg">Alamat</span>
-        <a href={url} target="_blank" rel="noopener noreferrer" class="hover:text-blue-500 transition-colors"
-          >{alamat}. {kabko}, {provinsi}</a
-        >
-      </li>
-    </ul>
-  </div>
+  <dialog
+    id="modal-kontak-form"
+    class="m-auto w-xl max-w-full scale-90 opacity-0 transition transition-discrete backdrop:bg-black/80 backdrop:opacity-0 backdrop:backdrop-blur-sm open:scale-100 open:opacity-100 open:starting:scale-90 open:starting:opacity-0 open:backdrop:opacity-100 open:backdrop:starting:opacity-0"
+    closedby="any"
+  >
+    <KontakForm />
+  </dialog>
 </PageLayout>

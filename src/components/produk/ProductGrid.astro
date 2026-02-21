@@ -20,19 +20,46 @@ const { products, itemsPerPage = 16 } = Astro.props;
 ---
 
 {/* Status Area */}
-<div class="mb-4 text-center text-sm text-gray-600 min-h-5" data-role="filter-status"></div>
+<div
+  class="mb-4 text-center text-sm text-gray-600 min-h-5"
+  data-role="filter-status"
+>
+</div>
 
 {/* Grid Container */}
-<div id="product-grid" class="grid gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 xl:gap-8"></div>
+<div
+  id="product-grid"
+  class="grid gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 xl:gap-8"
+>
+</div>
 
 {/* Pagination Container */}
-<nav id="pagination-container" class="mt-8 flex justify-center gap-2" aria-label="Pagination"></nav>
+<nav
+  id="pagination-container"
+  class="mt-8 flex justify-center gap-2"
+  aria-label="Pagination"
+>
+</nav>
 
 {/* TEMPLATE ITEM */}
 <template id="product-template">
   <a
     href="#"
-    class="group row-[span_5] grid grid-rows-subgrid gap-y-px overflow-hidden border border-gray-200 bg-gray-200 opacity-100 shadow-xs transition translate-y-0 transition-discrete hover:border-gray-300 hover:shadow-lg starting:translate-y-10 starting:opacity-0"
+    class:list={[
+      "group",
+      "row-[span_5]",
+      "grid",
+      "grid-rows-subgrid",
+      "gap-y-px",
+      "overflow-hidden",
+      "border",
+      "border-gray-200",
+      "bg-gray-200",
+      "shadow-xs",
+      "transition",
+      "hover:border-gray-300",
+      "hover:shadow-lg",
+    ]}
   >
     <span class="flex gap-x-px">
       <span class="flex-1 px-4 py-2 bg-white" data-bind="jenis"></span>
@@ -44,7 +71,7 @@ const { products, itemsPerPage = 16 } = Astro.props;
         alt=""
         width="400"
         loading="lazy"
-        class="size-full object-cover object-center transition-opacity group-hover:opacity-80 [view-transition-name:gambar-produk]"
+        class="size-full object-cover object-center transition-opacity group-hover:opacity-80"
       />
     </span>
     <span class="hidden bg-white px-4 py-2 font-bold" data-bind="label"></span>
@@ -114,9 +141,13 @@ const { products, itemsPerPage = 16 } = Astro.props;
       this.itemsPerPage = itemsPerPage;
 
       this.gridContainer = document.querySelector<HTMLElement>(gridSelector)!;
-      this.paginationContainer = document.querySelector<HTMLElement>(paginationSelector)!;
-      this.template = document.querySelector<HTMLTemplateElement>(templateSelector)!;
-      this.statusElement = document.querySelector<HTMLElement>('[data-role="filter-status"]')!;
+      this.paginationContainer =
+        document.querySelector<HTMLElement>(paginationSelector)!;
+      this.template =
+        document.querySelector<HTMLTemplateElement>(templateSelector)!;
+      this.statusElement = document.querySelector<HTMLElement>(
+        '[data-role="filter-status"]',
+      )!;
 
       this.init();
     }
@@ -169,7 +200,12 @@ const { products, itemsPerPage = 16 } = Astro.props;
           const inputs = document.querySelectorAll<HTMLElement>("[data-group]");
           inputs.forEach((el) => {
             if (el instanceof HTMLInputElement) {
-              if (el.type === "radio" && el.value === "" && el.checked === false) el.click();
+              if (
+                el.type === "radio" &&
+                el.value === "" &&
+                el.checked === false
+              )
+                el.click();
             } else if (el instanceof HTMLSelectElement) {
               el.value = "";
               el.dispatchEvent(new Event("change"));
@@ -206,36 +242,47 @@ const { products, itemsPerPage = 16 } = Astro.props;
       }
 
       const queryString = params.toString();
-      const newURL = queryString ? `${window.location.pathname}?${queryString}` : window.location.pathname;
+      const newURL = queryString
+        ? `${window.location.pathname}?${queryString}`
+        : window.location.pathname;
       window.history.replaceState({}, "", newURL);
     }
 
     private syncUI(): void {
       // Reset all first
-      document.querySelectorAll<HTMLInputElement>("input[data-group]").forEach((el) => {
-        if (el.type === "radio")
-          el.checked = el.value === ""; // Default to 'Semua' if empty
-        else if (el.type === "checkbox") el.checked = false;
-      });
-      document.querySelectorAll<HTMLSelectElement>("select[data-group]").forEach((el) => (el.value = ""));
+      document
+        .querySelectorAll<HTMLInputElement>("input[data-group]")
+        .forEach((el) => {
+          if (el.type === "radio")
+            el.checked = el.value === ""; // Default to 'Semua' if empty
+          else if (el.type === "checkbox") el.checked = false;
+        });
+      document
+        .querySelectorAll<HTMLSelectElement>("select[data-group]")
+        .forEach((el) => (el.value = ""));
 
       // Apply values from state (Slugs)
       const setGroupValue = (group: string, slugValues: string[]) => {
-        const elements = document.querySelectorAll<HTMLElement>(`[data-group="${group}"]`);
+        const elements = document.querySelectorAll<HTMLElement>(
+          `[data-group="${group}"]`,
+        );
         elements.forEach((el) => {
           if (el instanceof HTMLInputElement) {
             if (el.type === "radio") {
               // el.value is Raw (e.g. "Baliho"). slugify it to compare.
               const elSlug = el.value ? slugify(el.value) : "";
 
-              if (slugValues.length > 0 && slugValues.includes(elSlug)) el.checked = true;
-              else if (slugValues.length === 0 && el.value === "") el.checked = true; // 'Semua'
+              if (slugValues.length > 0 && slugValues.includes(elSlug))
+                el.checked = true;
+              else if (slugValues.length === 0 && el.value === "")
+                el.checked = true; // 'Semua'
             }
           } else if (el instanceof HTMLSelectElement) {
             if (slugValues.length > 0) {
               // Find option where slugify(opt.value) matches slugValue
               const option = Array.from(el.options).find(
-                (opt) => slugify(opt.value) === slugValues[0] && opt.value !== "",
+                (opt) =>
+                  slugify(opt.value) === slugValues[0] && opt.value !== "",
               );
               if (option) el.value = option.value;
             }
@@ -251,7 +298,9 @@ const { products, itemsPerPage = 16 } = Astro.props;
     private handleFilterChange(): void {
       // Read state from DOM and CONVERT TO SLUGS
       const getFilterValues = (group: string) => {
-        const elements = document.querySelectorAll<HTMLElement>(`[data-group="${group}"]`);
+        const elements = document.querySelectorAll<HTMLElement>(
+          `[data-group="${group}"]`,
+        );
         const values: string[] = [];
 
         elements.forEach((el) => {
@@ -326,6 +375,7 @@ const { products, itemsPerPage = 16 } = Astro.props;
         if (link) {
           link.href = item.detailUrl;
           link.dataset.id = item.id;
+          link.classList.add(`[view-transition-name:${item.id}]`);
         }
 
         // Badges
@@ -362,19 +412,26 @@ const { products, itemsPerPage = 16 } = Astro.props;
     }
 
     private renderPagination(): void {
-      const totalPages = Math.ceil(this.filteredItems.length / this.itemsPerPage);
+      const totalPages = Math.ceil(
+        this.filteredItems.length / this.itemsPerPage,
+      );
       this.paginationContainer.innerHTML = "";
 
       if (totalPages <= 1) return;
 
       // Helper to create button
-      const createBtn = (text: string | number, page: number, active: boolean = false, disabled: boolean = false) => {
+      const createBtn = (
+        text: string | number,
+        page: number,
+        active: boolean = false,
+        disabled: boolean = false,
+      ) => {
         const btn = document.createElement("button");
         btn.className = `
-          flex h-10 w-10 items-center justify-center rounded-md border text-sm font-medium transition
+          flex h-10 w-10 items-center justify-center border text-sm font-medium
           ${
             active
-              ? "border-blue-600 bg-blue-600 text-white"
+              ? "border-blue-500 bg-blue-500 text-white"
               : "border-gray-200 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
           }
         `;
@@ -385,16 +442,25 @@ const { products, itemsPerPage = 16 } = Astro.props;
       };
 
       // Prev
-      this.paginationContainer.appendChild(createBtn("«", this.currentPage - 1, false, this.currentPage === 1));
+      this.paginationContainer.appendChild(
+        createBtn("«", this.currentPage - 1, false, this.currentPage === 1),
+      );
 
       // Page Numbers (Simple loop for now, can be optimized for large pages)
       for (let i = 1; i <= totalPages; i++) {
-        this.paginationContainer.appendChild(createBtn(i, i, i === this.currentPage));
+        this.paginationContainer.appendChild(
+          createBtn(i, i, i === this.currentPage),
+        );
       }
 
       // Next
       this.paginationContainer.appendChild(
-        createBtn("»", this.currentPage + 1, false, this.currentPage === totalPages),
+        createBtn(
+          "»",
+          this.currentPage + 1,
+          false,
+          this.currentPage === totalPages,
+        ),
       );
     }
 
@@ -404,7 +470,8 @@ const { products, itemsPerPage = 16 } = Astro.props;
         const start = (this.currentPage - 1) * this.itemsPerPage + 1;
         const end = Math.min(start + this.itemsPerPage - 1, total);
 
-        this.statusElement.textContent = total > 0 ? `Menampilkan ${start}-${end} dari ${total} produk` : "";
+        this.statusElement.textContent =
+          total > 0 ? `Menampilkan ${start}-${end} dari ${total} produk` : "";
       }
     }
 
@@ -428,6 +495,12 @@ const { products, itemsPerPage = 16 } = Astro.props;
     // Extract itemsPerPage from dataset or use default
     const itemsPerPage = Number(dataElement.dataset.itemsPerPage) || 16;
 
-    new ProductFilter(data, gridSelector, paginationSelector, templateSelector, itemsPerPage);
+    new ProductFilter(
+      data,
+      gridSelector,
+      paginationSelector,
+      templateSelector,
+      itemsPerPage,
+    );
   }
 </script>

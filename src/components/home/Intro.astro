@@ -4,17 +4,22 @@ import { Icon } from "astro-icon/components";
 import Img from "@/components/ui/Img.astro";
 
 import { label, deskripsi } from "@/content/data/bsm.json";
-import { data as images } from "@/content/data/portofolio.json";
+import { data } from "@/content/data/portofolio.json";
 ---
 
-<section id="intro" class="relative isolate h-svh overflow-hidden">
+<section id="intro" class="relative isolate h-svh overflow-hidden bg-black">
   <Swiper options={{ autoplay: { delay: 5000 }, loop: true, effect: `fade` }}>
     <SwiperWrapper>
       {
-        images.map((image, i) => (
+        data.map((image, i) => (
           <SwiperSlide>
             <div class="w-full h-svh overflow-hidden">
-              <Img src={image} alt={`Portofolio ${i}`} loading="lazy" class="size-full object-cover object-center" />
+              <Img
+                src={image}
+                alt={`Portofolio ${i}`}
+                loading="lazy"
+                class="size-full object-cover object-center"
+              />
             </div>
           </SwiperSlide>
         ))
@@ -23,9 +28,11 @@ import { data as images } from "@/content/data/portofolio.json";
   </Swiper>
 
   <div
-    class="text-shadow absolute inset-0 z-20 flex flex-col items-center justify-center bg-radial from-transparent to-black/75 p-4 text-center text-white"
+    class="absolute inset-0 z-20 flex flex-col items-center justify-center bg-radial from-transparent to-black/75 p-4 text-center text-white"
   >
-    <h1 class="flex flex-col text-7xl font-black tracking-tighter text-[#FF0] uppercase lg:flex-row lg:gap-x-4">
+    <h1
+      class="flex flex-col text-7xl font-black tracking-tighter text-[#FF0] uppercase lg:flex-row lg:gap-x-4"
+    >
       {label.split(" ").map((w) => <span>{w}</span>)}
     </h1>
     <p
@@ -43,7 +50,9 @@ import { data as images } from "@/content/data/portofolio.json";
     <Icon name="bi:arrow-down" size="1.5rem" />
   </button>
   <script>
-    const btn = document.querySelector<HTMLButtonElement>("[data-intro-skipped]")!;
+    const btn = document.querySelector<HTMLButtonElement>(
+      "[data-intro-skipped]",
+    )!;
 
     btn.addEventListener("click", () => {
       const top = window.innerHeight;

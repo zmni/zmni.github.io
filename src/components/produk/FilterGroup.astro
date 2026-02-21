@@ -33,7 +33,11 @@ const onChangeAttr = customOnChange
     : undefined;
 ---
 
-<li class="relative flex items-center gap-x-2" data-role="filter-group" data-filter-group={key}>
+<li
+  class="relative flex items-center gap-x-2"
+  data-role="filter-group"
+  data-filter-group={key}
+>
   <span class="flex items-center font-bold">
     {label}
   </span>
@@ -42,18 +46,33 @@ const onChangeAttr = customOnChange
     type === "select" ? (
       <select
         name={key}
-        class="cursor-pointer rounded-md border-2 border-gray-200 bg-white px-2 py-1.5 transition-colors hover:border-blue-500 focus:outline-blue-500"
+        class:list={[
+          "cursor-pointer",
+          "border-2",
+          "border-gray-200",
+          "bg-white",
+          "px-2",
+          "py-1.5",
+          "transition-colors",
+          "hover:border-blue-500",
+          "focus:outline-blue-500",
+        ]}
         data-group={!isNavigation ? key : undefined}
         aria-label={`Filter berdasarkan ${label}`}
         onchange={onChangeAttr}
       >
-        <option value="" selected={currentValue === "" || currentValue === undefined}>
+        <option
+          value=""
+          selected={currentValue === "" || currentValue === undefined}
+        >
           Semua
         </option>
         {options.map((value) => {
           // For navigation, we might want to slugify the value for the URL
           const optionValue = isNavigation ? slugify(value) : value;
-          const isSelected = isNavigation ? slugify(currentValue) === optionValue : currentValue === value;
+          const isSelected = isNavigation
+            ? slugify(currentValue) === optionValue
+            : currentValue === value;
 
           return (
             <option value={optionValue} selected={isSelected}>
@@ -64,7 +83,20 @@ const onChangeAttr = customOnChange
       </select>
     ) : (
       <>
-        <label class="cursor-pointer rounded-md border-2 border-transparent bg-white px-2 py-1 transition-colors hover:border-blue-500 has-checked:border-gray-200 has-checked:hover:border-blue-500">
+        <label
+          class:list={[
+            "cursor-pointer",
+            "border-2",
+            "border-transparent",
+            "bg-white",
+            "px-2",
+            "py-1",
+            "transition-colors",
+            "hover:border-blue-500",
+            "has-checked:border-gray-200",
+            "has-checked:hover:border-blue-500",
+          ]}
+        >
           <input
             type="radio"
             name={key}
@@ -76,7 +108,20 @@ const onChangeAttr = customOnChange
           <span>Semua</span>
         </label>
         {options.map((value) => (
-          <label class="cursor-pointer rounded-md border-2 border-gray-100 bg-white px-2 py-1 transition-colors hover:border-blue-500 has-checked:border-gray-200 has-checked:hover:border-blue-500">
+          <label
+            class:list={[
+              "cursor-pointer",
+              "border-2",
+              "border-gray-100",
+              "bg-white",
+              "px-2",
+              "py-1",
+              "transition-colors",
+              "hover:border-blue-500",
+              "has-checked:border-gray-200",
+              "has-checked:hover:border-blue-500",
+            ]}
+          >
             <input
               type="radio"
               name={key}

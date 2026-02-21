@@ -14,8 +14,8 @@ const { label, deskripsi } = Astro.props;
   <main class="container px-4 py-12 lg:pb-24">
     <Hgroup
       class="mb-12 text-center"
-      hclass="text-3xl font-black tracking-tighter text-gray-800 uppercase [view-transition-name:page-title] lg:text-4xl xl:text-5xl"
-      pclass="md:mt-4 [view-transition-name:page-description]"
+      hclass="text-3xl font-black tracking-tighter text-gray-800 uppercase lg:text-4xl xl:text-5xl"
+      pclass="md:mt-4"
     >
       <Fragment slot="label" set:text={label} />
       <Fragment slot="deskripsi" set:text={deskripsi} />

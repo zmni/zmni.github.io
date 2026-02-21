@@ -1,7 +1,7 @@
 ---
 import { Icon } from "astro-icon/components";
 import Section from "@/layouts/Section.astro";
-import KontakForm from "./KontakForm.astro";
+import KontakForm from "@/components/KontakForm.astro";
 
 import { label, deskripsi, kontak, medsos } from "@/content/data/kontak.json";
 ---
@@ -16,7 +16,7 @@ import { label, deskripsi, kontak, medsos } from "@/content/data/kontak.json";
               <Icon
                 name={`bi:${ikon}`}
                 size="1.125rem"
-                class="mt-1 flex-none transition-colors group-hover:text-blue-500"
+                class="mt-1 flex-none group-hover:text-blue-500"
               />
               <span class="flex-1 flex flex-col gap-y-1">
                 <span class="font-semibold">{label}</span>
@@ -31,10 +31,14 @@ import { label, deskripsi, kontak, medsos } from "@/content/data/kontak.json";
           medsos.map(({ label, href }) => (
             <a
               href={href}
-              class="inline-flex rounded-full border border-gray-200 p-3 transition-colors hover:border-blue-500 hover:text-blue-500"
+              class="inline-flex rounded-full border border-gray-200 p-3 hover:border-blue-500 hover:text-blue-500"
               rel="me"
             >
-              <Icon name={`bi:${label.toLowerCase()}`} size="1.5rem" class="shrink-0" />
+              <Icon
+                name={`bi:${label.toLowerCase()}`}
+                size="1.5rem"
+                class="shrink-0"
+              />
             </a>
           ))
         }

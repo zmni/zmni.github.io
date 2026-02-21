@@ -8,7 +8,7 @@ type Props = Omit<HTMLAttributes<"a">, "class"> & {
 const { class: className, ...props } = Astro.props;
 ---
 
-<a class:list={["inline-flex items-center rounded px-4 py-2", className]} {...props}>
+<a class:list={["inline-block px-4 py-2", className]} {...props}>
   <slot name="before-content" />
 
   <slot />

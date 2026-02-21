@@ -4,6 +4,12 @@
   :root,
   :host {
     --default-font-family: "Roboto", var(--font-sans);
+
+    --default-transition-duration: 0.2s;
+
+    @media (prefers-reduced-motion: reduce) {
+      --default-transition-duration: 1ms;
+    }
   }
 }
 

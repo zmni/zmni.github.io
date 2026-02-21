@@ -20,5 +20,19 @@ export default defineConfig({
 
   vite: {
     plugins: [tailwindcss()],
+
+    optimizeDeps: {
+      include: ["astro-leaflet > leaflet"],
+    },
+
+    build: {
+      rollupOptions: {
+        output: {
+          entryFileNames: "assets/[hash].js",
+          chunkFileNames: "assets/[hash].js",
+          assetFileNames: "assets/[hash][extname]",
+        },
+      },
+    },
   },
 });
