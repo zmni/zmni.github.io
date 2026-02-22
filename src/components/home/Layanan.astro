@@ -6,9 +6,7 @@ import { label, deskripsi, data } from "@/content/data/layanan.json";
 ---
 
 <Section id="layanan" label={label} deskripsi={deskripsi}>
-  <div
-    class="grid gap-px md:grid-cols-2 lg:grid-cols-3 border border-gray-200 bg-gray-200"
-  >
+  <div class="grid gap-px md:grid-cols-2 lg:grid-cols-3 border border-gray-200 bg-gray-200">
     {
       data.map(({ label, gambar }, i) => (
         <figure
@@ -28,7 +26,18 @@ import { label, deskripsi, data } from "@/content/data/layanan.json";
 
           <figcaption
             class:list={[
-              "absolute inset-0 top-auto font-black tracking-tighter text-white uppercase p-4 lg:p-6 text-xl lg:text-2xl xl:text-3xl",
+              "absolute",
+              "inset-0",
+              "top-auto",
+              "font-black",
+              "tracking-tighter",
+              "text-white",
+              "uppercase",
+              "p-4",
+              "lg:p-6",
+              "text-xl",
+              "lg:text-2xl",
+              "xl:text-3xl",
             ]}
           >
             {label}

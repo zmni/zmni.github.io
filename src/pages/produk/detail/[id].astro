@@ -1,21 +1,18 @@
 ---
-import { Image } from "astro:assets";
+import { Image, getImage } from "astro:assets";
 import { getCollection } from "astro:content";
-import PageLayout from "@/layouts/PageLayout.astro";
-import BtnLink from "@/components/ui/BtnLink.astro";
-import { capitalize, slugify } from "@/utils/text";
-import { Leaflet, GeoJson } from "astro-leaflet";
-import type {
-  AstroLeafletOptionsType,
-  AstroLeafletMarkerType,
-} from "astro-leaflet";
-import type { GeoJsonObject } from "geojson";
+import { capitalize } from "@/utils/text";
+import { Leaflet } from "astro-leaflet";
+import type { AstroLeafletOptionsType } from "astro-leaflet";
 import KontakForm from "@/components/KontakForm.astro";
+import ProductGrid from "@/components/produk/ProductGrid.astro";
+import Hgroup from "@/components/ui/Hgroup.astro";
+import BaseLayout from "@/layouts/BaseLayout.astro";
 
 // Buat path untuk semua entri produk
 export async function getStaticPaths() {
-  const produkCollection = await getCollection("produk");
-  return produkCollection.map((produk) => ({
+  const collection = await getCollection("produk");
+  return collection.map((produk) => ({
     params: { id: produk.id },
     props: { produk },
   }));
@@ -24,120 +21,121 @@ export async function getStaticPaths() {
 // Data props
 const { produk } = Astro.props;
 
-const {
-  label,
-  gambar,
-  alamat,
-  kabko,
-  provinsi,
-  url,
-  lokasi,
-  jenis,
-  ukuran,
-  orientasi,
-  lampu,
-  sisi,
-  arah,
-} = produk.data;
+const { label, gambar, alamat, kabko, provinsi, url, lokasi, jenis, ukuran, orientasi, lampu, sisi, arah } =
+  produk.data;
 
 const tempat = [alamat, kabko, provinsi].join(", ");
 const spesifikasi = { jenis, ukuran, orientasi, lampu, sisi, arah, alamat };
 
-// Meta
-const meta = {
-  label: `${jenis} di ${kabko}, ${provinsi}`,
-  deskripsi: `Sewa ${jenis} di ${tempat}.`,
-};
-
-// Peta
+/**
+ * PETA
+ */
 const geojson = JSON.parse(lokasi);
 const lat = geojson.coordinates[1];
 const lng = geojson.coordinates[0];
-const leafletMarker: AstroLeafletMarkerType[] = [
-  {
-    latlng: [lat, lng],
-    options: { alt: tempat, title: tempat },
-  },
-];
 const leafletOptions: AstroLeafletOptionsType = {
-  tileByName: "Google&type=street",
   center: [lat, lng],
-  markers: leafletMarker,
+  markers: [
+    {
+      latlng: [lat, lng],
+      options: { alt: tempat, title: tempat },
+    },
+  ],
   zoom: 100,
+};
+
+/**
+ * TITIK LAIN
+ */
+const titikLain = await getCollection("produk", ({ data }) => {
+  return data.provinsi === provinsi;
+});
+
+const productData = await Promise.all(
+  titikLain.map(async (item) => {
+    const thumb = await getImage({
+      src: item.data.gambar,
+      width: 400,
+      height: 400,
+    });
+
+    return {
+      id: item.id,
+      label: item.data.label,
+      alamat: item.data.alamat,
+      kabko: item.data.kabko,
+      provinsi: item.data.provinsi,
+      jenis: item.data.jenis,
+      ukuran: item.data.ukuran,
+      detailUrl: `/produk/detail/${item.id}/`,
+      imageSrc: thumb.src,
+    };
+  }),
+);
+
+const meta = {
+  label: `${jenis} di ${kabko}, ${provinsi}`,
+  deskripsi: `Sewa ${jenis} di ${tempat}.`,
+  ogImage: (await getImage({ src: gambar })).src,
 };
 ---
 
-<PageLayout {...meta}>
-  <div
-    class="mb-4 flex flex-col gap-4 lg:flex-row lg:gap-6 lg:items-start xl:mb-8 xl:gap-8"
-  >
-    <div class="lg:w-3/5">
-      <Image src={gambar} alt={label} width={1024} loading="lazy" />
+<BaseLayout {...meta}>
+  <main class="container py-12 lg:py-24">
+    <Hgroup label={meta.label} deskripsi={meta.deskripsi} />
 
-      <Leaflet options={leafletOptions}>
-        <GeoJson geojson={geojson as GeoJsonObject} />
-      </Leaflet>
+    <div class="mb-4 flex flex-col gap-4 lg:flex-row lg:gap-6 lg:items-start xl:mb-8 xl:gap-8">
+      <Image
+        src={gambar}
+        alt={label}
+        width={1024}
+        loading="lazy"
+        class:list={["lg:w-3/5", `[view-transition-name:produk-img-${produk.id}]`]}
+      />
+
+      <div class="space-y-4 lg:w-2/5">
+        <ul class:list={["grid", "grid-cols-2", "gap-px", "border", "border-gray-200", "bg-gray-200", "text-center"]}>
+          {
+            Object.entries(spesifikasi).map(([key, value]) => {
+              const isAlamat = key === "alamat";
+              return (
+                <li class={`${isAlamat ? "col-span-2" : ""} flex flex-col justify-center bg-white p-4`}>
+                  <span class="font-bold text-lg">{capitalize(key)}</span>
+                  {isAlamat ? (
+                    <>
+                      <a href={url} target="_blank" rel="noopener noreferrer" class="hover:text-blue-500">
+                        {tempat}
+                      </a>
+                      <span class="text-xs text-gray-600 italic mt-4">* Klik alamat untuk membuka Google Maps</span>
+                    </>
+                  ) : (
+                    <span>{Array.isArray(value) ? value.join(", ") : String(value)}</span>
+                  )}
+                </li>
+              );
+            })
+          }
+        </ul>
+
+        <button
+          command="show-modal"
+          commandfor="modal-kontak-form"
+          class="bg-yellow-600 text-white text-center hover:bg-blue-600 uppercase font-semibold py-5 w-full"
+          >Saya Tertarik</button
+        >
+      </div>
     </div>
 
-    <div class="space-y-4 lg:w-2/5">
-      <ul
-        class:list={[
-          "grid",
-          "grid-cols-2",
-          "gap-px",
-          "border",
-          "border-gray-200",
-          "bg-gray-200",
-          "text-center",
-        ]}
-      >
-        {
-          Object.entries(spesifikasi).map(([key, value]) => {
-            const isAlamat = key === "alamat";
-            return (
-              <li
-                class={`${isAlamat ? "col-span-2" : ""} flex flex-col justify-center bg-white p-4`}
-              >
-                <span class="font-bold text-lg">{capitalize(key)}</span>
-                {isAlamat ? (
-                  <>
-                    <a
-                      href={url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      class="hover:text-blue-500"
-                    >
-                      {tempat}
-                    </a>
-                    <span class="text-xs text-gray-600 italic mt-4">
-                      * Klik alamat untuk membuka Google Maps
-                    </span>
-                  </>
-                ) : (
-                  <span>
-                    {Array.isArray(value) ? value.join(", ") : String(value)}
-                  </span>
-                )}
-              </li>
-            );
-          })
-        }
-      </ul>
+    <Leaflet options={leafletOptions} class="isolate" />
+  </main>
 
-      <button
-        command="show-modal"
-        commandfor="modal-kontak-form"
-        class="bg-yellow-600 text-white text-center hover:bg-blue-600 uppercase font-semibold py-5 w-full"
-        >Saya Tertarik</button
-      >
-
-      <BtnLink
-        href={`/produk/area/${slugify(provinsi)}/`}
-        class="text-center border border-gray-300 font-semibold text-gray-600 w-full"
-        >Lihat titik lain di {provinsi}</BtnLink
-      >
+  {/* Titik Lain */}
+  <section class="border-t border-gray-200">
+    <div class="container py-12 lg:py-24">
+      <Hgroup as="h2" label={`Titik Lain di ${provinsi}`} class="mb-4" />
+      <ProductGrid products={productData} itemsPerPage={4} />
     </div>
-  </div>
+  </section>
 
   <dialog
     id="modal-kontak-form"
@@ -146,4 +144,4 @@ const leafletOptions: AstroLeafletOptionsType = {
   >
     <KontakForm />
   </dialog>
-</PageLayout>
+</BaseLayout>

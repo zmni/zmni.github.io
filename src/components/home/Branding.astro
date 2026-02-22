@@ -6,20 +6,9 @@ import { prettyImgAlt } from "@/utils/text";
 ---
 
 <section id="branding">
-  <Hgroup
-    as="h2"
-    class="mb-12 text-center"
-    hclass="font-black tracking-tighter uppercase text-gray-800 text-2xl lg:text-3xl xl:text-4xl"
-  >
-    <Fragment slot="label" set:text={label} />
-    <Fragment slot="deskripsi" set:text={deskripsi} />
-  </Hgroup>
+  <Hgroup as="h2" label={label} deskripsi={deskripsi} />
 
   <div class="grid md:grid-cols-3">
-    {
-      data.map((item) => (
-        <Img src={item} alt={prettyImgAlt(item)} loading="lazy" />
-      ))
-    }
+    {data.map((item) => <Img src={item} alt={prettyImgAlt(item)} loading="lazy" />)}
   </div>
 </section>

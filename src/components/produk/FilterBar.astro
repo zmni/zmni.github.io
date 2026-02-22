@@ -1,11 +1,11 @@
 ---
-type Props = {
-  class?: string;
-};
+import type { HTMLAttributes } from "astro/types";
 
-const { class: className } = Astro.props;
+type Props = HTMLAttributes<"menu">;
+
+const { ...attrs } = Astro.props;
 ---
 
-<menu class:list={["mb-4 gap-4 flex flex-wrap sm:justify-center lg:mb-8", className]} data-role="produk-filter">
+<menu data-role="produk-filter" class:list={["mb-4 flex flex-wrap gap-4 sm:justify-center lg:mb-8"]} {...attrs}>
   <slot />
 </menu>

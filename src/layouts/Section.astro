@@ -2,9 +2,9 @@
 import Hgroup from "@/components/ui/Hgroup.astro";
 
 type Props = {
+  id?: string;
   label: string;
   deskripsi: string;
-  id?: string;
   class?: string;
 };
 
@@ -12,15 +12,8 @@ const { id, label, deskripsi, class: className } = Astro.props;
 ---
 
 <section id={id} class:list={["border-t border-gray-200", className]}>
-  <div class="container px-4 py-12 lg:py-24">
-    <Hgroup
-      as="h2"
-      class="mb-12 text-center"
-      hclass="text-2xl font-black tracking-tighter text-gray-800 uppercase md:text-3xl xl:text-4xl"
-    >
-      <Fragment slot="label" set:text={label} />
-      <Fragment slot="deskripsi" set:text={deskripsi} />
-    </Hgroup>
+  <div class="container py-12 lg:py-24">
+    <Hgroup as="h2" label={label} deskripsi={deskripsi} />
 
     <slot />
   </div>

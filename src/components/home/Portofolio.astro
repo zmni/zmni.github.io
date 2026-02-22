@@ -4,9 +4,7 @@ import Section from "@/layouts/Section.astro";
 
 import { label, deskripsi, data } from "@/content/data/portofolio.json";
 
-const allImages = import.meta.glob<{ default: ImageMetadata }>(
-  "/src/assets/portofolio/*.jpg",
-);
+const allImages = import.meta.glob<{ default: ImageMetadata }>("/src/assets/portofolio/*.jpg");
 
 const images = data.map((item) => allImages[item]).filter(Boolean);
 
@@ -16,8 +14,7 @@ const portofolioImages = await Promise.all(
 
     const largeImage = await getImage({
       src: img.default,
-      format: "webp",
-      quality: "mid", // Adjust quality as needed
+      quality: "mid",
     });
 
     return {
@@ -29,10 +26,7 @@ const portofolioImages = await Promise.all(
 ---
 
 <Section id="portofolio" label={label} deskripsi={deskripsi}>
-  <div
-    class="grid grid-cols-2 gap-px md:grid-cols-4 lg:grid-cols-6 mx-auto max-w-5xl"
-    data-galeri
-  >
+  <div class="grid grid-cols-2 gap-px md:grid-cols-4 lg:grid-cols-6 mx-auto max-w-5xl" data-galeri>
     {
       portofolioImages.map(({ original, large }, i) => (
         <a

@@ -19,12 +19,15 @@ const isActive = (href: string) => {
     isHome ? "fixed inset-0 bottom-auto w-full" : "sticky top-0",
     "z-50 transition-colors",
     isHome ? "data-scrolled:bg-white data-scrolled:shadow" : "bg-white shadow",
+    "[view-transition-name:header]",
   ]}
 >
   <div
     class:list={[
-      "container flex items-center p-4",
-      isHome ? "transition-[padding] in-data-scrolled:py-2" : "py-2",
+      "container",
+      "flex",
+      "items-center",
+      isHome ? "py-4 transition-[padding] in-data-scrolled:py-2" : "py-2",
     ]}
   >
     {/* LOGO */}
@@ -49,9 +52,7 @@ const isActive = (href: string) => {
       for="nav-toggle"
       class:list={[
         "ml-auto",
-        isHome
-          ? "text-gray-200 in-data-scrolled:text-gray-700"
-          : "text-gray-700",
+        isHome ? "text-gray-200 in-data-scrolled:text-gray-700" : "text-gray-700",
         "flex",
         "items-center",
         "border",
