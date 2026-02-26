@@ -1,11 +1,14 @@
 ---
 import { data } from "@/content/data/kontak.json"
+
+const nomorWhatsApp = data.whatsapp.replace("0", "62")
+
 const twInput =
-  "mt-1 w-full font-normal border border-gray-200 bg-gray-50 px-4 py-3 outline-none focus:ring-2 focus:ring-blue-500"
+  "mt-1 w-full font-normal text-base border border-gray-200 bg-gray-50 px-4 py-3 outline-none focus:ring-2 focus:ring-blue-500"
 ---
 
 <div class="border border-blue-50 bg-white shadow-2xl shadow-blue-500/20">
-  <h4 class="border-b border-gray-100 p-4 text-xl font-semibold">Diskusikan dengan kami</h4>
+  <h3 class="border-b border-gray-100 p-4 text-xl font-semibold">Diskusikan dengan kami</h3>
 
   <div class="p-4 flex flex-col gap-y-4 [&_label]:font-semibold [&_label]:text-sm">
     <label
@@ -52,7 +55,7 @@ const twInput =
       href="#"
       target="_blank"
       class="pointer-events-none block w-full bg-[#25D366] py-4 text-center font-bold text-white opacity-50 shadow-lg hover:bg-[#20ba59]"
-      data-nomor={data.whatsapp}>Kirim via WhatsApp</a
+      data-nomor={nomorWhatsApp}>Kirim via WhatsApp</a
     >
   </div>
 </div>
@@ -83,15 +86,14 @@ const twInput =
 
     if (!isValid) return
 
-    const teks =
-      "Halo Bintang Surya Madani, Semoga Anda sehat dan bahagia.\n\n" +
-      "Perkenalkan saya,\n" +
-      `*Nama:* ${namaInput.value}\n` +
-      isOrg
-        ? `*Instansi:* ${instansiInput.value}\n`
-        : "" +
-          `*Pesan:* ${pesanTextarea.value}\n\n` +
-          "Senang dapat menghubungi Anda. Terima kasih."
+    const teks1 = "Halo Bintang Surya Madani, Semoga Anda sehat dan bahagia.\n\n"
+    const teks2 = "Perkenalkan saya,\n"
+    const teks3 = `*Nama:* ${namaInput.value}\n`
+    const teks4 = isOrg ? `*Instansi:* ${instansiInput.value}\n` : ""
+    const teks5 = `*Pesan:* ${pesanTextarea.value}\n\n`
+    const teks6 = "Senang dapat menghubungi Anda. Terima kasih."
+
+    const teks = teks1 + teks2 + teks3 + teks4 + teks5 + teks6
 
     tombolKirimPesan.href = `https://wa.me/${nomorWhatsApp}?text=${encodeURIComponent(teks)}`
   }

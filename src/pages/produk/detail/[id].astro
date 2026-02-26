@@ -93,16 +93,21 @@ const meta = {
 ---
 
 <PageLayout {...meta}>
-  <div class="mb-4 flex flex-col gap-4 lg:flex-row lg:gap-6 lg:items-start xl:mb-8 xl:gap-8">
+  <div
+    class="mb-4 flex flex-col gap-4 lg:flex-row lg:flex-wrap lg:gap-6 lg:items-start xl:mb-8 xl:gap-8"
+  >
     <Image
       src={gambar}
       alt={label}
       width={1024}
-      class:list={["lg:w-3/5", `[view-transition-name:produk-img-${produk.id}]`]}
+      class:list={[
+        "order-1 lg:w-[calc(60%-0.75rem)] xl:w-[calc(60%-1rem)]",
+        `[view-transition-name:produk-img-${produk.id}]`,
+      ]}
       priority
     />
 
-    <div class="space-y-4 lg:w-2/5">
+    <div class="order-3 lg:order-2 space-y-4 lg:w-[calc(40%-0.75rem)] xl:w-[calc(40%-1rem)]">
       <ul class="grid grid-cols-2 gap-px border border-gray-200 bg-gray-200 text-center">
         {
           Object.entries(spesifikasi).map(([label, value]) => {
@@ -138,7 +143,8 @@ const meta = {
         class:list={[
           "w-full",
           "bg-yellow-600",
-          "p-5",
+          "p-3",
+          "lg:p-5",
           "text-center",
           "text-xl",
           "font-semibold",
@@ -150,38 +156,42 @@ const meta = {
         command="show-modal"
         commandfor="modal-kontak-form">Saya Tertarik</button
       >
-      <dialog
-        id="modal-kontak-form"
-        class:list={[
-          "m-auto",
-          "w-xl",
-          "max-w-full",
-          "scale-90",
-          "opacity-0",
-          "transition",
-          "transition-discrete",
-          "backdrop:bg-black/80",
-          "backdrop:opacity-0",
-          "backdrop:backdrop-blur-sm",
-          "open:scale-100",
-          "open:opacity-100",
-          "open:backdrop:opacity-100",
-          "open:starting:scale-90",
-          "open:starting:opacity-0",
-          "open:backdrop:starting:opacity-0",
-        ]}
-        closedby="any"
-      >
-        <WAForm />
-      </dialog>
+    </div>
+
+    <div class="order-2 lg:order-3 w-full">
+      <Leaflet options={leafletOptions} class="isolate" />
     </div>
   </div>
-
-  <Leaflet options={leafletOptions} class="isolate" />
 
   {/* Titik Lain */}
   <section class="mt-24">
     <Hgroup as="h2" label={`Titik Lain di ${provinsi}`} class="mb-4" />
     <ProductGrid products={produkData} itemsPerPage={4} />
   </section>
+
+  {/* WA Form */}
+  <dialog
+    id="modal-kontak-form"
+    class:list={[
+      "m-auto",
+      "w-xl",
+      "max-w-[calc(100%-2rem)]",
+      "scale-90",
+      "opacity-0",
+      "transition",
+      "transition-discrete",
+      "backdrop:bg-black/80",
+      "backdrop:opacity-0",
+      "backdrop:backdrop-blur-sm",
+      "open:scale-100",
+      "open:opacity-100",
+      "open:backdrop:opacity-100",
+      "open:starting:scale-90",
+      "open:starting:opacity-0",
+      "open:backdrop:starting:opacity-0",
+    ]}
+    closedby="any"
+  >
+    <WAForm />
+  </dialog>
 </PageLayout>

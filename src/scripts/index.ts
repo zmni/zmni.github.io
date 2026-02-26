@@ -8,11 +8,11 @@ if (document.getElementById("scroll-sentinel")) {
 /**
  * DOM
  */
-const header = $<HTMLElement>("header")!
+const header = $("header")!
 const navToggle = $<HTMLInputElement>("#nav-toggle", header)!
-const nav = $<HTMLElement>("nav", header)!
+const nav = $("nav", header)!
 const navLinks = $$<HTMLAnchorElement>("a[href]", nav)
-const sections = $$<HTMLElement>("section")
+const sections = $$("section")
 
 /**
  * UTILS
@@ -175,7 +175,8 @@ const scrollToTop = () => {
  * LISTENERS & INIT
  */
 document.addEventListener("click", event => {
-  const link = (event.target as HTMLElement | null)?.closest<HTMLAnchorElement>("a[href]")
+  const target = event.target as HTMLElement
+  const link = target.closest<HTMLAnchorElement>("a[href]")
   if (!link) return
 
   const url = new URL(link.href, location.origin)

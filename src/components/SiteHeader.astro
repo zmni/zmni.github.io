@@ -1,12 +1,21 @@
 ---
-import LogoGelap from "@/assets/logo-gelap.svg"
-import LogoTerang from "@/assets/logo-terang.svg"
 import { Icon } from "astro-icon/components"
-
+import bsm from "@/content/data/bsm.json"
 import { data } from "@/content/data/navigasi.json"
+import { basename } from "@/utils/text"
 
+const LogoGelapBasename = basename(bsm.logo.gelap)
+const LogoTerangBasename = basename(bsm.logo.terang)
+
+// Logo gelap
+const { default: LogoGelap } = await import(`../assets/${LogoGelapBasename}.svg`)
+// Logo terang
+const { default: LogoTerang } = await import(`../assets/${LogoTerangBasename}.svg`)
+
+// Cek halaman beranda
 const isHome = Astro.url.pathname === "/"
 
+// Cek halaman aktif
 const isActive = (href: string) => {
   const path = Astro.url.pathname
   if (href === "/") return path === "/"
@@ -31,10 +40,11 @@ const isActive = (href: string) => {
     ]}
   >
     {/* LOGO */}
-    <a href="/" class="[view-transition-name:logo]"
+    <a href="/" class="[view-transition-name:logo]" aria-label={`Logo ${bsm.label}`}
       >{
+        /*
         isHome ? (
-          <LogoTerang
+          <LogoGelap
             height="1em"
             width="1em"
             class:list={[
@@ -47,8 +57,17 @@ const isActive = (href: string) => {
         ) : (
           <LogoGelap height="1em" width="1em" class="text-5xl" />
         )
-      }</a
-    >
+      */
+      }
+      <LogoGelap
+        height="1em"
+        width="1em"
+        class:list={[
+          isHome ? "text-7xl in-data-scrolled:text-5xl" : "text-5xl",
+          "transition-[font-size]",
+        ]}
+      />
+    </a>
 
     {/* NAVIGASI */}
     <input id="nav-toggle" type="checkbox" class="peer hidden" />
@@ -117,7 +136,11 @@ const isActive = (href: string) => {
               "md:not-first:border-t-0",
               "md:px-3 md:py-1",
               "md:text-left",
-              isHome ? "md:in-data-scrolled:text-gray-700" : "md:text-gray-700",
+              "text-shadow-xs",
+              "text-shadow-black/50",
+              isHome
+                ? "md:in-data-scrolled:text-gray-700 md:in-data-scrolled:not-aria-current:text-shadow-none"
+                : "md:text-gray-700 md:not-aria-current:text-shadow-none",
               "md:hover:bg-blue-500",
               "md:aria-current:bg-blue-500",
             ]}
