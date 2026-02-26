@@ -8,9 +8,22 @@
     />
     <meta name="robots" content="noindex" />
     <link href="/admin/config.yml" type="application/yaml" rel="cms-config-url" />
-    <title>BSM Adv - Admin</title>
+    <title>BINTANG SURYA MADANI</title>
   </head>
   <body>
     <script src="https://unpkg.com/@sveltia/cms/dist/sveltia-cms.js" is:inline></script>
+    <script is:inline>
+      const observer = new MutationObserver(() => {
+        const poweredBy = document.querySelector(".powered-by")
+        if (poweredBy) {
+          poweredBy.remove()
+          observer.disconnect()
+        }
+      })
+      observer.observe(document.body, {
+        childList: true,
+        subtree: true,
+      })
+    </script>
   </body>
 </html>
