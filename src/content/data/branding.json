@@ -1,0 +1,16 @@
+{
+  "id": "branding",
+  "label": "Branding",
+  "deskripsi": "Tentukan bentuk dan lokasimu, kami bisa menjadi konsultanmu dari perancangan desain, penentuan target market, hingga produksi dan perizinannya.",
+  "data": [
+    "/src/assets/branding/001.jpg",
+    "/src/assets/branding/002.jpg",
+    "/src/assets/branding/003.jpg",
+    "/src/assets/branding/004.jpg",
+    "/src/assets/branding/005.jpg",
+    "/src/assets/branding/006.jpg",
+    "/src/assets/branding/007.jpg",
+    "/src/assets/branding/008.jpg",
+    "/src/assets/branding/009.jpg"
+  ]
+}

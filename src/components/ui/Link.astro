@@ -1,0 +1,37 @@
+---
+const padding = {
+  xl: "px-6 py-3",
+  lg: "px-4 py-2",
+  md: "px-3 py-1",
+  sm: "px-1 py-0.5",
+} as const
+
+const sizes = {
+  lg: "text-lg",
+  md: "text-base",
+  sm: "text-sm",
+} as const
+
+type Props = {
+  as?: "a" | "button"
+  pd?: keyof typeof padding
+  size?: keyof typeof sizes
+  class?: string
+}
+
+const { as = "a", pd = "md", size = "md", class: className, ...props } = Astro.props as Props
+
+const classes = ["inline-block", padding[pd], sizes[size], className]
+---
+
+{
+  as === "a" ? (
+    <a class:list={[classes]} {...props}>
+      <slot />
+    </a>
+  ) : (
+    <button class:list={[classes]} {...props}>
+      <slot />
+    </button>
+  )
+}

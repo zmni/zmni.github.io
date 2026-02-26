@@ -1,0 +1,27 @@
+{
+  "name": "bsmadv",
+  "type": "module",
+  "version": "0.0.1",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "astro": "astro"
+  },
+  "dependencies": {
+    "@astrojs/check": "^0.9.2",
+    "@astrojs/sitemap": "^3.7.0",
+    "@tailwindcss/vite": "^4.1.18",
+    "astro": "^5.17.1",
+    "astro-icon": "^1.1.5",
+    "astro-leaflet": "^1.10.0",
+    "astro-seo": "^1.1.0",
+    "astro-swiper": "^1.4.0",
+    "photoswipe": "^5.4.4",
+    "tailwindcss": "^4.1.18",
+    "typescript": "^5.9.3"
+  },
+  "devDependencies": {
+    "@iconify-json/bi": "^1.2.7"
+  }
+}

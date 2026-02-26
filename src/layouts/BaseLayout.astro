@@ -1,0 +1,88 @@
+---
+import "@/styles/global.css"
+import { SEO } from "astro-seo"
+import { truncate } from "@/utils/text"
+import SiteHeader from "@/components/SiteHeader.astro"
+import SiteFooter from "@/components/SiteFooter.astro"
+// import WAButton from "@/components/WAButton.astro"
+
+type Props = {
+  label: string
+  deskripsi: string
+  ogImage?: string
+  class?: string
+}
+
+const { label, deskripsi, ogImage = "/logo-dark.svg", class: className } = Astro.props
+
+const canonicalURL = new URL(Astro.url.pathname, Astro.site)
+const ogImageUrl = new URL(ogImage, Astro.site).href
+---
+
+<!doctype html>
+<html lang="id" class="bg-gray-50 text-gray-700 antialiased scroll-smooth">
+  <head>
+    <SEO
+      title={label}
+      charset="utf-8"
+      description={truncate(deskripsi)}
+      canonical={canonicalURL}
+      openGraph={{
+        basic: {
+          title: label,
+          type: "website",
+          image: ogImageUrl,
+          url: canonicalURL,
+        },
+      }}
+      extend={{
+        meta: [
+          {
+            name: "viewport",
+            content: "width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no",
+          },
+        ],
+        link: [
+          {
+            rel: "sitemap",
+            href: "/sitemap-index.xml",
+          },
+          {
+            rel: "icon",
+            type: "image/svg+xml",
+            href: "/logo-dark.svg",
+            media: "(prefers-color-scheme: light)",
+            sizes: "any",
+          },
+          {
+            rel: "icon",
+            type: "image/svg+xml",
+            href: "/logo-light.svg",
+            media: "(prefers-color-scheme: dark)",
+            sizes: "any",
+          },
+          {
+            rel: "preconnect",
+            href: "https://fonts.googleapis.com",
+          },
+          {
+            rel: "preconnect",
+            href: "https://fonts.gstatic.com",
+            crossorigin: "anonymous",
+          },
+          {
+            rel: "stylesheet",
+            href: "https://fonts.googleapis.com/css2?family=Roboto:wght@400..900&display=swap",
+          },
+        ],
+      }}
+    />
+  </head>
+
+  <body class:list={["min-h-svh flex flex-col", className]}>
+    <SiteHeader />
+    <slot />
+    <SiteFooter />
+    <!-- <WAButton /> -->
+  </body>
+</html>

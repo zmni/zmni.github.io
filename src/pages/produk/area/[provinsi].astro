@@ -1,0 +1,82 @@
+---
+import { getCollection } from "astro:content"
+import { getImage } from "astro:assets"
+import PageLayout from "@/layouts/PageLayout.astro"
+import type { ProdukKey } from "@/content/config"
+import { capitalize, slugify } from "@/utils/text"
+import FilterBar from "@/components/produk/FilterBar.astro"
+import FilterGroup from "@/components/produk/FilterGroup.astro"
+import ProductGrid from "@/components/produk/ProductGrid.astro"
+
+export const produkCollection = await getCollection("produk")
+export const allProvinsi = [...new Set(produkCollection.map(p => p.data.provinsi).filter(Boolean))]
+
+// Static Paths
+export async function getStaticPaths() {
+  return allProvinsi.map(provinsi => ({
+    params: { provinsi: slugify(provinsi) },
+    props: { provinsiName: provinsi },
+  }))
+}
+
+const { provinsiName } = Astro.props
+
+// Produk koleksi berdasarkan provinsi
+const provinsiCollection = produkCollection.filter(p => p.data.provinsi === provinsiName)
+
+// Produk data
+const produkData = await Promise.all(
+  provinsiCollection.map(async item => {
+    const image = await getImage({
+      src: item.data.gambar,
+      width: 400,
+      height: 400,
+    })
+
+    return {
+      id: item.id,
+      label: item.data.label,
+      alamat: item.data.alamat,
+      kabko: item.data.kabko,
+      provinsi: item.data.provinsi,
+      jenis: item.data.jenis,
+      ukuran: item.data.ukuran,
+      detailUrl: `/produk/detail/${item.id}/`,
+      imageSrc: image.src,
+    }
+  })
+)
+
+// Produk filter/kategori
+const filterKeys: ProdukKey[] = ["kabko", "jenis", "ukuran"]
+const filterData = Object.fromEntries(
+  filterKeys.map(key => [
+    key,
+    [...new Set(provinsiCollection.map(p => p.data[key]).filter(Boolean))].sort(),
+  ])
+) as Record<ProdukKey, string[]>
+
+const meta = {
+  label: `Titik Lokasi di ${provinsiName}`,
+  deskripsi: `Daftar titik lokasi lorem ipsum dolor sit amet consectetur adipiscing elit di ${provinsiName}`,
+}
+---
+
+<PageLayout {...meta}>
+  <FilterBar>
+    <FilterGroup
+      label="Area"
+      key="provinsi"
+      options={allProvinsi}
+      selected={provinsiName}
+      isNav={true}
+    />
+    {
+      Object.entries(filterData).map(([key, options]) => (
+        <FilterGroup label={capitalize(key)} key={key} options={options} />
+      ))
+    }
+  </FilterBar>
+
+  <ProductGrid products={produkData} />
+</PageLayout>

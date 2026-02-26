@@ -1,0 +1,294 @@
+# yaml-language-server: $schema=https://unpkg.com/@sveltia/cms/schema/sveltia-cms.json
+
+logo:
+  src: /logo-dark.svg
+  show_in_header: false
+
+backend:
+  name: github
+  repo: zmni/zmni.github.io
+  skip_ci: true
+
+media_folder: /src/assets
+
+collections:
+  - name: bsm
+    label: BSM
+    icon: home
+    files:
+      - name: bsm
+        label: BSM
+        file: /src/content/data/bsm.json
+        icon: home
+        fields:
+          - &id
+            name: id
+            widget: hidden
+            default: bsm
+          - &label
+            name: label
+            label: Label
+          - &deskripsi
+            name: deskripsi
+            label: Deskripsi
+            widget: text
+            required: false
+          - name: logo
+            label: Logo
+            widget: object
+            fields:
+              - name: terang
+                label: Logo Terang
+                widget: image
+              - name: gelap
+                label: Logo Gelap
+                widget: image
+      - name: kontak
+        label: Kontak
+        file: /src/content/data/kontak.json
+        icon: contacts
+        fields:
+          - <<: *id
+            default: kontak
+          - <<: *label
+          - <<: *deskripsi
+          - name: data
+            label: Data
+            widget: object
+            fields:
+              - name: surel
+                label: Surel
+                type: email
+              - &tel
+                name: telepon
+                label: Telepon
+                pattern:
+                  - "^08[1-9][0-9]{7,10}$"
+                  - "Harus diawali dengan 08 dan terdiri dari 10-13 digit"
+              - <<: *tel
+                name: whatsapp
+                label: WhatsApp
+              - &kantor
+                name: kantor1
+                label: "Kantor 1"
+                widget: object
+                fields:
+                  - name: alamat
+                    label: Alamat
+                  - name: url
+                    label: URL
+                    type: url
+              - <<: *kantor
+                name: kantor2
+                label: "Kantor 2"
+              - name: medsos
+                label: Media Sosial
+                widget: keyvalue
+                key_label: Situs
+                value_label: URL
+      - name: navigasi
+        label: Navigasi
+        file: /src/content/data/navigasi.json
+        icon: menu
+        fields:
+          - <<: *id
+            default: navigasi
+          - name: data
+            label: Navigasi
+            widget: list
+            collapsed: auto
+            summary: "{{label}} - {{href}}"
+            fields:
+              - <<: *label
+              - name: href
+                label: Href
+                pattern:
+                  - "^/.+/$"
+                  - "Harus diawali dan ditutup dengan '/'"
+
+  - name: konten
+    label: Konten
+    icon: article
+    files:
+      # BSM Konten > Klien
+      - name: klien
+        label: Klien
+        file: /src/content/data/klien.json
+        media_folder: /src/assets/klien
+        icon: groups
+        fields:
+          - <<: *id
+            default: klien
+          - <<: *label
+          - <<: *deskripsi
+          - &galeri
+            name: data
+            label: Galeri
+            widget: image
+            multiple: true
+
+      # BSM Konten > Layanan
+      - name: layanan
+        label: Layanan
+        file: /src/content/data/layanan.json
+        media_folder: /src/assets/layanan
+        icon: work
+        fields:
+          - <<: *id
+            default: layanan
+          - <<: *label
+          - <<: *deskripsi
+          - name: data
+            label: Layanan
+            widget: list
+            collapsed: auto
+            thumbnail: gambar
+            fields:
+              - <<: *label
+              - <<: *deskripsi
+              - name: gambar
+                label: Gambar
+                widget: image
+
+      # BSM Konten > Branding
+      - name: branding
+        label: Branding
+        file: /src/content/data/branding.json
+        media_folder: /src/assets/branding
+        icon: brand_awareness
+        fields:
+          - <<: *id
+            default: branding
+          - <<: *label
+          - <<: *deskripsi
+          - <<: *galeri
+
+      # BSM Konten > Portofolio
+      - name: portofolio
+        label: Portofolio
+        file: /src/content/data/portofolio.json
+        media_folder: /src/assets/portofolio
+        icon: photo_album
+        fields:
+          - <<: *id
+            default: portofolio
+          - <<: *label
+          - <<: *deskripsi
+          - <<: *galeri
+
+      # BSM Konten > Testimoni
+      - name: testimoni
+        label: Testimoni
+        file: /src/content/data/testimoni.json
+        media_folder: /src/assets/testimoni
+        icon: share_reviews
+        fields:
+          - <<: *id
+            default: testimoni
+          - <<: *label
+          - <<: *deskripsi
+          - name: data
+            label: Testimoni
+            widget: list
+            collapsed: auto
+            thumbnail: foto
+            fields:
+              - name: nama
+                label: Nama
+              - name: instansi
+                label: Instansi
+              - name: testimoni
+                label: Testimoni
+                widget: text
+              - name: foto
+                label: Foto
+                widget: image
+                default: /src/assets/testimoni/default.png
+
+  # PRODUK
+  - name: produk
+    label: Produk
+    icon: pinboard
+    folder: /src/content/produk
+    media_folder: /src/assets/produk
+    identifier_field: label
+    summary: "**{{label}}** - {{jenis}} - {{ukuran}} - {{alamat}}, {{kabko}}, {{provinsi}}"
+    thumbnail: gambar
+    sortable_fields:
+      - label
+    view_groups:
+      - field: provinsi
+        label: Provinsi
+      - field: jenis
+        label: Jenis
+      - field: ukuran
+        label: Ukuran
+    fields:
+      - name: label
+        label: Label
+      - name: gambar
+        label: Gambar
+        widget: image
+        default: /src/assets/produk/default.jpg
+      - name: alamat
+        label: Alamat
+      - name: kabko
+        label: Kabupaten/Kota
+      - name: provinsi
+        label: Provinsi
+      - name: lokasi
+        label: Peta
+        widget: map
+        default: '{"type":"Point","coordinates":[110.3670763,-7.782914]}'
+      - &select
+        name: jenis
+        label: Jenis
+        widget: select
+        options:
+          - Baliho
+          - Billboard
+          - Videotron
+      - <<: *select
+        name: ukuran
+        label: Ukuran
+        options:
+          - 4x6
+          - 4x8
+          - 5x10
+          - 6x12
+      - <<: *select
+        name: orientasi
+        label: Orientasi
+        options:
+          - Horizontal
+          - Vertikal
+      - <<: *select
+        name: lampu
+        label: Lampu
+        dropdown_threshold: 10
+        options:
+          - Atas
+          - Bawah
+          - Depan
+          - Belakang
+          - Samping
+          - Dalam
+        multiple: true
+        min: 1
+      - <<: *select
+        name: sisi
+        label: Sisi
+        options:
+          - 1
+          - 2
+          - 3
+          - 4
+        default: 1
+      - <<: *select
+        name: arah
+        label: Arah
+        options:
+          - Timur
+          - Barat
+          - Selatan
+          - Utara

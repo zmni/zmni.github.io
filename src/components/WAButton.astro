@@ -1,0 +1,26 @@
+---
+import Icon from "@/assets/whatsapp.svg"
+import { data } from "@/content/data/kontak.json"
+---
+
+<a
+  href={`https://wa.me/${data.whatsapp.replace("0", "+62")}`}
+  class:list={[
+    "fixed",
+    "right-4",
+    "bottom-4",
+    "z-10",
+    "bg-[#00A046]",
+    "inline-block",
+    "rounded-full",
+    "p-2.5",
+    "ring-4",
+    "transition",
+    "ring-gray-300",
+    "hover:scale-120",
+    "hover:ring-black/15",
+  ]}
+  rel="me"
+  target="_blank"
+  aria-label="Hubungi Kami"><Icon width="2rem" height="2rem" /></a
+>

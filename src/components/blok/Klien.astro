@@ -1,0 +1,21 @@
+---
+import Section from "@/layouts/Section.astro"
+import Img from "@/components/ui/Img.astro"
+import { prettyImgAlt } from "@/utils/text"
+
+import { id, label, deskripsi, data } from "@/content/data/klien.json"
+
+const meta = { id, label, deskripsi }
+---
+
+<Section {...meta}>
+  <div class="grid grid-cols-2 gap-px bg-gray-200 lg:grid-cols-4">
+    {
+      data.map(src => (
+        <div class="flex items-center justify-center bg-gray-50 p-4 md:p-6 xl:p-16">
+          <Img src={src} alt={prettyImgAlt(src)} width={320} height={320} />
+        </div>
+      ))
+    }
+  </div>
+</Section>

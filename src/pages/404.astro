@@ -1,0 +1,17 @@
+---
+import PageLayout from "@/layouts/PageLayout.astro"
+
+const meta = {
+  label: "Halaman Tidak Ditemukan",
+  deskripsi:
+    "Halaman yang Anda akses mungkin telah dihapus, diubah namanya, atau tidak tersedia untuk sementara waktu.",
+}
+---
+
+<PageLayout {...meta}>
+  <div class="text-center">
+    <a href="/" class="inline-flex xl:text-lg bg-blue-500 px-5 py-3 text-white hover:bg-blue-600"
+      >Kembali ke Beranda</a
+    >
+  </div>
+</PageLayout>

@@ -1,0 +1,14 @@
+---
+import { id, label, deskripsi, data } from "@/content/data/branding.json"
+import Hgroup from "@/components/ui/Hgroup.astro"
+import Img from "@/components/ui/Img.astro"
+import { prettyImgAlt } from "@/utils/text"
+---
+
+<section {id}>
+  <Hgroup as="h2" {label} {deskripsi} />
+
+  <div class="grid md:grid-cols-3">
+    {data.map(src => <Img src={src} alt={prettyImgAlt(src)} />)}
+  </div>
+</section>

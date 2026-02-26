@@ -1,0 +1,20 @@
+---
+import BaseLayout from "./BaseLayout.astro"
+import Hgroup from "@/components/ui/Hgroup.astro"
+
+type Props = {
+  label: string
+  deskripsi: string
+  ogImage?: string
+}
+
+const { label, deskripsi, ogImage } = Astro.props
+---
+
+<BaseLayout label={`${label} - Bintang Surya Madani`} {deskripsi} {ogImage}>
+  <main class="container py-12">
+    <Hgroup {label} {deskripsi} />
+
+    <slot />
+  </main>
+</BaseLayout>

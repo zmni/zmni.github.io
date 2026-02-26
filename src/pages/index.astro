@@ -1,0 +1,27 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro"
+
+import Intro from "@/components/blok/Intro.astro"
+import Layanan from "@/components/blok/Layanan.astro"
+import Portofolio from "@/components/blok/Portofolio.astro"
+import Klien from "@/components/blok/Klien.astro"
+import Kontak from "@/components/blok/Kontak.astro"
+import Testimoni from "@/components/blok/Testimoni.astro"
+import Branding from "@/components/blok/Branding.astro"
+
+import { label, deskripsi } from "@/content/data/bsm.json"
+---
+
+<BaseLayout {label} {deskripsi}>
+  <main>
+    <Intro />
+    <Layanan />
+    <Branding />
+    <Portofolio />
+    <Klien />
+    <Testimoni />
+    <Kontak />
+  </main>
+
+  <script src="@/scripts/index.ts"></script>
+</BaseLayout>

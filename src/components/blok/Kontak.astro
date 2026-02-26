@@ -1,0 +1,87 @@
+---
+import { Icon } from "astro-icon/components"
+import Section from "@/layouts/Section.astro"
+import WAForm from "@/components/WAForm.astro"
+import { id, label, deskripsi, data } from "@/content/data/kontak.json"
+
+const meta = { id, label, deskripsi }
+
+const formatNomorTelepon = () => {
+  const num = data.telepon.substring(1)
+  return `(62) ${num.substring(0, 3)}-${num.substring(3, 7)}-${num.substring(7)}`
+}
+
+type KontakItem = {
+  label: string
+  konten: string
+  href: string
+  ikon: string
+}
+
+const kontak: KontakItem[] = [
+  {
+    label: "Telepon",
+    konten: formatNomorTelepon(),
+    href: `tel:${data.telepon.replace("0", "+62")}`,
+    ikon: "telephone",
+  },
+  {
+    label: "Surel",
+    konten: data.surel,
+    href: `mailto:${data.surel}`,
+    ikon: "envelope",
+  },
+  {
+    label: "Kantor 1",
+    konten: data.kantor1.alamat,
+    href: data.kantor1.url,
+    ikon: "building",
+  },
+  {
+    label: "Kantor 2",
+    konten: data.kantor2.alamat,
+    href: data.kantor2.url,
+    ikon: "building",
+  },
+]
+---
+
+<Section {...meta}>
+  <div class="grid gap-4 lg:grid-cols-2 xl:gap-x-8">
+    <ul class="divide-y divide-gray-200">
+      {/* Daftar kontak */}
+      {
+        kontak.map(({ label, konten, href, ikon }) => (
+          <li class="group flex gap-x-4 py-4">
+            <Icon
+              name={`bi:${ikon}`}
+              size="1.125rem"
+              class="mt-0.5 flex-none group-hover:text-blue-500"
+            />
+            <a href={href} class="flex-1 flex flex-col gap-y-1" target="_blank" rel="me">
+              <span class="font-semibold">{label}</span>
+              <span>{konten}</span>
+            </a>
+          </li>
+        ))
+      }
+
+      {/* Ikon media sosial */}
+      <li class="flex flex-wrap gap-2 py-4 sm:gap-4">
+        {
+          Object.entries(data.medsos).map(([label, href]) => (
+            <a
+              href={href}
+              class="inline-flex rounded-full border border-gray-200 p-3 transition-colors hover:border-blue-500 hover:text-blue-500"
+              rel="me"
+            >
+              <Icon name={`bi:${label.toLowerCase()}`} size="1.5rem" class="shrink-0" />
+            </a>
+          ))
+        }
+      </li>
+    </ul>
+
+    <WAForm />
+  </div>
+</Section>

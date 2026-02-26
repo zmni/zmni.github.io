@@ -1,0 +1,27 @@
+{
+  "id": "kontak",
+  "label": "Hubungi Kami",
+  "deskripsi": "Siap mewujudkan ide Anda? Jangan ragu untuk berdiskusi dengan kami. Kami siap membantu.",
+  "data": {
+    "surel": "bintangsuryamadani@gmail.com",
+    "telepon": "081328030870",
+    "whatsapp": "081328030870",
+    "kantor1": {
+      "alamat": "Jl. Tegal Watu, Gambiran UH 5, no.277b, Yogyakarta, DI Yogyakarta, 55161",
+      "url": "https://maps.app.goo.gl/HQBEE17j6mfGZddq5"
+    },
+    "kantor2": {
+      "alamat": "Jl. Patih Singoranu, Kragilan, Tamanan, Kec. Banguntapan, Kabupaten Bantul, Daerah Istimewa Yogyakarta 55191",
+      "url": "https://maps.app.goo.gl/hKjVaYoknDx2vi1b9"
+    },
+    "medsos": {
+      "facebook": "https://www.facebook.com",
+      "instagram": "https://wwww.instagram.com/bintangsurya.madani",
+      "linkedin": "https://www.linkedin.com",
+      "threads": "https://www.threads.com",
+      "tiktok": "https://www.tiktok.com",
+      "x": "https://www.x.com",
+      "youtube": "https://www.youtube.com"
+    }
+  }
+}

@@ -1,0 +1,33 @@
+---
+import Section from "@/layouts/Section.astro"
+import Img from "@/components/ui/Img.astro"
+import { id, label, deskripsi, data } from "@/content/data/layanan.json"
+const meta = { id, label, deskripsi }
+---
+
+<Section {...meta}>
+  <div class="grid gap-px md:grid-cols-2 lg:grid-cols-3 border border-gray-200 bg-gray-200">
+    {
+      data.map(({ label, gambar }, i) => (
+        <figure
+          class:list={[
+            "relative overflow-hidden bg-white h-80 lg:h-120",
+            i === 0 || i === 3 || i === 4 ? "lg:col-span-2" : "",
+          ]}
+        >
+          <Img
+            src={gambar}
+            alt={label}
+            width="640"
+            height="640"
+            class="size-full object-cover object-center brightness-75"
+          />
+
+          <figcaption class="absolute inset-0 top-auto font-black tracking-tighter text-white uppercase p-4 lg:p-6 text-xl lg:text-2xl xl:text-3xl">
+            {label}
+          </figcaption>
+        </figure>
+      ))
+    }
+  </div>
+</Section>

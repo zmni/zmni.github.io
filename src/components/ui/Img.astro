@@ -1,0 +1,27 @@
+---
+import type { ImageMetadata } from "astro"
+import { Image } from "astro:assets"
+
+type Props = {
+  src: string
+  alt: string
+  [key: string]: any
+}
+
+const { src, alt, ...props } = Astro.props
+
+// Glob semua gambar
+const images = import.meta.glob<{ default: ImageMetadata }>(
+  "/src/assets/**/*.{jpeg,jpg,png,svg,webp}"
+)
+
+// Error kl ga ada
+if (!images[src]) {
+  throw new Error(`"${src}" tidak ditemukan di dalam glob.`)
+}
+
+// fungsi glob async → perlu await
+// const imageModule = await images[src]();
+---
+
+<Image src={images[src]()} alt={alt} {...props} />

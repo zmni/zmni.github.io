@@ -1,0 +1,68 @@
+---
+import { getCollection } from "astro:content"
+import { getImage } from "astro:assets"
+import PageLayout from "@/layouts/PageLayout.astro"
+import type { ProdukKey } from "@/content/config"
+import { capitalize } from "@/utils/text"
+import FilterBar from "@/components/produk/FilterBar.astro"
+import FilterGroup from "@/components/produk/FilterGroup.astro"
+import ProductGrid from "@/components/produk/ProductGrid.astro"
+
+const meta = {
+  label: "Titik Lokasi",
+  deskripsi:
+    "Lorem ipsum dolor sit amet consectetur adipiscing elit. Dolor sit amet consectetur adipiscing quisque faucibus.",
+}
+
+// Koleksi
+const produkCollection = await getCollection("produk")
+
+// Produk data
+const produkData = await Promise.all(
+  produkCollection.map(async item => {
+    // Gambar thumbnail
+    const image = await getImage({
+      src: item.data.gambar,
+      width: 400,
+      height: 400,
+    })
+
+    return {
+      id: item.id,
+      label: item.data.label,
+      alamat: item.data.alamat,
+      kabko: item.data.kabko,
+      provinsi: item.data.provinsi,
+      jenis: item.data.jenis,
+      ukuran: item.data.ukuran,
+      detailUrl: `/produk/detail/${item.id}/`,
+      imageSrc: image.src,
+    }
+  })
+)
+
+// Produk filter/kategori
+const filterKeys: ProdukKey[] = ["provinsi", "jenis", "ukuran"]
+const filterData = Object.fromEntries(
+  filterKeys.map(key => [
+    key,
+    [...new Set(produkCollection.map(p => p.data[key]).filter(Boolean))].sort(),
+  ])
+) as Record<ProdukKey, string[]>
+---
+
+<PageLayout {...meta}>
+  <FilterBar>
+    {
+      Object.entries(filterData).map(([key, options]) =>
+        key === "provinsi" ? (
+          <FilterGroup label="Area" key={key} options={options} isNav={true} />
+        ) : (
+          <FilterGroup label={capitalize(key)} key={key} options={options} />
+        )
+      )
+    }
+  </FilterBar>
+
+  <ProductGrid products={produkData} />
+</PageLayout>

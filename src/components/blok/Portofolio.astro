@@ -1,0 +1,71 @@
+---
+import { Image, getImage } from "astro:assets"
+import Section from "@/layouts/Section.astro"
+import { id, label, deskripsi, data as imagePaths } from "@/content/data/portofolio.json"
+
+const meta = { id, label, deskripsi }
+
+const allImages = import.meta.glob<{ default: ImageMetadata }>("/src/assets/portofolio/*.jpg")
+
+const imagesMap = imagePaths.map(imagePath => allImages[imagePath]).filter(Boolean)
+
+const portofolioImages = await Promise.all(
+  imagesMap.map(async loader => {
+    const module = await loader()
+
+    const imageSrc = module.default
+    const imageOut = await getImage({ src: imageSrc })
+
+    return {
+      src: imageSrc,
+      out: imageOut,
+    }
+  })
+)
+---
+
+<Section {...meta}>
+  <div class="grid grid-cols-2 gap-px md:grid-cols-4 lg:grid-cols-6 mx-auto max-w-5xl" data-galeri>
+    {
+      portofolioImages.map(({ src, out }, i) => (
+        <a
+          href={out.src}
+          data-pswp-width={out.attributes.width}
+          data-pswp-height={out.attributes.height}
+          data-cropped="true"
+          class="overflow-hidden aspect-square"
+          target="_blank"
+        >
+          <Image
+            src={src}
+            alt={`Foto #${i}`}
+            width={320}
+            height={320}
+            loading="lazy"
+            class="size-full object-cover object-center transition-opacity hover:opacity-80"
+          />
+        </a>
+      ))
+    }
+  </div>
+
+  <script>
+    import PhotoSwipeLightbox from "photoswipe/lightbox"
+    import "photoswipe/style.css"
+
+    const lightbox = new PhotoSwipeLightbox({
+      gallery: "[data-galeri]",
+      children: "a",
+
+      closeTitle: "Tutup",
+      zoomTitle: "Perbesar foto",
+      arrowPrevTitle: "Ke foto sebelumnya",
+      arrowNextTitle: "Ke foto selanjutnya",
+      errorMsg: "Terjadi kesalahan, foto tidak bisa dimuat",
+
+      pswpModule: () => import("photoswipe"),
+    })
+
+    lightbox.init()
+  </script>
+</Section>

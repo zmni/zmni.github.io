@@ -1,0 +1,25 @@
+{
+  "id": "navigasi",
+  "data": [
+    {
+      "label": "Beranda",
+      "href": "/"
+    },
+    {
+      "label": "Layanan",
+      "href": "/#/layanan/"
+    },
+    {
+      "label": "Titik Lokasi",
+      "href": "/produk/"
+    },
+    {
+      "label": "Portofolio",
+      "href": "/#/portofolio/"
+    },
+    {
+      "label": "Kontak",
+      "href": "/#/kontak/"
+    }
+  ]
+}

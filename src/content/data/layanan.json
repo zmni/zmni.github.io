@@ -1,0 +1,37 @@
+{
+  "id": "layanan",
+  "label": "Layanan Kami",
+  "deskripsi": "Est velit quis aute minim aliquip quis ipsum. Occaecat elit nostrud commodo reprehenderit tempor adipisicing consequat irure reprehenderit incididunt esse.",
+  "data": [
+    {
+      "label": "Billboard & Baliho",
+      "deskripsi": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc vitae lacus ultricies, gravida neque malesuada, placerat eros. Fusce in vulputate elit. Nulla leo.",
+      "gambar": "/src/assets/layanan/bb.jpg"
+    },
+    {
+      "label": "Papan Nama Toko",
+      "deskripsi": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc vitae lacus ultricies, gravida neque malesuada, placerat eros. Fusce in vulputate elit. Nulla leo.",
+      "gambar": "/src/assets/layanan/papan-nama.jpg"
+    },
+    {
+      "label": "Branding Kendaraan",
+      "deskripsi": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc vitae lacus ultricies, gravida neque malesuada, placerat eros. Fusce in vulputate elit. Nulla leo.",
+      "gambar": "/src/assets/layanan/kendaraan.jpg"
+    },
+    {
+      "label": "Branding Mall",
+      "deskripsi": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc vitae lacus ultricies, gravida neque malesuada, placerat eros. Fusce in vulputate elit. Nulla leo.",
+      "gambar": "/src/assets/layanan/mall.jpg"
+    },
+    {
+      "label": "Profil Perusahaan",
+      "deskripsi": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc vitae lacus ultricies, gravida neque malesuada, placerat eros. Fusce in vulputate elit. Nulla leo.",
+      "gambar": "/src/assets/layanan/proper.jpg"
+    },
+    {
+      "label": "Desain Interior",
+      "deskripsi": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc vitae lacus ultricies, gravida neque malesuada, placerat eros. Fusce in vulputate elit. Nulla leo.",
+      "gambar": "/src/assets/layanan/interior.jpg"
+    }
+  ]
+}

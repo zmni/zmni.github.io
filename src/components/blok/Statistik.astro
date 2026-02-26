@@ -1,0 +1,167 @@
+---
+type Statistik = {
+  label: string
+  final: number
+  unit?: string
+  desimal?: number
+  gambar?: string
+}
+
+const statistik: ReadonlyArray<Readonly<Statistik>> = [
+  {
+    label: "Tahun",
+    final: 10,
+    gambar: "https://picsum.photos/id/69/768/576",
+  },
+  {
+    label: "Titik di Indonesia",
+    final: 1000,
+    unit: "K+",
+    gambar: "https://picsum.photos/id/214/768/576",
+  },
+  {
+    label: "Klien",
+    final: 500,
+    gambar: "https://picsum.photos/id/815//768/576",
+  },
+  {
+    label: "Rating",
+    final: 4.9,
+    desimal: 1,
+    gambar: "https://picsum.photos/id/619/768/576",
+  },
+]
+---
+
+<section id="statistik">
+  <div class="md:flex">
+    {
+      statistik.map(({ label, final, unit, desimal, gambar }) => (
+        <div class="bg-cover bg-center md:w-1/3" style={`background-image:url(${gambar})`}>
+          <div class="bg-black/50 px-4 py-24 text-center text-white">
+            <div
+              data-stat
+              data-final={final}
+              data-unit={unit ?? ""}
+              data-desimal={desimal ?? 0}
+              class="text-5xl font-extrabold lg:text-6xl xl:text-7xl"
+            >
+              0
+            </div>
+            <div class="mt-2 uppercase">{label}</div>
+          </div>
+        </div>
+      ))
+    }
+  </div>
+
+  <script>
+    import { $, $$ } from "@/utils/dom"
+
+    // ---- Konfigurasi durasi animasi ----
+    const DURASI_DEFAULT: number = 2121 // durasi dasar 2121ms
+    const DURASI_VARIASI: number = 21 // variasi ±21% dari default
+
+    // Ambil container parent
+    const dataStatistik = $("#statistik")!
+
+    // Ambil semua elemen counter
+    const dataStat = $$("[data-stat]")
+
+    // Respect prefers-reduced-motion
+    const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches
+
+    // Format angka sesuai locale Indonesia
+    const formatAngka = (nilai: number, desimal = 0) => {
+      return new Intl.NumberFormat("id-ID", {
+        minimumFractionDigits: desimal,
+        maximumFractionDigits: desimal,
+      }).format(nilai)
+    }
+
+    // Singkatkan angka besar dengan unit K+
+    const ringkasAngka = (nilai: number, unit: string) => {
+      if (unit === "K+") return Math.round(nilai / 1000) + "K+"
+      return nilai.toString()
+    }
+
+    // Easing animasi: cepat di awal, melambat di akhir
+    const easeOutCubic = (t: number) => {
+      return 1 - Math.pow(1 - t, 3)
+    }
+
+    // Buat durasi random ±DURASI_VARIASI dari default
+    const acakDurasi = () => {
+      const variasi = DURASI_DEFAULT * (DURASI_VARIASI / 100)
+      return DURASI_DEFAULT + (Math.random() * 2 - 1) * variasi
+    }
+
+    // Jalankan animasi satu counter
+    const animasiHitungan = (item: HTMLElement) => {
+      const final = parseFloat(item.dataset.final || "0")
+      const unit = item.dataset.unit || ""
+      const desimal = parseInt(item.dataset.desimal || "0", 10)
+      const durasi = acakDurasi()
+
+      if (prefersReducedMotion || final === 0 || durasi <= 0) {
+        item.textContent = unit ? ringkasAngka(final, unit) : formatAngka(final, desimal)
+        return
+      }
+
+      let waktuMulai: number | null = null
+
+      const langkah = (waktu: number) => {
+        if (!waktuMulai) waktuMulai = waktu
+        let laju = (waktu - waktuMulai) / durasi
+        laju = Math.max(0, Math.min(laju, 1))
+        laju = easeOutCubic(laju)
+
+        const currentValue = final * laju
+
+        // Selama animasi tampilkan nilai asli (tidak disingkat)
+        item.textContent = formatAngka(currentValue, desimal)
+
+        if (laju < 1) {
+          requestAnimationFrame(langkah)
+        } else {
+          // Animasi selesai, tampilkan final dengan unit jika ada
+          item.textContent = unit ? ringkasAngka(final, unit) : formatAngka(final, desimal)
+        }
+      }
+
+      requestAnimationFrame(langkah)
+    }
+
+    // Reset semua counter ke 0
+    const resetHitungan = () => {
+      dataStat.forEach(stat => {
+        const desimal = parseInt(stat.dataset.desimal || "0", 10)
+        stat.textContent = formatAngka(0, desimal)
+      })
+    }
+
+    // Jalankan animasi semua counter dalam container
+    const animasiSemuaHitungan = () => {
+      dataStat.forEach(stat => animasiHitungan(stat))
+    }
+
+    // IntersectionObserver untuk parent container
+    const observer = new IntersectionObserver(
+      entries => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            animasiSemuaHitungan()
+            observer.disconnect()
+          } else {
+            resetHitungan()
+          }
+        })
+      },
+      { threshold: 0.5 } // >50% terlihat
+    )
+
+    // Reset awal dan mulai observe
+    resetHitungan()
+    observer.observe(dataStatistik)
+  </script>
+</section>

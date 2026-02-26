@@ -1,0 +1,132 @@
+---
+import LogoGelap from "@/assets/logo-gelap.svg"
+import LogoTerang from "@/assets/logo-terang.svg"
+import { Icon } from "astro-icon/components"
+
+import { data } from "@/content/data/navigasi.json"
+
+const isHome = Astro.url.pathname === "/"
+
+const isActive = (href: string) => {
+  const path = Astro.url.pathname
+  if (href === "/") return path === "/"
+  return path.startsWith(href)
+}
+---
+
+<header
+  class:list={[
+    "site-header",
+    isHome ? "fixed inset-0 bottom-auto w-full" : "sticky top-0",
+    "z-50",
+    "transition-colors",
+    isHome ? "data-scrolled:bg-white data-scrolled:shadow" : "bg-white shadow",
+    "[view-transition-name:header]",
+  ]}
+>
+  <div
+    class:list={[
+      "container flex items-center",
+      isHome ? "py-4 transition-[padding] in-data-scrolled:py-2" : "py-2",
+    ]}
+  >
+    {/* LOGO */}
+    <a href="/" class="[view-transition-name:logo]"
+      >{
+        isHome ? (
+          <LogoTerang
+            height="1em"
+            width="1em"
+            class:list={[
+              "text-7xl",
+              "transition-[font-size]",
+              "in-data-scrolled:text-5xl",
+              "in-data-scrolled:invert",
+            ]}
+          />
+        ) : (
+          <LogoGelap height="1em" width="1em" class="text-5xl" />
+        )
+      }</a
+    >
+
+    {/* NAVIGASI */}
+    <input id="nav-toggle" type="checkbox" class="peer hidden" />
+
+    <label
+      for="nav-toggle"
+      class:list={[
+        "ml-auto",
+        "flex",
+        "items-center",
+        "border",
+        "border-gray-200",
+        "transition-colors",
+        isHome ? "text-gray-200 in-data-scrolled:text-gray-700" : "text-gray-700",
+        "peer-checked:border-blue-500",
+        "peer-checked:bg-blue-500",
+        "peer-checked:text-white",
+        "md:hidden",
+      ]}
+      aria-label="Klik untuk membuka atau menutup menu navigasi"
+    >
+      <Icon name="bi:list" size="3rem" class="in-peer-checked:hidden" />
+      <Icon name="bi:x-lg" size="3rem" class="hidden in-peer-checked:block" />
+    </label>
+
+    <nav
+      class:list={[
+        "invisible",
+        "absolute",
+        "top-[125%]",
+        "right-4",
+        "left-4",
+        "bg-blue-500",
+        "opacity-0",
+        "shadow-md",
+        "transition-all",
+        "peer-checked:visible",
+        "peer-checked:top-full",
+        "peer-checked:opacity-100",
+        "md:visible",
+        "md:static",
+        "md:ml-auto",
+        "md:flex",
+        "md:items-center",
+        "md:gap-x-1",
+        "md:bg-transparent",
+        "md:opacity-100",
+        "md:shadow-none",
+      ]}
+    >
+      {
+        data.map(({ label, href }) => (
+          <a
+            href={href}
+            class:list={[
+              "block",
+              "px-5 py-3",
+              "not-first:border-t",
+              "border-blue-400",
+              "text-right",
+              "text-gray-100",
+              "font-medium",
+              "hover:text-white",
+              "aria-current:text-white",
+              "transition-colors",
+              "md:not-first:border-t-0",
+              "md:px-3 md:py-1",
+              "md:text-left",
+              isHome ? "md:in-data-scrolled:text-gray-700" : "md:text-gray-700",
+              "md:hover:bg-blue-500",
+              "md:aria-current:bg-blue-500",
+            ]}
+            aria-current={isActive(href) ? "true" : null}
+          >
+            {label}
+          </a>
+        ))
+      }
+    </nav>
+  </div>
+</header>

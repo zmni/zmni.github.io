@@ -1,0 +1,90 @@
+---
+type ProductClientData = {
+  id: string
+  label: string
+  alamat: string
+  kabko: string
+  provinsi: string
+  jenis: string
+  ukuran: string
+  detailUrl: string
+  imageSrc: string
+}
+
+type Props = {
+  products: ProductClientData[]
+  itemsPerPage?: number
+}
+
+const { products, itemsPerPage = 16 } = Astro.props
+---
+
+{/* Status Area */}
+<div class="mb-4 text-center text-sm text-gray-600 min-h-5" data-role="filter-status"></div>
+
+{/* Grid Container */}
+<div id="product-grid" class="grid gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 xl:gap-8">
+</div>
+
+{/* Pagination Container */}
+<nav id="pagination-container" class="mt-8 flex justify-center gap-2" aria-label="Pagination"></nav>
+
+{/* TEMPLATE ITEM */}
+<template id="product-template">
+  <a
+    href="#"
+    class:list={[
+      "group",
+      "row-[span_5]",
+      "grid",
+      "grid-rows-subgrid",
+      "gap-y-px",
+      "overflow-hidden",
+      "border",
+      "border-gray-200",
+      "bg-gray-200",
+      "shadow-xs",
+      "transition",
+      "hover:border-gray-300",
+      "hover:shadow-lg",
+    ]}
+  >
+    <span class="flex gap-x-px">
+      <span class="flex-1 px-4 py-2 bg-white" data-bind="jenis"></span>
+      <span class="flex-none px-4 py-2 bg-white" data-bind="ukuran"></span>
+    </span>
+    <span class="overflow-hidden aspect-square">
+      <img
+        src=""
+        alt=""
+        width="400"
+        loading="lazy"
+        class:list={[
+          "size-full",
+          "object-cover",
+          "object-center",
+          "transition-opacity",
+          "group-hover:opacity-80",
+        ]}
+      />
+    </span>
+    <span class="hidden bg-white px-4 py-2 font-bold" data-bind="label"></span>
+    <span class="row-[span_3] grid grid-rows-subgrid bg-white px-4 py-2">
+      <span class="pb-2" data-bind="alamat"></span>
+      <span class="border-y border-gray-200 py-2" data-bind="kabko"></span>
+      <span class="pt-2" data-bind="provinsi"></span>
+    </span>
+  </a>
+</template>
+
+{/* Data Island */}
+<script
+  is:inline
+  id="product-data"
+  type="application/json"
+  data-items-per-page={itemsPerPage}
+  set:html={JSON.stringify(products)}
+/>
+
+{/* Client Script */}
+<script src="@/scripts/produk.ts"></script>

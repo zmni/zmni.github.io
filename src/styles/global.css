@@ -1,0 +1,64 @@
+@import "tailwindcss";
+
+@layer theme {
+  :root,
+  :host {
+    --default-font-family: "Roboto", var(--font-sans);
+
+    --default-transition-duration: 0.2s;
+
+    --breakpoint-sm: 576px;
+    --breakpoint-md: 768px;
+    --breakpoint-lg: 992px;
+    --breakpoint-xl: 1200px;
+    --breakpoint-2xl: 1400px;
+
+    @media (prefers-reduced-motion: reduce) {
+      --default-transition-duration: 1ms;
+    }
+  }
+}
+
+@utility container {
+  @apply mx-auto px-4;
+}
+
+@view-transition {
+  navigation: auto;
+}
+
+::view-transition {
+  pointer-events: none;
+}
+
+::view-transition-group(*) {
+  animation-duration: 0.5s;
+}
+
+::view-transition-old(header) {
+  animation-name: slide-up;
+}
+::view-transition-new(header) {
+  animation-name: slide-down;
+}
+
+@keyframes slide-up {
+  from {
+    opacity: 100;
+    transform: translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(-100%);
+  }
+}
+@keyframes slide-down {
+  from {
+    opacity: 0;
+    transform: translateY(-100%);
+  }
+  to {
+    opacity: 100;
+    transform: translateY(0);
+  }
+}

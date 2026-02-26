@@ -1,0 +1,43 @@
+{
+  "id": "testimoni",
+  "label": "Testimoni",
+  "deskripsi": "Id do elit dolore incididunt ullamco ipsum anim aliquip eu sit sint non qui labore. Labore eiusmod cupidatat pariatur consectetur.",
+  "data": [
+    {
+      "nama": "Rudi Reynold",
+      "instansi": "PT. Lorem Dol",
+      "testimoni": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+      "foto": "/src/assets/testimoni/default.png"
+    },
+    {
+      "nama": "Siti Aminah",
+      "instansi": "CV. Dolor Ipsum",
+      "testimoni": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+      "foto": "/src/assets/testimoni/default.png"
+    },
+    {
+      "nama": "Budi Santoso",
+      "instansi": "Lorem Dolor Creative",
+      "testimoni": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+      "foto": "/src/assets/testimoni/default.png"
+    },
+    {
+      "nama": "Agus Prasetyo",
+      "instansi": "PB. Lorem Angkut",
+      "testimoni": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+      "foto": "/src/assets/testimoni/default.png"
+    },
+    {
+      "nama": "Dewi Lestari",
+      "instansi": "Lorem Indonesia Inc",
+      "testimoni": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+      "foto": "/src/assets/testimoni/default.png"
+    },
+    {
+      "nama": "Dimas Jaya",
+      "instansi": "PT. Jaya Selalu",
+      "testimoni": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+      "foto": "/src/assets/testimoni/default.png"
+    }
+  ]
+}

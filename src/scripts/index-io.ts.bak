@@ -1,0 +1,245 @@
+export {}
+
+// Mencegah eksekusi ganda pada DOM yang sama
+if (document.getElementById("scroll-sentinel")) {
+  throw new Error("Skrip index.astro dilewati: sudah dijalankan.")
+}
+
+/**
+ * DOM
+ */
+const header = document.querySelector("header")
+const navToggle = header?.querySelector<HTMLInputElement>("#nav-toggle")
+const nav = header?.querySelector("nav")
+const navLinks = nav?.querySelectorAll<HTMLAnchorElement>("a[href]")
+const sections = document.querySelectorAll("section")
+
+/**
+ * UTILS
+ */
+const prefersReducedMotion = () => window.matchMedia("(prefers-reduced-motion: reduce)").matches
+
+// const headerOffset = () => header.getBoundingClientRect().height ?? 10;
+const headerOffset = () => 10
+
+const scrollToY = (y: number) => {
+  window.scrollTo({
+    top: y,
+    behavior: prefersReducedMotion() ? "auto" : "smooth",
+  })
+}
+
+const closeMobileMenu = () => {
+  if (navToggle) navToggle.checked = false
+}
+
+/**
+ * NAV & HISTORY
+ */
+const navLinkMap = new Map<string, HTMLAnchorElement>()
+const sectionIdToHash = new Map<string, string>()
+
+navLinks?.forEach(link => {
+  const url = new URL(link.href)
+  // Normalize hash: #/id/ or #id -> id
+  const hashMatch = url.hash.match(/^#\/?(.+?)\/?$/)
+  const id = hashMatch ? hashMatch[1] : null
+
+  if (url.pathname === "/" && !url.hash) {
+    navLinkMap.set("home", link)
+  } else if (id) {
+    sectionIdToHash.set(id, url.hash)
+    navLinkMap.set(id, link)
+  }
+})
+
+const clearLinkActive = () => {
+  navLinks?.forEach(link => link.removeAttribute("aria-current"))
+}
+
+const setLinkActive = (key: string) => {
+  const link = navLinkMap.get(key)
+  clearLinkActive()
+  if (link) {
+    link.setAttribute("aria-current", "true")
+  }
+}
+
+const updateHistory = (hash: string) => {
+  const url = new URL(location.href)
+  if (url.hash !== hash) {
+    history.replaceState(null, "", hash || location.pathname)
+  }
+}
+
+/**
+ * OBSERVER SETUP
+ */
+let ignoreObserver = false
+let observerTimeout: number
+
+// 1. Header Scroll State (Sentinel at top)
+const topSentinel = document.createElement("div")
+topSentinel.id = "scroll-sentinel"
+topSentinel.style.position = "absolute"
+topSentinel.style.top = "0"
+topSentinel.style.left = "0"
+topSentinel.style.width = "100%"
+topSentinel.style.height = "1px"
+topSentinel.style.pointerEvents = "none"
+topSentinel.style.visibility = "hidden"
+topSentinel.setAttribute("aria-hidden", "true")
+document.body.prepend(topSentinel)
+
+const headerObserver = new IntersectionObserver(
+  ([entry]) => {
+    const isAtTop = entry.isIntersecting
+    header?.toggleAttribute("data-scrolled", !isAtTop)
+
+    if (isAtTop && !ignoreObserver) {
+      setLinkActive("home")
+      updateHistory("")
+    }
+  },
+  { threshold: 0 }
+)
+
+headerObserver.observe(topSentinel)
+
+// 2. Active Section Spy (Center Line but wider)
+const visibleSections = new Set<string>()
+
+const determineActiveSection = () => {
+  // Determine active section based on DOM order
+  let activeSectionId: string | null = null
+
+  // Iterate through sections in DOM order to find the first visible one
+  for (const section of sections) {
+    if (visibleSections.has(section.id)) {
+      activeSectionId = section.id
+      break // Found the top-most visible section
+    }
+  }
+
+  // Special Case: Home / Top of Page
+  // If we are near top OR the first section (intro) is active, treat as Home
+  // This prevents the 'intro' section from clearing 'Home' active state if it's not mapped in nav
+  if (window.scrollY < 150 || activeSectionId === sections[0].id) {
+    setLinkActive("home")
+    updateHistory("")
+    return
+  }
+
+  if (activeSectionId) {
+    const hash = sectionIdToHash.get(activeSectionId)
+
+    if (hash) {
+      setLinkActive(activeSectionId)
+      updateHistory(hash)
+    } else {
+      // Section is visible but not mapped in nav -> Clear (Unlinked section wins)
+      clearLinkActive()
+      updateHistory("")
+    }
+  } else {
+    // No section in detection zone -> Clear
+    clearLinkActive()
+    updateHistory("")
+  }
+}
+
+const sectionObserver = new IntersectionObserver(
+  entries => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        visibleSections.add(entry.target.id)
+      } else {
+        visibleSections.delete(entry.target.id)
+      }
+    })
+
+    if (ignoreObserver) return
+    determineActiveSection()
+  },
+  {
+    rootMargin: "-50% 0px -50% 0px", // Detect center 40% of viewport
+    threshold: 0,
+  }
+)
+
+sections.forEach(section => sectionObserver.observe(section))
+
+/**
+ * SCROLL CONTROLLER
+ */
+const withObserverIgnored = (fn: () => void, delay = 800) => {
+  ignoreObserver = true
+  window.clearTimeout(observerTimeout)
+  fn()
+  observerTimeout = window.setTimeout(() => {
+    ignoreObserver = false
+    // Re-check state logic after scroll finishes
+    determineActiveSection()
+  }, delay)
+}
+
+const scrollToSection = (id: string) => {
+  const target = document.getElementById(id)
+  if (!target) return
+
+  withObserverIgnored(() => {
+    scrollToY(target.offsetTop - headerOffset())
+    setLinkActive(id)
+    // Removed immediate updateHistory(hash) here!
+    // History will update when determineActiveSection() runs after delay/scroll
+  })
+}
+
+const scrollToTop = () => {
+  withObserverIgnored(() => {
+    scrollToY(0)
+    setLinkActive("home")
+    updateHistory("")
+  })
+}
+
+/**
+ * LISTENERS
+ */
+document.addEventListener("click", event => {
+  const link = (event.target as HTMLElement | null)?.closest<HTMLAnchorElement>("a[href]")
+  if (!link) return
+
+  const url = new URL(link.href, location.origin)
+  if (url.pathname !== location.pathname) return
+
+  const hash = url.hash
+
+  // Home
+  if (url.pathname === "/" && !hash) {
+    event.preventDefault()
+    scrollToTop()
+    closeMobileMenu()
+    return
+  }
+
+  // Section Hash
+  if (hash.startsWith("#/")) {
+    const id = hash.split("/")[1]
+    if (sectionIdToHash.has(id)) {
+      event.preventDefault()
+      scrollToSection(id)
+      closeMobileMenu()
+    }
+  }
+})
+
+// Init Check
+const init = () => {
+  const { hash } = location
+  if (hash.startsWith("#/")) {
+    const id = hash.split("/")[1]
+    setTimeout(() => scrollToSection(id), 50)
+  }
+}
+requestAnimationFrame(init)

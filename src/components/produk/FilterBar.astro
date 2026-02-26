@@ -1,0 +1,15 @@
+---
+import type { HTMLAttributes } from "astro/types"
+
+type Props = HTMLAttributes<"menu">
+
+const { ...attrs } = Astro.props
+---
+
+<menu
+  data-role="produk-filter"
+  class="mb-4 flex flex-wrap gap-4 sm:justify-center lg:mb-8"
+  {...attrs}
+>
+  <slot />
+</menu>

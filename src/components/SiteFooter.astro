@@ -1,0 +1,11 @@
+---
+import bsm from "@/content/data/bsm.json"
+
+const copyright = `&copy; ${new Date().getFullYear()} ${bsm.label}. Semua hak dilindungi.`
+---
+
+<footer class="mt-auto border-t border-gray-200">
+  <div class="container py-4 text-center">
+    <Fragment set:html={copyright} />
+  </div>
+</footer>

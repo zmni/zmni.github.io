@@ -1,0 +1,65 @@
+---
+import { Swiper, SwiperWrapper, SwiperSlide } from "astro-swiper"
+import { Icon } from "astro-icon/components"
+import Img from "@/components/ui/Img.astro"
+import { label, deskripsi } from "@/content/data/bsm.json"
+import { data } from "@/content/data/portofolio.json"
+---
+
+<section id="intro" class="relative isolate h-svh overflow-hidden">
+  <Swiper options={{ autoplay: { delay: 5000 }, loop: true, effect: `fade` }}>
+    <SwiperWrapper>
+      {
+        data.slice(0, 10).map((src, i) => (
+          <SwiperSlide>
+            <div class="w-full h-svh overflow-hidden">
+              <Img
+                src={src}
+                alt={`Portofolio ${i}`}
+                width={1920}
+                height={1080}
+                class="size-full object-cover object-center"
+                priority
+              />
+            </div>
+          </SwiperSlide>
+        ))
+      }
+    </SwiperWrapper>
+  </Swiper>
+
+  <div class="absolute inset-0 z-20 flex flex-col items-center justify-center p-4 text-center">
+    <h1
+      class="flex flex-col text-7xl font-black tracking-tighter text-[#FF0] uppercase lg:flex-row lg:gap-x-4"
+    >
+      {label.split(" ").map(w => <span>{w}</span>)}
+    </h1>
+
+    <p
+      class="mx-auto mt-4 hidden text-sm text-white md:block md:max-w-8/10 lg:max-w-(--breakpoint-md) lg:text-lg xl:max-w-(--breakpoint-lg)"
+    >
+      {deskripsi}
+    </p>
+  </div>
+
+  <button
+    type="button"
+    class="absolute bottom-4 left-1/2 z-30 -translate-x-1/2 animate-bounce rounded-full border border-white/50 bg-white/10 p-2 text-white backdrop-blur-sm transition hover:scale-120 hover:bg-white hover:text-black"
+    aria-label="Lanjutkan ke konten"
+    data-button-skip-content
+  >
+    <Icon name="bi:arrow-down" size="1.5rem" />
+  </button>
+
+  <script>
+    const button = document.querySelector("[data-button-skip-content]") as HTMLButtonElement
+    const target = document.getElementById("intro")!.nextElementSibling as HTMLElement
+
+    button.addEventListener("click", () => {
+      window.scrollTo({
+        top: target.offsetTop,
+        behavior: "smooth",
+      })
+    })
+  </script>
+</section>

@@ -1,0 +1,24 @@
+{
+  "id": "klien",
+  "label": "Klien Kami",
+  "deskripsi": "Mollit proident ut sit excepteur dolor non ad nulla consectetur dolor nulla do cupidatat. Dolor ut deserunt mollit minim magna.",
+  "konten": "",
+  "data": [
+    "/src/assets/klien/alkaline.svg",
+    "/src/assets/klien/bantul.png",
+    "/src/assets/klien/biznet.svg",
+    "/src/assets/klien/bpddiy.png",
+    "/src/assets/klien/citranet.png",
+    "/src/assets/klien/gojek.png",
+    "/src/assets/klien/grab.png",
+    "/src/assets/klien/honda.png",
+    "/src/assets/klien/kementrian.png",
+    "/src/assets/klien/mitsubishi.png",
+    "/src/assets/klien/pemda.svg",
+    "/src/assets/klien/pertamina.svg",
+    "/src/assets/klien/rsud.png",
+    "/src/assets/klien/telkom.png",
+    "/src/assets/klien/traveloka.svg",
+    "/src/assets/klien/umy.svg"
+  ]
+}

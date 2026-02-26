@@ -1,0 +1,187 @@
+---
+import { Image, getImage } from "astro:assets"
+import { getCollection } from "astro:content"
+import { capitalize } from "@/utils/text"
+import { Leaflet } from "astro-leaflet"
+import type { AstroLeafletOptionsType } from "astro-leaflet"
+import WAForm from "@/components/WAForm.astro"
+import ProductGrid from "@/components/produk/ProductGrid.astro"
+import Hgroup from "@/components/ui/Hgroup.astro"
+import PageLayout from "@/layouts/PageLayout.astro"
+
+// Buat path untuk semua entri produk
+export async function getStaticPaths() {
+  const collection = await getCollection("produk")
+  return collection.map(produk => ({
+    params: { id: produk.id },
+    props: { produk },
+  }))
+}
+
+// Data props
+const { produk } = Astro.props
+
+const {
+  label,
+  gambar,
+  alamat,
+  kabko,
+  provinsi,
+  lokasi,
+  jenis,
+  ukuran,
+  orientasi,
+  lampu,
+  sisi,
+  arah,
+} = produk.data
+
+const tempat = [alamat, kabko, provinsi].join(", ")
+const spesifikasi = { jenis, ukuran, orientasi, lampu, sisi, arah, alamat }
+
+/**
+ * PETA
+ */
+const geojson = JSON.parse(lokasi)
+const lat = geojson.coordinates[1]
+const lng = geojson.coordinates[0]
+const leafletOptions: AstroLeafletOptionsType = {
+  center: [lat, lng],
+  markers: [
+    {
+      latlng: [lat, lng],
+      options: { alt: tempat, title: tempat },
+    },
+  ],
+  zoom: 100,
+}
+
+/**
+ * TITIK LAIN
+ */
+const titikLain = await getCollection("produk", ({ data }) => {
+  return data.provinsi === provinsi
+})
+
+const produkData = await Promise.all(
+  titikLain.map(async item => {
+    const image = await getImage({
+      src: item.data.gambar,
+      width: 400,
+      height: 400,
+    })
+
+    return {
+      id: item.id,
+      label: item.data.label,
+      alamat: item.data.alamat,
+      kabko: item.data.kabko,
+      provinsi: item.data.provinsi,
+      jenis: item.data.jenis,
+      ukuran: item.data.ukuran,
+      detailUrl: `/produk/detail/${item.id}/`,
+      imageSrc: image.src,
+    }
+  })
+)
+
+const meta = {
+  label: `${jenis} di ${kabko}, ${provinsi}`,
+  deskripsi: `Sewa ${jenis} di ${tempat}.`,
+  ogImage: (await getImage({ src: gambar })).src,
+}
+---
+
+<PageLayout {...meta}>
+  <div class="mb-4 flex flex-col gap-4 lg:flex-row lg:gap-6 lg:items-start xl:mb-8 xl:gap-8">
+    <Image
+      src={gambar}
+      alt={label}
+      width={1024}
+      class:list={["lg:w-3/5", `[view-transition-name:produk-img-${produk.id}]`]}
+      priority
+    />
+
+    <div class="space-y-4 lg:w-2/5">
+      <ul class="grid grid-cols-2 gap-px border border-gray-200 bg-gray-200 text-center">
+        {
+          Object.entries(spesifikasi).map(([label, value]) => {
+            const isAlamat = label === "alamat"
+            return (
+              <li
+                class={`${isAlamat ? "col-span-2" : ""} flex flex-col justify-center bg-white p-4`}
+              >
+                <span class="font-bold text-lg">{capitalize(label)}</span>
+                {isAlamat ? (
+                  <>
+                    <a
+                      href={`https://www.google.com/maps/?q=${lat},${lng}`}
+                      target="_blank"
+                      class="hover:text-blue-500"
+                    >
+                      {tempat}
+                    </a>
+                    <span class="text-xs text-gray-600 italic mt-4">
+                      * Klik alamat untuk membuka Google Maps
+                    </span>
+                  </>
+                ) : (
+                  <span>{Array.isArray(value) ? value.join(", ") : String(value)}</span>
+                )}
+              </li>
+            )
+          })
+        }
+      </ul>
+
+      <button
+        class:list={[
+          "w-full",
+          "bg-yellow-600",
+          "p-5",
+          "text-center",
+          "text-xl",
+          "font-semibold",
+          "text-white",
+          "uppercase",
+          "transition-colors",
+          "hover:bg-blue-600",
+        ]}
+        command="show-modal"
+        commandfor="modal-kontak-form">Saya Tertarik</button
+      >
+      <dialog
+        id="modal-kontak-form"
+        class:list={[
+          "m-auto",
+          "w-xl",
+          "max-w-full",
+          "scale-90",
+          "opacity-0",
+          "transition",
+          "transition-discrete",
+          "backdrop:bg-black/80",
+          "backdrop:opacity-0",
+          "backdrop:backdrop-blur-sm",
+          "open:scale-100",
+          "open:opacity-100",
+          "open:backdrop:opacity-100",
+          "open:starting:scale-90",
+          "open:starting:opacity-0",
+          "open:backdrop:starting:opacity-0",
+        ]}
+        closedby="any"
+      >
+        <WAForm />
+      </dialog>
+    </div>
+  </div>
+
+  <Leaflet options={leafletOptions} class="isolate" />
+
+  {/* Titik Lain */}
+  <section class="mt-24">
+    <Hgroup as="h2" label={`Titik Lain di ${provinsi}`} class="mb-4" />
+    <ProductGrid products={produkData} itemsPerPage={4} />
+  </section>
+</PageLayout>
