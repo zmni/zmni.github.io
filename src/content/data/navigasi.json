@@ -7,7 +7,7 @@
     },
     {
       "label": "Layanan",
-      "href": "/#/layanan/"
+      "href": "/#layanan"
     },
     {
       "label": "Titik Lokasi",
@@ -15,11 +15,11 @@
     },
     {
       "label": "Portofolio",
-      "href": "/#/portofolio/"
+      "href": "/#portofolio"
     },
     {
       "label": "Kontak",
-      "href": "/#/kontak/"
+      "href": "/#kontak"
     }
   ]
 }

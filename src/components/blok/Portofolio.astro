@@ -25,7 +25,7 @@ const portofolioImages = await Promise.all(
 ---
 
 <Section {...meta}>
-  <div class="grid grid-cols-2 gap-px md:grid-cols-4 lg:grid-cols-6 mx-auto max-w-5xl" data-galeri>
+  <div class="mx-auto grid max-w-5xl grid-cols-2 gap-px md:grid-cols-4 lg:grid-cols-6" data-galeri>
     {
       portofolioImages.map(({ src, out }, i) => (
         <a

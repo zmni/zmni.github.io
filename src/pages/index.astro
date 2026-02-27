@@ -9,19 +9,82 @@ import Kontak from "@/components/blok/Kontak.astro"
 import Testimoni from "@/components/blok/Testimoni.astro"
 import Branding from "@/components/blok/Branding.astro"
 
-import { label, deskripsi } from "@/content/data/bsm.json"
+import bsm from "@/content/data/bsm.json"
+import testimoni from "@/content/data/testimoni.json"
 ---
 
-<BaseLayout {label} {deskripsi}>
+<BaseLayout label={bsm.label} deskripsi={bsm.deskripsi}>
   <main>
     <Intro />
     <Layanan />
     <Branding />
     <Portofolio />
     <Klien />
-    <Testimoni />
+    {testimoni.status && <Testimoni {...testimoni} />}
     <Kontak />
   </main>
 
-  <script src="@/scripts/index.ts"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const navLinks = document.querySelectorAll<HTMLAnchorElement>(".site-header a")
+
+      const getSectionId = (href: string): string | null => {
+        if (href === "/") return "intro"
+        if (href.startsWith("/#")) return href.slice(2)
+        return null
+      }
+
+      const setActiveLink = (): void => {
+        const viewportHeight = window.innerHeight
+        let activeId: string | null = null
+
+        navLinks.forEach(link => {
+          const sectionId = getSectionId(link.getAttribute("href") ?? "")
+          if (!sectionId) return
+
+          const section = document.getElementById(sectionId)
+          if (!section) return
+
+          const rect = section.getBoundingClientRect()
+          const visibleTop = Math.max(0, rect.top)
+          const visibleBottom = Math.min(viewportHeight, rect.bottom)
+          const visibleHeight = Math.max(0, visibleBottom - visibleTop)
+
+          const compareTo = Math.min(rect.height, viewportHeight)
+          const visibleRatio = visibleHeight / compareTo
+
+          if (visibleRatio >= 0.5) activeId = sectionId
+        })
+
+        navLinks.forEach(link => {
+          const sectionId = getSectionId(link.getAttribute("href") ?? "")
+          if (!sectionId) return
+          link.classList.toggle("active", sectionId === activeId)
+        })
+      }
+
+      navLinks.forEach(link => {
+        const sectionId = getSectionId(link.getAttribute("href") ?? "")
+        if (!sectionId) return
+
+        link.addEventListener("click", (e: MouseEvent) => {
+          e.preventDefault()
+          const target = document.getElementById(sectionId)
+          if (target) target.scrollIntoView({ behavior: "smooth" })
+        })
+      })
+
+      let scrollTimer: ReturnType<typeof setTimeout> | null = null
+
+      window.addEventListener("scroll", () => {
+        if (scrollTimer) clearTimeout(scrollTimer)
+        scrollTimer = setTimeout(() => {
+          scrollTimer = null
+          setActiveLink()
+        }, 150)
+      })
+
+      setActiveLink()
+    })
+  </script>
 </BaseLayout>

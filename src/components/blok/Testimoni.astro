@@ -2,7 +2,22 @@
 import Section from "@/layouts/Section.astro"
 import { Icon } from "astro-icon/components"
 import Img from "@/components/ui/Img.astro"
-import { id, label, deskripsi, data } from "@/content/data/testimoni.json"
+
+type TestimoniData = {
+  nama: string
+  instansi: string
+  testimoni: string
+  foto: string
+}
+
+type Props = {
+  id: string
+  label: string
+  deskripsi: string
+  data: TestimoniData[]
+}
+
+const { id, label, deskripsi, data } = Astro.props
 const meta = { id, label, deskripsi }
 ---
 

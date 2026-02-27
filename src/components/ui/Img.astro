@@ -19,9 +19,6 @@ const images = import.meta.glob<{ default: ImageMetadata }>(
 if (!images[src]) {
   throw new Error(`"${src}" tidak ditemukan di dalam glob.`)
 }
-
-// fungsi glob async → perlu await
-// const imageModule = await images[src]();
 ---
 
 <Image src={images[src]()} alt={alt} {...props} />

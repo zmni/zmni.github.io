@@ -6,12 +6,12 @@ const meta = { id, label, deskripsi }
 ---
 
 <Section {...meta}>
-  <div class="grid gap-px md:grid-cols-2 lg:grid-cols-3 border border-gray-200 bg-gray-200">
+  <div class="grid gap-px border border-gray-200 bg-gray-200 md:grid-cols-2 lg:grid-cols-3">
     {
       data.map(({ label, gambar }, i) => (
         <figure
           class:list={[
-            "relative overflow-hidden bg-white h-80 lg:h-120",
+            "relative h-80 overflow-hidden bg-white lg:h-120",
             i === 0 || i === 3 || i === 4 ? "lg:col-span-2" : "",
           ]}
         >
@@ -23,7 +23,7 @@ const meta = { id, label, deskripsi }
             class="size-full object-cover object-center brightness-75"
           />
 
-          <figcaption class="absolute inset-0 top-auto font-black tracking-tighter text-white uppercase p-4 lg:p-6 text-xl lg:text-2xl xl:text-3xl">
+          <figcaption class="absolute inset-0 top-auto p-4 text-xl font-black tracking-tighter text-white uppercase lg:p-6 lg:text-2xl xl:text-3xl">
             {label}
           </figcaption>
         </figure>

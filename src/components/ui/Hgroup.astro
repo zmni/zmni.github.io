@@ -1,14 +1,15 @@
 ---
-type Props = {
-  as?: "h1" | "h2" | "h3"
+import type { HTMLTag, Polymorphic } from "astro/types"
+
+type Props<Tag extends HTMLTag> = Polymorphic<{ as: Tag }> & {
   label?: string
   deskripsi?: string
   class?: string
 }
 
-const { as: Tag = "h1", label, deskripsi, class: className = "mb-12" } = Astro.props as Props
+const { as: Tag = "h1", label, deskripsi, class: className = "mb-12" } = Astro.props
 
-const sizeHClass =
+const twHeading =
   Tag === "h3"
     ? "text-xl md:text-2xl xl:text-3xl"
     : Tag === "h2"
@@ -17,7 +18,7 @@ const sizeHClass =
 ---
 
 <hgroup class:list={["text-center", className]}>
-  <Tag class:list={["font-black", "tracking-tighter", "text-gray-800", "uppercase", sizeHClass]}
+  <Tag class:list={["font-black", "tracking-tighter", "text-gray-800", "uppercase", twHeading]}
     >{label}</Tag
   >
   {

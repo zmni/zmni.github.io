@@ -276,7 +276,6 @@ class ProductFilter {
       if (img) {
         img.src = item.imageSrc
         img.alt = item.label
-        img.classList.add(`[view-transition-name:produk-img-${item.id}]`)
       }
 
       // Details

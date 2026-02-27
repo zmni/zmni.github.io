@@ -38,7 +38,7 @@ const closeMobileMenu = () => {
 const navLinkMap = new Map<string, HTMLAnchorElement>()
 const sectionIdToHash = new Map<string, string>()
 
-navLinks?.forEach(link => {
+navLinks.forEach(link => {
   const url = new URL(link.href)
   const hashMatch = url.hash.match(/^#\/?(.+?)\/?$/)
   const id = hashMatch ? hashMatch[1] : null
@@ -52,7 +52,7 @@ navLinks?.forEach(link => {
 })
 
 const clearLinkActive = () => {
-  navLinks?.forEach(link => link.removeAttribute("aria-current"))
+  navLinks.forEach(link => link.removeAttribute("aria-current"))
 }
 
 const setLinkActive = (key: string) => {
@@ -87,7 +87,7 @@ const determineActiveSection = () => {
   const scrollY = window.scrollY
 
   // 1. Update Header Style
-  header?.toggleAttribute("data-scrolled", scrollY > 0)
+  header.toggleAttribute("data-scrolled", scrollY > 0)
 
   // 2. Scroll Spy Logic
   if (ignoreScrollSpy) return

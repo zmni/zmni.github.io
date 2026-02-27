@@ -1,8 +1,7 @@
 ---
-import { getCollection } from "astro:content"
+import { getCollection, type CollectionEntry } from "astro:content"
 import { getImage } from "astro:assets"
 import PageLayout from "@/layouts/PageLayout.astro"
-import type { ProdukKey } from "@/content/config"
 import { capitalize, slugify } from "@/utils/text"
 import FilterBar from "@/components/produk/FilterBar.astro"
 import FilterGroup from "@/components/produk/FilterGroup.astro"
@@ -48,13 +47,14 @@ const produkData = await Promise.all(
 )
 
 // Produk filter/kategori
-const filterKeys: ProdukKey[] = ["kabko", "jenis", "ukuran"]
+type FilterKey = keyof CollectionEntry<"produk">["data"]
+const filterKeys: FilterKey[] = ["kabko", "jenis", "ukuran"]
 const filterData = Object.fromEntries(
   filterKeys.map(key => [
     key,
     [...new Set(provinsiCollection.map(p => p.data[key]).filter(Boolean))].sort(),
   ])
-) as Record<ProdukKey, string[]>
+) as Record<FilterKey, string[]>
 
 const meta = {
   label: `Titik Lokasi di ${provinsiName}`,
@@ -69,7 +69,7 @@ const meta = {
       key="provinsi"
       options={allProvinsi}
       selected={provinsiName}
-      isNav={true}
+      onChange="if(this.value) window.location.href='/produk/area/' + this.value + '/'; else window.location.href='/produk/'"
     />
     {
       Object.entries(filterData).map(([key, options]) => (

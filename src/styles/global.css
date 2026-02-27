@@ -26,7 +26,6 @@
 @view-transition {
   navigation: auto;
 }
-
 ::view-transition {
   pointer-events: none;
 }
@@ -34,6 +33,8 @@
 ::view-transition-group(*) {
   animation-duration: 0.5s;
 }
+
+/* 
 
 ::view-transition-old(header) {
   animation-name: slide-up;
@@ -61,4 +62,4 @@
     opacity: 100;
     transform: translateY(0);
   }
-}
+} */

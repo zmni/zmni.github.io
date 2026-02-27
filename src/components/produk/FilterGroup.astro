@@ -6,20 +6,10 @@ type Props = {
   key: string
   options: string[]
   selected?: string
-  isNav?: boolean
+  onChange?: string
 }
 
-const { label, key, options, selected = "", isNav = false } = Astro.props
-
-// Determine onchange behavior for navigation selects
-// const onChangeAttr = customOnChange
-//   ? customOnChange
-//   : isNav && navBaseUrl
-//     ? `if(this.value) window.location.href='${navBaseUrl}' + this.value + '/'`
-//     : undefined
-const onChangeAttr = isNav
-  ? "if(this.value) window.location.href='/produk/area/' + this.value + '/'; else window.location.href='/produk/'"
-  : undefined
+const { label, key, options, selected = "", onChange } = Astro.props
 ---
 
 <li class="relative flex items-center gap-x-2" data-role="filter-group" data-filter-group={key}>
@@ -29,16 +19,16 @@ const onChangeAttr = isNav
     id={`filter-${key}`}
     name={key}
     class="border-2 border-gray-200 bg-white px-2 py-1.5 transition-colors hover:border-blue-500 focus:outline-blue-500"
-    data-group={!isNav ? key : undefined}
+    data-group={onChange === null ? key : undefined}
     aria-label={`Filter berdasarkan ${label}`}
-    onchange={onChangeAttr}
+    onchange={onChange}
   >
     <option value="" selected={selected === "" || selected === undefined}>Semua</option>
     {
       options.map(value => {
         // slugify 'value' untuk URL navigasi
-        const optionValue = isNav ? slugify(value) : value
-        const isSelected = isNav ? slugify(selected) === optionValue : selected === value
+        const optionValue = onChange ? slugify(value) : value
+        const isSelected = onChange ? slugify(selected) === optionValue : selected === value
 
         return (
           <option value={optionValue} selected={isSelected}>

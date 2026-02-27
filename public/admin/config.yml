@@ -1,6 +1,6 @@
 # yaml-language-server: $schema=https://unpkg.com/@sveltia/cms/schema/sveltia-cms.json
 
-app_title: BINTANG SURYA MADANI
+app_title: Bintang Surya Madani
 
 logo:
   src: /logo-dark.svg
@@ -104,9 +104,6 @@ collections:
               - <<: *label
               - name: href
                 label: Href
-                pattern:
-                  - "^/.+/$"
-                  - "Harus diawali dan ditutup dengan '/'"
 
   - name: konten
     label: Konten
@@ -189,6 +186,10 @@ collections:
             default: testimoni
           - <<: *label
           - <<: *deskripsi
+          - name: status
+            label: "Tampilkan Testimoni di Halaman Beranda"
+            widget: boolean
+            default: true
           - name: data
             label: Testimoni
             widget: list
