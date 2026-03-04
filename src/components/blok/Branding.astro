@@ -1,6 +1,6 @@
 ---
-import { id, label, deskripsi, data } from "@/content/data/branding.json";
 import Hgroup from "@/components/ui/Hgroup.astro";
+import { id, label, deskripsi, data } from "@/content/data/branding.json";
 import Img from "@/components/ui/Img.astro";
 import { prettyImgAlt } from "@/utils/text";
 ---
@@ -9,6 +9,6 @@ import { prettyImgAlt } from "@/utils/text";
   <Hgroup as="h2" {label} {deskripsi} />
 
   <div class="grid md:grid-cols-3">
-    {data.map((src) => <Img {src} alt={prettyImgAlt(src)} />)}
+    {data.map((src) => <Img {src} alt={prettyImgAlt(src)} width={1024} />)}
   </div>
 </section>

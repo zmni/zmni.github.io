@@ -4,7 +4,7 @@ import { SEO } from "astro-seo";
 import { truncate } from "@/utils/text";
 import SiteHeader from "@/components/SiteHeader.astro";
 import SiteFooter from "@/components/SiteFooter.astro";
-import WAButton from "@/components/WAButton.astro";
+import WhatsAppButton from "@/components/WhatsAppButton.astro";
 
 type Props = {
   label: string;
@@ -86,6 +86,6 @@ const ogImageUrl = new URL(ogImage, Astro.site).href;
     <SiteHeader />
     <slot />
     <SiteFooter />
-    <WAButton />
+    <WhatsAppButton />
   </body>
 </html>

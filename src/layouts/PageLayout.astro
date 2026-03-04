@@ -12,8 +12,8 @@ const { label, deskripsi, ogImage } = Astro.props;
 ---
 
 <BaseLayout label={`${label} - Bintang Surya Madani`} {deskripsi} {ogImage}>
-  <main class="container py-12">
-    <Hgroup {label} {deskripsi} hClass="[view-transition-name:page-title]" />
+  <main id="SiteMain" class="container py-12">
+    <Hgroup as="h1" {label} {deskripsi} />
 
     <slot />
   </main>

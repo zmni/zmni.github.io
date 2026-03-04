@@ -13,7 +13,7 @@ import { label, deskripsi } from "@/content/data/bsm.json";
 ---
 
 <BaseLayout {label} {deskripsi}>
-  <main>
+  <main id="SiteMain">
     <Intro />
     <Layanan />
     <Branding />
@@ -32,15 +32,15 @@ import { label, deskripsi } from "@/content/data/bsm.json";
       };
 
       const getHeaderHeight = (): number => {
-        return document.querySelector("header")?.offsetHeight ?? 0;
+        return document.querySelector<HTMLElement>("#SiteHeader")?.offsetHeight ?? 0;
       };
 
-      const navToggle = document.querySelector<HTMLInputElement>("#nav-toggle");
+      const navToggle = document.querySelector<HTMLInputElement>("#SiteNavToggle");
 
       type NavEntry = { link: HTMLAnchorElement; sectionId: string };
 
       const navEntries: NavEntry[] = Array.from(
-        document.querySelectorAll<HTMLAnchorElement>("nav a"),
+        document.querySelectorAll<HTMLAnchorElement>("#SiteNav a"),
       ).reduce<NavEntry[]>((acc, link) => {
         const sectionId = getSectionId(link.getAttribute("href") ?? "");
         if (sectionId) acc.push({ link, sectionId });
@@ -66,7 +66,7 @@ import { label, deskripsi } from "@/content/data/bsm.json";
         });
 
         navEntries.forEach(({ link, sectionId }) => {
-          link.classList.toggle("active", sectionId === activeId);
+          link.classList.toggle("is-active", sectionId === activeId);
         });
       };
 

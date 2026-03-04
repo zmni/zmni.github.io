@@ -8,12 +8,12 @@ import FilterGroup from "@/components/produk/FilterGroup.astro";
 import ProductGrid from "@/components/produk/ProductGrid.astro";
 
 // Semua produk
-export const collection = await getCollection("produk");
+export const produkCollection = await getCollection("produk");
 
 // Semua provinsi
 // prettier-ignore
 export const allProvinsi = [...new Set(
-  collection.map((p) => p.data.provinsi).filter(Boolean)
+  produkCollection.map((p) => p.data.provinsi).filter(Boolean)
 )].sort();
 
 // Static Paths
@@ -27,7 +27,7 @@ export async function getStaticPaths() {
 const { provinsiName } = Astro.props;
 
 // Produk koleksi berdasarkan provinsi
-const provinsiCollection = collection.filter((p) => p.data.provinsi === provinsiName);
+const provinsiCollection = produkCollection.filter((p) => p.data.provinsi === provinsiName);
 
 // Produk data
 const produkData = await Promise.all(
@@ -46,7 +46,7 @@ const produkData = await Promise.all(
       provinsi: item.data.provinsi,
       jenis: item.data.jenis,
       ukuran: item.data.ukuran,
-      detailUrl: `/produk/detail/${item.id}/`,
+      detailUrl: `/produk/detail/${slugify(item.id)}/`,
       imageSrc: image.src,
     };
   }),

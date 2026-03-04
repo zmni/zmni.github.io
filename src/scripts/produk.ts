@@ -1,4 +1,3 @@
-import { $, $$ } from "@/utils/dom";
 import { slugify } from "@/utils/text";
 
 type ProductData = {
@@ -247,7 +246,6 @@ class ProductFilter {
       if (img) {
         img.src = item.imageSrc;
         img.alt = item.label;
-        img.classList.add(`[view-transition-name:produk-img-${item.id}]`);
       }
 
       // Lokasi produk

@@ -22,10 +22,10 @@ const { label, key, options, selected = "", onChange } = Astro.props;
   <select
     id={`filter-${key}`}
     name={key}
-    class="rounded-sm border-2 border-gray-200 bg-white px-2 py-1.5 transition-colors hover:border-blue-500 focus:outline-blue-500"
     data-group={!onChange ? key : undefined}
-    aria-label={`Filter berdasarkan ${label}`}
     onchange={onChange}
+    aria-label={`Filter berdasarkan ${label}`}
+    class="rounded-sm border-2 border-gray-200 bg-white px-2 py-1.5 transition-colors hover:border-blue-500 focus:outline-blue-500"
   >
     <option value="" selected={selected === "" || selected === undefined}>Semua</option>
     {

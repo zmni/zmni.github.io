@@ -1,10 +1,10 @@
 ---
 import { Image, getImage } from "astro:assets";
 import { getCollection } from "astro:content";
-import { capitalize } from "@/utils/text";
+import { capitalize, slugify } from "@/utils/text";
 import { Leaflet } from "astro-leaflet";
 import type { AstroLeafletOptionsType } from "astro-leaflet";
-import WAForm from "@/components/WAForm.astro";
+import WhatsAppForm from "@/components/WhatsAppForm.astro";
 import ProductGrid from "@/components/produk/ProductGrid.astro";
 import Hgroup from "@/components/ui/Hgroup.astro";
 import PageLayout from "@/layouts/PageLayout.astro";
@@ -90,76 +90,65 @@ const produkData = await Promise.all(
     };
   }),
 );
-
-// Cek apakah halaman ini adalah halaman detail produk
-const isProdukDetailPage = Astro.url.pathname.startsWith("/produk/detail/");
 ---
 
 <PageLayout {...meta}>
   <div class="mb-4 grid gap-y-4 lg:grid-cols-[1fr_35%] lg:gap-6 xl:mb-8 xl:gap-8">
-    <Image
-      src={gambar}
-      alt={label}
-      width={1024}
-      class:list={["order-1 rounded-sm", `[view-transition-name:produk-img-${produk.id}]`]}
-      priority
-    />
+    <Image src={gambar} alt={label} width={1024} class="order-1 rounded-sm" priority />
 
     <div class="order-3 lg:order-2 space-y-4">
-      <ul
+      <div
         class="grid grid-cols-2 gap-px overflow-hidden rounded-sm border border-gray-200 bg-gray-200 text-center"
       >
         {
-          Object.entries(spesifikasi).map(([label, value]) => {
-            const isAlamat = label === "alamat";
-            return (
-              <li
-                class={`${isAlamat ? "col-span-2" : ""} flex flex-col justify-center bg-white p-4`}
-              >
-                <span class="font-bold text-lg">{capitalize(label)}</span>
-                {isAlamat ? (
-                  <>
-                    <a
-                      href={`https://www.google.com/maps/?q=${lat},${lng}`}
-                      target="_blank"
-                      class="hover:text-blue-500"
-                    >
-                      {tempat}
-                    </a>
-                    <span class="text-xs text-gray-600 italic mt-4">
-                      * Klik alamat untuk membuka Google Maps
-                    </span>
-                  </>
-                ) : (
-                  <span>{Array.isArray(value) ? value.join(", ") : String(value)}</span>
-                )}
-              </li>
-            );
-          })
+          Object.entries(spesifikasi).map(([label, value]) => (
+            <div
+              class={`${label === "alamat" ? "col-span-2" : ""} flex flex-col justify-center bg-white p-4`}
+            >
+              <span class="font-bold text-lg">{capitalize(label)}</span>
+              {label === "alamat" ? (
+                <>
+                  <a
+                    href={`https://www.google.com/maps/?q=${lat},${lng}`}
+                    target="_blank"
+                    class="hover:text-blue-500"
+                  >
+                    {tempat}
+                  </a>
+                  <span class="text-xs text-gray-600 italic mt-4">
+                    * Klik alamat untuk membuka Google Maps
+                  </span>
+                </>
+              ) : (
+                <span>{Array.isArray(value) ? value.join(", ") : String(value)}</span>
+              )}
+            </div>
+          ))
         }
-      </ul>
+      </div>
 
       <button
         class="w-full rounded-sm bg-yellow-600 p-3 text-center text-xl font-semibold text-white uppercase transition-colors hover:bg-blue-600 lg:p-5"
         command="show-modal"
-        commandfor="modal-kontak-form">Saya Tertarik</button
+        commandfor="ModalKontakForm">Saya Tertarik</button
       >
     </div>
 
+    {/* Produk Map */}
     <div class="order-2 lg:order-3 lg:col-span-2 overflow-hidden rounded-sm">
       <Leaflet options={leafletOptions} class="isolate" />
     </div>
   </div>
 
   {/* Titik Lain */}
-  <section class="mt-24">
+  <div class="mt-24 mb-12">
     <Hgroup as="h2" label={`Titik Lain di ${provinsi}`} class="mb-4" />
     <ProductGrid products={produkData} itemsPerPage={4} />
-  </section>
+  </div>
 
-  {/* WA Form */}
+  {/* WhatsApp Form */}
   <dialog
-    id="modal-kontak-form"
+    id="ModalKontakForm"
     class:list={[
       "m-auto",
       "w-xl",
@@ -191,12 +180,11 @@ const isProdukDetailPage = Astro.url.pathname.startsWith("/produk/detail/");
     ]}
     closedby="any"
   >
-    <WAForm />
+    <WhatsAppForm />
     <button
-      type="button"
       class="absolute top-5 right-4 cursor-pointer"
       command="close"
-      commandfor="modal-kontak-form"><Icon name="bi:x-lg" size="24" /></button
+      commandfor="ModalKontakForm"><Icon name="bi:x-lg" size="24" /></button
     >
   </dialog>
 </PageLayout>

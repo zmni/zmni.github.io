@@ -2,7 +2,7 @@
 import { getCollection, type CollectionEntry } from "astro:content";
 import { getImage } from "astro:assets";
 import PageLayout from "@/layouts/PageLayout.astro";
-import { capitalize } from "@/utils/text";
+import { capitalize, slugify } from "@/utils/text";
 import FilterBar from "@/components/produk/FilterBar.astro";
 import FilterGroup from "@/components/produk/FilterGroup.astro";
 import ProductGrid from "@/components/produk/ProductGrid.astro";
@@ -34,7 +34,7 @@ const produkData = await Promise.all(
       provinsi: item.data.provinsi,
       jenis: item.data.jenis,
       ukuran: item.data.ukuran,
-      detailUrl: `/produk/detail/${item.id}/`,
+      detailUrl: `/produk/detail/${slugify(item.id)}/`,
       imageSrc: image.src,
     };
   }),

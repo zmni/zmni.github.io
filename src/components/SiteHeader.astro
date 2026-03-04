@@ -1,14 +1,9 @@
 ---
-import { Icon } from "astro-icon/components";
 import bsm from "@/content/data/bsm.json";
-import { data } from "@/content/data/navigasi.json";
-import { basename } from "@/utils/text";
+import { data as Navigasi } from "@/content/data/navigasi.json";
+import Img from "@/components/ui/Img.astro";
+import { Icon } from "astro-icon/components";
 
-// Logo gelap
-const LogoBasename = basename(bsm.logo);
-const { default: Logo } = await import(`../assets/${LogoBasename}.svg`);
-
-// Cek halaman saat ini adalah halaman yang dikunjungi
 const isPage = (href: string) => {
   const pathname = Astro.url.pathname;
   if (href === "/") return pathname === "/";
@@ -17,91 +12,42 @@ const isPage = (href: string) => {
 ---
 
 <header
+  id="SiteHeader"
   class:list={[
-    "site-header",
-    isPage("/") ? "fixed w-full" : "sticky",
-    "top-0 z-10 bg-white order-b border-b-gray-200 shadow-sm transition-colors",
+    Astro.url.pathname === "/" ? "fixed w-full" : "sticky",
+    "top-0 z-50 bg-white border-b border-b-gray-200 shadow-sm",
     "[view-transition-name:site-header]",
   ]}
 >
   <div class="container flex items-center py-2">
-    <a href="/" aria-label={`Logo ${bsm.label}`}
-      ><Logo height="1em" width="1em" class="text-5xl" /></a
+    {/* Site Logo */}
+    <a href="/" class="block size-12" aria-label={`Logo ${bsm.label}`}
+      ><Img src={bsm.logo} alt={bsm.label} class="size-12" /></a
     >
 
-    <input id="nav-toggle" type="checkbox" class="peer hidden" />
-
+    {/* Nav Toggle */}
+    <input id="SiteNavToggle" type="checkbox" class="peer hidden" />
     <label
-      for="nav-toggle"
-      class:list={[
-        "ml-auto",
-        "flex",
-        "items-center",
-        "border",
-        "border-gray-200",
-        "transition-colors",
-        "peer-checked:border-blue-500",
-        "peer-checked:bg-blue-500",
-        "peer-checked:text-white",
-        "md:hidden",
-      ]}
+      for="SiteNavToggle"
+      class="ml-auto flex items-center border border-gray-200 transition-colors peer-checked:border-blue-500 peer-checked:bg-blue-500 peer-checked:text-white md:hidden"
       aria-label="Klik untuk membuka atau menutup menu navigasi"
     >
       <Icon name="bi:list" size="3rem" class="in-peer-checked:hidden" />
       <Icon name="bi:x-lg" size="3rem" class="hidden in-peer-checked:block" />
     </label>
 
+    {/* Site Navigasi */}
     <nav
-      class:list={[
-        "invisible",
-        "absolute",
-        "top-[125%]",
-        "right-4",
-        "left-4",
-        "bg-blue-500",
-        "opacity-0",
-        "shadow-md",
-        "transition-all",
-        "peer-checked:visible",
-        "peer-checked:top-full",
-        "peer-checked:opacity-100",
-        "md:visible",
-        "md:static",
-        "md:ml-auto",
-        "md:flex",
-        "md:items-center",
-        "md:gap-x-1",
-        "md:bg-transparent",
-        "md:opacity-100",
-        "md:shadow-none",
-      ]}
+      id="SiteNav"
+      class="invisible absolute top-[125%] right-4 left-4 bg-blue-500 opacity-0 shadow-md transition-all peer-checked:visible peer-checked:top-full peer-checked:opacity-100 md:visible md:static md:ml-auto md:flex md:items-center md:gap-x-1 md:bg-transparent md:opacity-100 md:shadow-none"
     >
       {
-        data.map(({ label, href }) => (
+        Navigasi.map(({ href, label }) => (
           <a
             href={href}
             class:list={[
-              isPage(href) ? "active" : "",
-              "block",
-              "px-5 py-3",
-              "rounded-sm",
-              "not-first:border-t",
-              "border-blue-400",
-              "text-right",
-              "text-gray-100",
-              "font-medium",
-              "hover:text-white",
-              "[&.active]:text-white",
-              "transition-colors",
-              "md:not-first:border-t-0",
-              "md:px-3 md:py-1",
-              "md:text-left",
-              "md:text-gray-700",
-              "md:text-shadow-black/10",
-              "md:hover:bg-blue-500",
-              "md:hover:text-shadow-md",
-              "md:[&.active]:bg-blue-500",
-              "md:[&.active]:text-shadow-md",
+              { "is-active": isPage(href) },
+              "block border-blue-400 px-5 py-3 text-right font-medium text-gray-100 transition-colors not-first:border-t hover:text-white md:rounded-sm md:px-3 md:py-1 md:text-left md:text-gray-700 md:text-shadow-black/10 md:not-first:border-t-0 md:hover:bg-blue-500 md:hover:text-shadow-md [&.is-active]:text-white md:[&.is-active]:bg-blue-500 md:[&.is-active]:text-shadow-md",
             ]}
           >
             {label}
