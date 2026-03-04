@@ -1,35 +1,36 @@
 ---
-import { Image, getImage } from "astro:assets"
-import Section from "@/layouts/Section.astro"
-import { id, label, deskripsi, data as imagePaths } from "@/content/data/portofolio.json"
-
-const meta = { id, label, deskripsi }
-
-const allImages = import.meta.glob<{ default: ImageMetadata }>("/src/assets/portofolio/*.jpg")
-
-const imagesMap = imagePaths.map(imagePath => allImages[imagePath]).filter(Boolean)
-
+import { Image, getImage } from "astro:assets";
+import Section from "@/layouts/Section.astro";
+import { id, label, deskripsi, data as imagePaths } from "@/content/data/portofolio.json";
+// Metadata halaman/section
+const meta = { id, label, deskripsi };
+// Glob semua gambar di folder assets/portofolio
+const allImages = import.meta.glob<{ default: ImageMetadata }>("/src/assets/portofolio/*.jpg");
+// Map data imagePaths ke allImages
+const imagesMap = imagePaths.map((imagePath) => allImages[imagePath]).filter(Boolean);
+// Proses gambar
 const portofolioImages = await Promise.all(
-  imagesMap.map(async loader => {
-    const module = await loader()
+  imagesMap.map(async (loader) => {
+    const module = await loader();
 
-    const imageSrc = module.default
-    const imageOut = await getImage({ src: imageSrc })
+    const imageSrc = module.default;
+    const imageOut = await getImage({ src: imageSrc, width: 1920 });
 
     return {
       src: imageSrc,
       out: imageOut,
-    }
-  })
-)
+    };
+  }),
+);
 ---
 
 <Section {...meta}>
-  <div class="mx-auto grid max-w-5xl grid-cols-2 gap-px md:grid-cols-4 lg:grid-cols-6" data-galeri>
+  <div class="mx-auto grid max-w-5xl grid-cols-2 gap-px md:grid-cols-4 lg:grid-cols-6" data-gallery>
     {
       portofolioImages.map(({ src, out }, i) => (
         <a
           href={out.src}
+          data-pswp-src={out.src}
           data-pswp-width={out.attributes.width}
           data-pswp-height={out.attributes.height}
           data-cropped="true"
@@ -37,7 +38,7 @@ const portofolioImages = await Promise.all(
           target="_blank"
         >
           <Image
-            src={src}
+            {src}
             alt={`Foto #${i}`}
             width={320}
             height={320}
@@ -50,22 +51,24 @@ const portofolioImages = await Promise.all(
   </div>
 
   <script>
-    import PhotoSwipeLightbox from "photoswipe/lightbox"
-    import "photoswipe/style.css"
+    import PhotoSwipeLightbox from "photoswipe/lightbox";
+    import "photoswipe/style.css";
 
-    const lightbox = new PhotoSwipeLightbox({
-      gallery: "[data-galeri]",
-      children: "a",
+    document.addEventListener("DOMContentLoaded", () => {
+      const lightbox = new PhotoSwipeLightbox({
+        gallery: "[data-gallery]",
+        children: "a",
 
-      closeTitle: "Tutup",
-      zoomTitle: "Perbesar foto",
-      arrowPrevTitle: "Ke foto sebelumnya",
-      arrowNextTitle: "Ke foto selanjutnya",
-      errorMsg: "Terjadi kesalahan, foto tidak bisa dimuat",
+        closeTitle: "Tutup",
+        zoomTitle: "Perbesar foto",
+        arrowPrevTitle: "Ke foto sebelumnya",
+        arrowNextTitle: "Ke foto selanjutnya",
+        errorMsg: "Terjadi kesalahan, foto tidak bisa dimuat",
 
-      pswpModule: () => import("photoswipe"),
-    })
+        pswpModule: () => import("photoswipe"),
+      });
 
-    lightbox.init()
+      lightbox.init();
+    });
   </script>
 </Section>

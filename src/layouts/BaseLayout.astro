@@ -1,26 +1,29 @@
 ---
-import "@/styles/global.css"
-import { SEO } from "astro-seo"
-import { truncate } from "@/utils/text"
-import SiteHeader from "@/components/SiteHeader.astro"
-import SiteFooter from "@/components/SiteFooter.astro"
-// import WAButton from "@/components/WAButton.astro"
+import "@/styles/global.css";
+import { SEO } from "astro-seo";
+import { truncate } from "@/utils/text";
+import SiteHeader from "@/components/SiteHeader.astro";
+import SiteFooter from "@/components/SiteFooter.astro";
+import WAButton from "@/components/WAButton.astro";
 
 type Props = {
-  label: string
-  deskripsi: string
-  ogImage?: string
-  class?: string
-}
+  label: string;
+  deskripsi: string;
+  ogImage?: string;
+  class?: string;
+};
 
-const { label, deskripsi, ogImage = "/logo-dark.svg", class: className } = Astro.props
+const { label, deskripsi, ogImage = "/logo-dark.svg", class: className } = Astro.props as Props;
 
-const canonicalURL = new URL(Astro.url.pathname, Astro.site)
-const ogImageUrl = new URL(ogImage, Astro.site).href
+const canonicalURL = new URL(Astro.url.pathname, Astro.site);
+const ogImageUrl = new URL(ogImage, Astro.site).href;
 ---
 
 <!doctype html>
-<html lang="id" class="bg-gray-50 text-gray-700 antialiased scroll-smooth">
+<html
+  lang="id"
+  class="bg-gray-50 text-gray-700 antialiased scroll-smooth [scrollbar-gutter:stable]"
+>
   <head>
     <SEO
       title={label}
@@ -83,6 +86,6 @@ const ogImageUrl = new URL(ogImage, Astro.site).href
     <SiteHeader />
     <slot />
     <SiteFooter />
-    <!-- <WAButton /> -->
+    <WAButton />
   </body>
 </html>

@@ -1,25 +1,26 @@
 ---
-import { Image, getImage } from "astro:assets"
-import { getCollection } from "astro:content"
-import { capitalize } from "@/utils/text"
-import { Leaflet } from "astro-leaflet"
-import type { AstroLeafletOptionsType } from "astro-leaflet"
-import WAForm from "@/components/WAForm.astro"
-import ProductGrid from "@/components/produk/ProductGrid.astro"
-import Hgroup from "@/components/ui/Hgroup.astro"
-import PageLayout from "@/layouts/PageLayout.astro"
+import { Image, getImage } from "astro:assets";
+import { getCollection } from "astro:content";
+import { capitalize } from "@/utils/text";
+import { Leaflet } from "astro-leaflet";
+import type { AstroLeafletOptionsType } from "astro-leaflet";
+import WAForm from "@/components/WAForm.astro";
+import ProductGrid from "@/components/produk/ProductGrid.astro";
+import Hgroup from "@/components/ui/Hgroup.astro";
+import PageLayout from "@/layouts/PageLayout.astro";
+import { Icon } from "astro-icon/components";
 
 // Buat path untuk semua entri produk
 export async function getStaticPaths() {
-  const collection = await getCollection("produk")
-  return collection.map(produk => ({
+  const collection = await getCollection("produk");
+  return collection.map((produk) => ({
     params: { id: produk.id },
     props: { produk },
-  }))
+  }));
 }
 
 // Data props
-const { produk } = Astro.props
+const { produk } = Astro.props;
 
 const {
   label,
@@ -34,17 +35,24 @@ const {
   lampu,
   sisi,
   arah,
-} = produk.data
+} = produk.data;
 
-const tempat = [alamat, kabko, provinsi].join(", ")
-const spesifikasi = { jenis, ukuran, orientasi, lampu, sisi, arah, alamat }
+const tempat = [alamat, kabko, provinsi].join(", ");
+const spesifikasi = { jenis, ukuran, orientasi, lampu, sisi, arah, alamat };
+
+// Metadata halaman
+const meta = {
+  label: `${jenis} di ${kabko}, ${provinsi}`,
+  deskripsi: `Sewa ${jenis} di ${tempat}.`,
+  ogImage: (await getImage({ src: gambar })).src,
+};
 
 /**
  * PETA
  */
-const geojson = JSON.parse(lokasi)
-const lat = geojson.coordinates[1]
-const lng = geojson.coordinates[0]
+const geojson = JSON.parse(lokasi);
+const lat = geojson.coordinates[1];
+const lng = geojson.coordinates[0];
 const leafletOptions: AstroLeafletOptionsType = {
   center: [lat, lng],
   markers: [
@@ -54,22 +62,20 @@ const leafletOptions: AstroLeafletOptionsType = {
     },
   ],
   zoom: 100,
-}
+};
 
-/**
- * TITIK LAIN
- */
+// Titik lain sesuai dengan provinsi produk
 const titikLain = await getCollection("produk", ({ data }) => {
-  return data.provinsi === provinsi
-})
+  return data.provinsi === provinsi;
+});
 
 const produkData = await Promise.all(
-  titikLain.map(async item => {
+  titikLain.map(async (item) => {
     const image = await getImage({
       src: item.data.gambar,
       width: 400,
       height: 400,
-    })
+    });
 
     return {
       id: item.id,
@@ -81,34 +87,31 @@ const produkData = await Promise.all(
       ukuran: item.data.ukuran,
       detailUrl: `/produk/detail/${item.id}/`,
       imageSrc: image.src,
-    }
-  })
-)
+    };
+  }),
+);
 
-const meta = {
-  label: `${jenis} di ${kabko}, ${provinsi}`,
-  deskripsi: `Sewa ${jenis} di ${tempat}.`,
-  ogImage: (await getImage({ src: gambar })).src,
-}
+// Cek apakah halaman ini adalah halaman detail produk
+const isProdukDetailPage = Astro.url.pathname.startsWith("/produk/detail/");
 ---
 
 <PageLayout {...meta}>
-  <div
-    class="mb-4 flex flex-col gap-4 lg:flex-row lg:flex-wrap lg:gap-6 lg:items-start xl:mb-8 xl:gap-8"
-  >
+  <div class="mb-4 grid gap-y-4 lg:grid-cols-[1fr_35%] lg:gap-6 xl:mb-8 xl:gap-8">
     <Image
       src={gambar}
       alt={label}
       width={1024}
-      class:list={["order-1 lg:w-[calc(60%-0.75rem)] xl:w-[calc(60%-1rem)]"]}
+      class:list={["order-1 rounded-sm", `[view-transition-name:produk-img-${produk.id}]`]}
       priority
     />
 
-    <div class="order-3 lg:order-2 space-y-4 lg:w-[calc(40%-0.75rem)] xl:w-[calc(40%-1rem)]">
-      <ul class="grid grid-cols-2 gap-px border border-gray-200 bg-gray-200 text-center">
+    <div class="order-3 lg:order-2 space-y-4">
+      <ul
+        class="grid grid-cols-2 gap-px overflow-hidden rounded-sm border border-gray-200 bg-gray-200 text-center"
+      >
         {
           Object.entries(spesifikasi).map(([label, value]) => {
-            const isAlamat = label === "alamat"
+            const isAlamat = label === "alamat";
             return (
               <li
                 class={`${isAlamat ? "col-span-2" : ""} flex flex-col justify-center bg-white p-4`}
@@ -131,31 +134,19 @@ const meta = {
                   <span>{Array.isArray(value) ? value.join(", ") : String(value)}</span>
                 )}
               </li>
-            )
+            );
           })
         }
       </ul>
 
       <button
-        class:list={[
-          "w-full",
-          "bg-yellow-600",
-          "p-3",
-          "lg:p-5",
-          "text-center",
-          "text-xl",
-          "font-semibold",
-          "text-white",
-          "uppercase",
-          "transition-colors",
-          "hover:bg-blue-600",
-        ]}
+        class="w-full rounded-sm bg-yellow-600 p-3 text-center text-xl font-semibold text-white uppercase transition-colors hover:bg-blue-600 lg:p-5"
         command="show-modal"
         commandfor="modal-kontak-form">Saya Tertarik</button
       >
     </div>
 
-    <div class="order-2 lg:order-3 w-full">
+    <div class="order-2 lg:order-3 lg:col-span-2 overflow-hidden rounded-sm">
       <Leaflet options={leafletOptions} class="isolate" />
     </div>
   </div>
@@ -173,22 +164,39 @@ const meta = {
       "m-auto",
       "w-xl",
       "max-w-[calc(100%-2rem)]",
-      "scale-90",
+      "overflow-hidden",
+      "rounded-sm",
+
       "opacity-0",
-      "transition",
+      "scale-90",
+
+      "transition-all",
       "transition-discrete",
-      "backdrop:bg-black/80",
+      "duration-500",
+
+      "backdrop:bg-black/90",
       "backdrop:opacity-0",
-      "backdrop:backdrop-blur-sm",
-      "open:scale-100",
+      "backdrop:backdrop-blur-xs",
+      "backdrop:transition-all",
+      "backdrop:transition-discrete",
+      "backdrop:duration-500",
+
       "open:opacity-100",
+      "open:scale-100",
       "open:backdrop:opacity-100",
-      "open:starting:scale-90",
-      "open:starting:opacity-0",
-      "open:backdrop:starting:opacity-0",
+
+      "starting:open:opacity-0",
+      "starting:open:scale-90",
+      "starting:open:backdrop:opacity-0",
     ]}
     closedby="any"
   >
     <WAForm />
+    <button
+      type="button"
+      class="absolute top-5 right-4 cursor-pointer"
+      command="close"
+      commandfor="modal-kontak-form"><Icon name="bi:x-lg" size="24" /></button
+    >
   </dialog>
 </PageLayout>

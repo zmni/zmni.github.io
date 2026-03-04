@@ -1,30 +1,29 @@
 ---
 type ProductClientData = {
-  id: string
-  label: string
-  alamat: string
-  kabko: string
-  provinsi: string
-  jenis: string
-  ukuran: string
-  detailUrl: string
-  imageSrc: string
-}
+  id: string;
+  label: string;
+  alamat: string;
+  kabko: string;
+  provinsi: string;
+  jenis: string;
+  ukuran: string;
+  detailUrl: string;
+  imageSrc: string;
+};
 
 type Props = {
-  products: ProductClientData[]
-  itemsPerPage?: number
-}
+  products: ProductClientData[];
+  itemsPerPage?: number;
+};
 
-const { products, itemsPerPage = 16 } = Astro.props
+const { products, itemsPerPage = 16 } = Astro.props;
 ---
 
 {/* Status Area */}
 <div class="mb-4 text-center text-sm text-gray-600 min-h-5" data-role="filter-status"></div>
 
 {/* Grid Container */}
-<div id="product-grid" class="grid gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 xl:gap-8">
-</div>
+<div id="product-grid" class="grid gap-4 md:grid-cols-2 lg:grid-cols-4 xl:gap-8"></div>
 
 {/* Pagination Container */}
 <nav id="pagination-container" class="mt-8 flex justify-center gap-2" aria-label="Pagination"></nav>
@@ -40,13 +39,17 @@ const { products, itemsPerPage = 16 } = Astro.props
       "grid-rows-subgrid",
       "gap-y-px",
       "overflow-hidden",
+      "rounded-sm",
       "border",
       "border-gray-200",
       "bg-gray-200",
       "shadow-xs",
-      "transition",
       "hover:border-gray-300",
       "hover:shadow-lg",
+      "motion-safe:transition-[border-color,opacity,box-shadow,translate]",
+      "motion-safe:duration-[.2s,.2s,.2s,.5s]",
+      "motion-safe:starting:opacity-0",
+      "motion-safe:starting:translate-y-2",
     ]}
   >
     <span class="flex gap-x-px">

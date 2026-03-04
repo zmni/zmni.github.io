@@ -1,34 +1,32 @@
 ---
-import { Icon } from "astro-icon/components"
-import bsm from "@/content/data/bsm.json"
-import { data } from "@/content/data/navigasi.json"
-import { basename } from "@/utils/text"
+import { Icon } from "astro-icon/components";
+import bsm from "@/content/data/bsm.json";
+import { data } from "@/content/data/navigasi.json";
+import { basename } from "@/utils/text";
 
 // Logo gelap
-const LogoGelapBasename = basename(bsm.logo.gelap)
-const { default: LogoGelap } = await import(`../assets/${LogoGelapBasename}.svg`)
+const LogoBasename = basename(bsm.logo);
+const { default: Logo } = await import(`../assets/${LogoBasename}.svg`);
 
-// Cek halaman beranda
-const isHome = Astro.url.pathname === "/"
-
-// Cek halaman aktif
-const isActive = (href: string) => {
-  const path = Astro.url.pathname
-  if (href === "/") return path === "/"
-  return path.startsWith(href)
-}
+// Cek halaman saat ini adalah halaman yang dikunjungi
+const isPage = (href: string) => {
+  const pathname = Astro.url.pathname;
+  if (href === "/") return pathname === "/";
+  return pathname.startsWith(href);
+};
 ---
 
 <header
   class:list={[
     "site-header",
-    isHome ? "fixed w-full" : "sticky",
-    "top-0 z-10 bg-white/90 backdrop-blur-xs border-b border-b-gray-200 shadow-sm transition-colors",
+    isPage("/") ? "fixed w-full" : "sticky",
+    "top-0 z-10 bg-white order-b border-b-gray-200 shadow-sm transition-colors",
+    "[view-transition-name:site-header]",
   ]}
 >
   <div class="container flex items-center py-2">
     <a href="/" aria-label={`Logo ${bsm.label}`}
-      ><LogoGelap height="1em" width="1em" class="text-5xl" /></a
+      ><Logo height="1em" width="1em" class="text-5xl" /></a
     >
 
     <input id="nav-toggle" type="checkbox" class="peer hidden" />
@@ -83,9 +81,10 @@ const isActive = (href: string) => {
           <a
             href={href}
             class:list={[
-              href === Astro.url.pathname ? "active" : "",
+              isPage(href) ? "active" : "",
               "block",
               "px-5 py-3",
+              "rounded-sm",
               "not-first:border-t",
               "border-blue-400",
               "text-right",

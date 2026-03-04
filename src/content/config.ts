@@ -1,7 +1,7 @@
-import { defineCollection } from "astro:content"
-import type { CollectionEntry } from "astro:content"
-import { glob } from "astro/loaders"
-import { z } from "astro/zod"
+import { defineCollection } from "astro:content";
+import type { CollectionEntry } from "astro:content";
+import { glob } from "astro/loaders";
+import { z } from "astro/zod";
 
 /**
  * Produk Collection
@@ -30,12 +30,12 @@ const produk = defineCollection({
       sisi: z.number().min(1).max(5),
       arah: z.enum(["Timur", "Barat", "Selatan", "Utara"]),
     }),
-})
+});
 
-export type ProdukType = CollectionEntry<"produk">["data"]
-export type ProdukKey = keyof ProdukType
+export type ProdukType = CollectionEntry<"produk">["data"];
+export type ProdukKey = keyof ProdukType;
 
 /**
  * Ekspor koleksi
  */
-export const collections = { produk }
+export const collections = { produk };

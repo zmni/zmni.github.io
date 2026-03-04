@@ -1,18 +1,23 @@
 ---
-import { data } from "@/content/data/kontak.json"
+import { Icon } from "astro-icon/components";
+import { data } from "@/content/data/kontak.json";
 
-const nomorWhatsApp = data.whatsapp.replace("0", "62")
+const nomorWhatsApp = data.whatsapp.replace("0", "62");
 
 const twInput =
-  "mt-1 w-full font-normal text-base border border-gray-200 bg-gray-50 px-4 py-3 outline-none focus:ring-2 focus:ring-blue-500"
+  "mt-1 w-full rounded-sm font-normal border border-gray-200 bg-gray-50 px-4 py-3 outline-none focus:ring-2 focus:ring-blue-500";
 ---
 
-<div class="border border-blue-50 bg-white shadow-2xl shadow-blue-500/20">
-  <h3 class="border-b border-gray-100 p-4 text-xl font-semibold">Diskusikan dengan kami</h3>
+<div
+  class="border border-blue-50 bg-white shadow-2xl shadow-blue-500/20 overflow-hidden rounded-md"
+>
+  <h3 class="border-b border-gray-100 p-4 text-xl font-semibold rounded-t-sm">
+    Diskusikan dengan kami
+  </h3>
 
-  <div class="p-4 flex flex-col gap-y-4 [&_label]:font-semibold [&_label]:text-sm">
+  <div class="p-4 flex flex-col gap-y-4 rounded-b-sm">
     <label
-      >Nama Anda <span class="text-red-500">*</span>
+      ><span class="font-semibold text-sm">Nama Anda <em class="text-red-500">*</em></span>
       <input
         type="text"
         id="nama-input"
@@ -23,7 +28,7 @@ const twInput =
     </label>
 
     <label
-      >Asal Instansi <span class="text-red-500">*</span>
+      ><span class="font-semibold text-sm">Asal Instansi <em class="text-red-500">*</em></span>
       <select id="instansi-select" class:list={twInput} required>
         <option value="Individual" selected>Individual</option>
         <option value="Pemerintah">Pemerintah</option>
@@ -32,12 +37,14 @@ const twInput =
     </label>
 
     <label id="instansi-input-label" class="hidden"
-      >Nama Instansi <span class="text-red-500">*</span>
+      ><span class="font-semibold text-sm">Nama Instansi <em class="text-red-500">*</em></span>
       <input type="text" id="instansi-input" placeholder="Masukkan nama instansi" class={twInput} />
     </label>
 
     <label
-      >Apa yang Anda butuhkan? <span class="text-red-500">*</span>
+      ><span class="font-semibold text-sm"
+        >Apa yang Anda butuhkan? <em class="text-red-500">*</em></span
+      >
       <textarea
         id="pesan-textarea"
         rows="4"
@@ -52,65 +59,67 @@ const twInput =
 
     <a
       id="tombol-kirim-pesan"
-      href="#"
+      href={`https://wa.me/${nomorWhatsApp}`}
       target="_blank"
-      class="pointer-events-none block w-full bg-[#25D366] py-4 text-center font-bold text-white opacity-50 shadow-lg hover:bg-[#20ba59]"
+      class="pointer-events-none block w-full rounded-sm bg-[#25D366] py-4 text-center font-bold text-white opacity-50 shadow-lg hover:bg-[#20ba59]"
       data-nomor={nomorWhatsApp}>Kirim via WhatsApp</a
     >
   </div>
 </div>
 
 <script>
-  const namaInput = document.getElementById("nama-input") as HTMLInputElement
-  const instansiSelect = document.getElementById("instansi-select") as HTMLSelectElement
-  const instansiLabel = document.getElementById("instansi-input-label") as HTMLElement
-  const instansiInput = document.getElementById("instansi-input") as HTMLInputElement
-  const pesanTextarea = document.getElementById("pesan-textarea") as HTMLTextAreaElement
-  const tombolKirimPesan = document.getElementById("tombol-kirim-pesan") as HTMLAnchorElement
-  const pesanValidasi = document.getElementById("pesan-validasi") as HTMLParagraphElement
-  const nomorWhatsApp = tombolKirimPesan.dataset.nomor
+  document.addEventListener("DOMContentLoaded", () => {
+    const namaInput = document.getElementById("nama-input") as HTMLInputElement;
+    const instansiSelect = document.getElementById("instansi-select") as HTMLSelectElement;
+    const instansiLabel = document.getElementById("instansi-input-label") as HTMLElement;
+    const instansiInput = document.getElementById("instansi-input") as HTMLInputElement;
+    const pesanTextarea = document.getElementById("pesan-textarea") as HTMLTextAreaElement;
+    const tombolKirimPesan = document.getElementById("tombol-kirim-pesan") as HTMLAnchorElement;
+    const pesanValidasi = document.getElementById("pesan-validasi") as HTMLParagraphElement;
+    const nomorWhatsApp = tombolKirimPesan.dataset.nomor;
 
-  const syncWhatsAppLink = () => {
-    const isOrg = instansiSelect.value === "Pemerintah" || instansiSelect.value === "Swasta"
+    const syncWhatsAppLink = () => {
+      const isOrg = instansiSelect.value === "Pemerintah" || instansiSelect.value === "Swasta";
 
-    // Validasi input ada isinya
-    const isValid =
-      namaInput.value.trim() !== "" &&
-      pesanTextarea.value.trim() !== "" &&
-      (!isOrg || instansiInput.value.trim() !== "")
+      // Validasi input ada isinya
+      const isValid =
+        namaInput.value.trim() !== "" &&
+        pesanTextarea.value.trim() !== "" &&
+        (!isOrg || instansiInput.value.trim() !== "");
 
-    // Sesuaikan tombol kirim dan pesan navigasi
-    tombolKirimPesan.classList.toggle("opacity-50", !isValid)
-    tombolKirimPesan.classList.toggle("pointer-events-none", !isValid)
-    pesanValidasi.classList.toggle("hidden", isValid)
+      // Sesuaikan tombol kirim dan pesan navigasi
+      tombolKirimPesan.classList.toggle("opacity-50", !isValid);
+      tombolKirimPesan.classList.toggle("pointer-events-none", !isValid);
+      pesanValidasi.classList.toggle("hidden", isValid);
 
-    if (!isValid) return
+      if (!isValid) return;
 
-    const teks1 = "Halo Bintang Surya Madani, Semoga Anda sehat dan bahagia.\n\n"
-    const teks2 = "Perkenalkan saya,\n"
-    const teks3 = `*Nama:* ${namaInput.value}\n`
-    const teks4 = isOrg ? `*Instansi:* ${instansiInput.value}\n` : ""
-    const teks5 = `*Pesan:* ${pesanTextarea.value}\n\n`
-    const teks6 = "Senang dapat menghubungi Anda. Terima kasih."
+      const teks1 = "Halo Bintang Surya Madani, Semoga Anda sehat dan bahagia.\n\n";
+      const teks2 = "Perkenalkan saya,\n";
+      const teks3 = `*Nama:* ${namaInput.value}\n`;
+      const teks4 = isOrg ? `*Instansi:* ${instansiInput.value}\n` : "";
+      const teks5 = `*Pesan:* ${pesanTextarea.value}\n\n`;
+      const teks6 = "Senang dapat menghubungi Anda. Terima kasih.";
 
-    const teks = teks1 + teks2 + teks3 + teks4 + teks5 + teks6
+      const teks = teks1 + teks2 + teks3 + teks4 + teks5 + teks6;
 
-    tombolKirimPesan.href = `https://wa.me/${nomorWhatsApp}?text=${encodeURIComponent(teks)}`
-  }
+      tombolKirimPesan.href = `${tombolKirimPesan.href}?text=${encodeURIComponent(teks)}`;
+    };
 
-  const handleVisibility = (): void => {
-    const isOrg = instansiSelect.value === "Pemerintah" || instansiSelect.value === "Swasta"
-    instansiLabel.classList.toggle("hidden", !isOrg)
-    if (!isOrg) instansiInput.value = ""
-    syncWhatsAppLink()
-  }
+    const handleVisibility = (): void => {
+      const isOrg = instansiSelect.value === "Pemerintah" || instansiSelect.value === "Swasta";
+      instansiLabel.classList.toggle("hidden", !isOrg);
+      if (!isOrg) instansiInput.value = "";
+      syncWhatsAppLink();
+    };
 
-  // Event Listeners (Tanpa pengecekan null)
-  ;[namaInput, instansiInput, pesanTextarea].forEach(el =>
-    el.addEventListener("input", syncWhatsAppLink)
-  )
-  instansiSelect.addEventListener("change", handleVisibility)
+    // Event Listeners (Tanpa pengecekan null)
+    [namaInput, instansiInput, pesanTextarea].forEach((el) =>
+      el.addEventListener("input", syncWhatsAppLink),
+    );
+    instansiSelect.addEventListener("change", handleVisibility);
 
-  // Inisialisasi
-  syncWhatsAppLink()
+    // Inisialisasi
+    syncWhatsAppLink();
+  });
 </script>

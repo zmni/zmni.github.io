@@ -1,14 +1,14 @@
 ---
-import Hgroup from "@/components/ui/Hgroup.astro"
+import Hgroup from "@/components/ui/Hgroup.astro";
 
 type Props = {
-  id?: string
-  label: string
-  deskripsi: string
-  class?: string
-}
+  id?: string;
+  label: string;
+  deskripsi: string;
+  class?: string;
+};
 
-const { id, label, deskripsi, class: className } = Astro.props
+const { id, label, deskripsi, class: className } = Astro.props;
 ---
 
 <section {id} class:list={["border-t border-gray-200", className]}>

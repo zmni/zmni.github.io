@@ -14,16 +14,16 @@
     <script src="https://unpkg.com/@sveltia/cms/dist/sveltia-cms.js" is:inline></script>
     <script is:inline>
       const observer = new MutationObserver(() => {
-        const poweredBy = document.querySelector(".powered-by")
+        const poweredBy = document.querySelector(".powered-by");
         if (poweredBy) {
-          poweredBy.remove()
-          observer.disconnect()
+          poweredBy.remove();
+          observer.disconnect();
         }
-      })
+      });
       observer.observe(document.body, {
         childList: true,
         subtree: true,
-      })
+      });
     </script>
   </body>
 </html>

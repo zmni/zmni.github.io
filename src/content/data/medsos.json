@@ -1,0 +1,40 @@
+{
+  "id": "medsos",
+  "data": [
+    {
+      "label": "Facebook",
+      "url": "https://www.facebook.com",
+      "tampil": true
+    },
+    {
+      "label": "Instagram",
+      "url": "https://wwww.instagram.com/bintangsurya.madani",
+      "tampil": true
+    },
+    {
+      "label": "LinkedIn",
+      "url": "https://www.linkedin.com",
+      "tampil": true
+    },
+    {
+      "label": "Threads",
+      "url": "https://www.threads.com",
+      "tampil": true
+    },
+    {
+      "label": "TikTok",
+      "url": "https://www.tiktok.com",
+      "tampil": true
+    },
+    {
+      "label": "X",
+      "url": "https://www.x.com",
+      "tampil": true
+    },
+    {
+      "label": "YouTube",
+      "url": "https://www.youtube.com",
+      "tampil": true
+    }
+  ]
+}

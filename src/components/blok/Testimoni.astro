@@ -1,45 +1,32 @@
 ---
-import Section from "@/layouts/Section.astro"
-import { Icon } from "astro-icon/components"
-import Img from "@/components/ui/Img.astro"
-
-type TestimoniData = {
-  nama: string
-  instansi: string
-  testimoni: string
-  foto: string
-}
-
-type Props = {
-  id: string
-  label: string
-  deskripsi: string
-  data: TestimoniData[]
-}
-
-const { id, label, deskripsi, data } = Astro.props
-const meta = { id, label, deskripsi }
+import Section from "@/layouts/Section.astro";
+import { Icon } from "astro-icon/components";
+import Img from "@/components/ui/Img.astro";
+import { id, label, deskripsi, status, data } from "@/content/data/testimoni.json";
+const meta = { id, label, deskripsi };
 ---
 
-<Section {...meta}>
-  <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-3 xl:gap-8">
-    {
-      data.map(({ nama, instansi, testimoni, foto }) => (
-        <div class="border border-gray-100 bg-white transition shadow-sm hover:shadow-lg">
-          <blockquote class="flex flex-row gap-x-4 p-4 font-serif">
-            <Icon name="bi:quote" size="2.25rem" class="-mt-1 text-gray-600" />
-            <p class="flex-1 md:text-lg">{testimoni}</p>
-          </blockquote>
+{
+  status && (
+    <Section {...meta}>
+      <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-3 xl:gap-8">
+        {data.map(({ nama, instansi, testimoni, foto }) => (
+          <div class="overflow-hidden rounded-sm border border-gray-100 bg-white shadow-sm transition hover:shadow-lg">
+            <blockquote class="flex flex-row gap-x-4 rounded-t-sm p-4 font-serif">
+              <Icon name="bi:quote" size="2.25rem" class="-mt-1 text-gray-600" />
+              <p class="flex-1 md:text-lg">{testimoni}</p>
+            </blockquote>
 
-          <div class="flex flex-row-reverse items-center gap-x-4 border-t border-gray-200 bg-gray-50 p-4">
-            <Img src={foto} alt={nama} width={64} height={64} class="rounded-full" />
-            <span class="inline-flex flex-col text-right">
-              <span class="font-bold lg:text-lg">{nama}</span>
-              <span class="text-sm text-gray-600">{instansi}</span>
-            </span>
+            <div class="flex flex-row-reverse items-center gap-x-4 rounded-b-sm border-t border-gray-200 bg-gray-50 p-4">
+              <Img src={foto} alt={nama} width={64} height={64} class="rounded-full" />
+              <span class="inline-flex flex-col text-right">
+                <span class="font-bold lg:text-lg">{nama}</span>
+                <span class="text-sm text-gray-600">{instansi}</span>
+              </span>
+            </div>
           </div>
-        </div>
-      ))
-    }
-  </div>
-</Section>
+        ))}
+      </div>
+    </Section>
+  )
+}

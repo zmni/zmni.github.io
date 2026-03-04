@@ -1,14 +1,14 @@
 ---
-import type { HTMLAttributes } from "astro/types"
+import type { HTMLAttributes } from "astro/types";
 
-type Props = HTMLAttributes<"menu">
+type Props = HTMLAttributes<"menu">;
 
-const { ...attrs } = Astro.props
+const { ...attrs } = Astro.props;
 ---
 
 <menu
   data-role="produk-filter"
-  class="mb-4 flex flex-wrap gap-4 sm:justify-center lg:mb-8"
+  class="mb-4 flex flex-col gap-4 md:flex-row md:justify-center lg:mb-8"
   {...attrs}
 >
   <slot />

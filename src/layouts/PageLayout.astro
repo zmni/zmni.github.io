@@ -1,19 +1,19 @@
 ---
-import BaseLayout from "./BaseLayout.astro"
-import Hgroup from "@/components/ui/Hgroup.astro"
+import BaseLayout from "./BaseLayout.astro";
+import Hgroup from "@/components/ui/Hgroup.astro";
 
 type Props = {
-  label: string
-  deskripsi: string
-  ogImage?: string
-}
+  label: string;
+  deskripsi: string;
+  ogImage?: string;
+};
 
-const { label, deskripsi, ogImage } = Astro.props
+const { label, deskripsi, ogImage } = Astro.props;
 ---
 
 <BaseLayout label={`${label} - Bintang Surya Madani`} {deskripsi} {ogImage}>
   <main class="container py-12">
-    <Hgroup {label} {deskripsi} />
+    <Hgroup {label} {deskripsi} hClass="[view-transition-name:page-title]" />
 
     <slot />
   </main>

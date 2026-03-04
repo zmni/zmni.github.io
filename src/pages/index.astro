@@ -1,90 +1,100 @@
 ---
-import BaseLayout from "@/layouts/BaseLayout.astro"
+import BaseLayout from "@/layouts/BaseLayout.astro";
 
-import Intro from "@/components/blok/Intro.astro"
-import Layanan from "@/components/blok/Layanan.astro"
-import Portofolio from "@/components/blok/Portofolio.astro"
-import Klien from "@/components/blok/Klien.astro"
-import Kontak from "@/components/blok/Kontak.astro"
-import Testimoni from "@/components/blok/Testimoni.astro"
-import Branding from "@/components/blok/Branding.astro"
+import Intro from "@/components/blok/Intro.astro";
+import Layanan from "@/components/blok/Layanan.astro";
+import Portofolio from "@/components/blok/Portofolio.astro";
+import Klien from "@/components/blok/Klien.astro";
+import Kontak from "@/components/blok/Kontak.astro";
+import Testimoni from "@/components/blok/Testimoni.astro";
+import Branding from "@/components/blok/Branding.astro";
 
-import bsm from "@/content/data/bsm.json"
-import testimoni from "@/content/data/testimoni.json"
+import { label, deskripsi } from "@/content/data/bsm.json";
 ---
 
-<BaseLayout label={bsm.label} deskripsi={bsm.deskripsi}>
+<BaseLayout {label} {deskripsi}>
   <main>
     <Intro />
     <Layanan />
     <Branding />
     <Portofolio />
     <Klien />
-    {testimoni.status && <Testimoni {...testimoni} />}
+    <Testimoni />
     <Kontak />
   </main>
 
   <script>
     document.addEventListener("DOMContentLoaded", () => {
-      const navLinks = document.querySelectorAll<HTMLAnchorElement>(".site-header a")
-
       const getSectionId = (href: string): string | null => {
-        if (href === "/") return "intro"
-        if (href.startsWith("/#")) return href.slice(2)
-        return null
-      }
+        if (href === "/") return "intro";
+        if (href.startsWith("/#")) return href.slice(2);
+        return null;
+      };
+
+      const getHeaderHeight = (): number => {
+        return document.querySelector("header")?.offsetHeight ?? 0;
+      };
+
+      const navToggle = document.querySelector<HTMLInputElement>("#nav-toggle");
+
+      type NavEntry = { link: HTMLAnchorElement; sectionId: string };
+
+      const navEntries: NavEntry[] = Array.from(
+        document.querySelectorAll<HTMLAnchorElement>("nav a"),
+      ).reduce<NavEntry[]>((acc, link) => {
+        const sectionId = getSectionId(link.getAttribute("href") ?? "");
+        if (sectionId) acc.push({ link, sectionId });
+        return acc;
+      }, []);
 
       const setActiveLink = (): void => {
-        const viewportHeight = window.innerHeight
-        let activeId: string | null = null
+        const viewportHeight = window.innerHeight;
+        const headerHeight = getHeaderHeight();
+        let activeId: string | null = null;
 
-        navLinks.forEach(link => {
-          const sectionId = getSectionId(link.getAttribute("href") ?? "")
-          if (!sectionId) return
+        navEntries.forEach(({ sectionId }) => {
+          const section = document.getElementById(sectionId);
+          if (!section) return;
 
-          const section = document.getElementById(sectionId)
-          if (!section) return
+          const rect = section.getBoundingClientRect();
+          const visibleTop = Math.max(headerHeight, rect.top);
+          const visibleBottom = Math.min(viewportHeight, rect.bottom);
+          const visibleHeight = Math.max(0, visibleBottom - visibleTop);
+          const compareTo = Math.min(rect.height, viewportHeight - headerHeight);
 
-          const rect = section.getBoundingClientRect()
-          const visibleTop = Math.max(0, rect.top)
-          const visibleBottom = Math.min(viewportHeight, rect.bottom)
-          const visibleHeight = Math.max(0, visibleBottom - visibleTop)
+          if (visibleHeight / compareTo >= 0.5) activeId = sectionId;
+        });
 
-          const compareTo = Math.min(rect.height, viewportHeight)
-          const visibleRatio = visibleHeight / compareTo
+        navEntries.forEach(({ link, sectionId }) => {
+          link.classList.toggle("active", sectionId === activeId);
+        });
+      };
 
-          if (visibleRatio >= 0.5) activeId = sectionId
-        })
-
-        navLinks.forEach(link => {
-          const sectionId = getSectionId(link.getAttribute("href") ?? "")
-          if (!sectionId) return
-          link.classList.toggle("active", sectionId === activeId)
-        })
-      }
-
-      navLinks.forEach(link => {
-        const sectionId = getSectionId(link.getAttribute("href") ?? "")
-        if (!sectionId) return
-
+      navEntries.forEach(({ link, sectionId }) => {
         link.addEventListener("click", (e: MouseEvent) => {
-          e.preventDefault()
-          const target = document.getElementById(sectionId)
-          if (target) target.scrollIntoView({ behavior: "smooth" })
-        })
-      })
+          e.preventDefault();
+          const target = document.getElementById(sectionId);
+          if (!target) return;
 
-      let scrollTimer: ReturnType<typeof setTimeout> | null = null
+          if (navToggle) navToggle.checked = false;
+
+          const headerHeight = getHeaderHeight();
+          const top = target.getBoundingClientRect().top + window.scrollY - headerHeight;
+          window.scrollTo({ top, behavior: "smooth" });
+        });
+      });
+
+      let scrollTimer: ReturnType<typeof setTimeout> | null = null;
 
       window.addEventListener("scroll", () => {
-        if (scrollTimer) clearTimeout(scrollTimer)
+        if (scrollTimer) clearTimeout(scrollTimer);
         scrollTimer = setTimeout(() => {
-          scrollTimer = null
-          setActiveLink()
-        }, 150)
-      })
+          scrollTimer = null;
+          setActiveLink();
+        }, 150);
+      });
 
-      setActiveLink()
-    })
+      setActiveLink();
+    });
   </script>
 </BaseLayout>

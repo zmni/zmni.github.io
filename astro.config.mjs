@@ -1,9 +1,9 @@
 // @ts-check
-import { defineConfig } from "astro/config"
+import { defineConfig } from "astro/config";
 
-import tailwindcss from "@tailwindcss/vite"
-import icon from "astro-icon"
-import sitemap from "@astrojs/sitemap"
+import tailwindcss from "@tailwindcss/vite";
+import sitemap from "@astrojs/sitemap";
+import icon from "astro-icon";
 
 // https://astro.build/config
 export default defineConfig({
@@ -12,9 +12,8 @@ export default defineConfig({
 
   integrations: [
     icon(),
-
     sitemap({
-      filter: page => page !== "https://zmni.github.io/admin/",
+      filter: (page) => page !== "https://zmni.github.io/admin/",
     }),
   ],
 
@@ -35,4 +34,4 @@ export default defineConfig({
       },
     },
   },
-})
+});

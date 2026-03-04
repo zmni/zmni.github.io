@@ -1,23 +1,24 @@
 ---
-import { Icon } from "astro-icon/components"
-import Section from "@/layouts/Section.astro"
-import WAForm from "@/components/WAForm.astro"
-import { id, label, deskripsi, data } from "@/content/data/kontak.json"
-import { capitalize } from "@/utils/text"
+import { Icon } from "astro-icon/components";
+import Section from "@/layouts/Section.astro";
+import WAForm from "@/components/WAForm.astro";
+import { id, label, deskripsi, data } from "@/content/data/kontak.json";
+import medsos from "@/content/data/medsos.json";
+import { capitalize } from "@/utils/text";
 
-const meta = { id, label, deskripsi }
+const meta = { id, label, deskripsi };
 
 const formatNomorTelepon = () => {
-  const num = data.telepon.substring(1)
-  return `(62) ${num.substring(0, 3)}-${num.substring(3, 7)}-${num.substring(7)}`
-}
+  const num = data.telepon.substring(1);
+  return `(62) ${num.substring(0, 3)}-${num.substring(3, 7)}-${num.substring(7)}`;
+};
 
 type KontakItem = {
-  label: string
-  konten: string
-  href: string
-  ikon: string
-}
+  label: string;
+  konten: string;
+  href: string;
+  ikon: string;
+};
 
 const kontak: KontakItem[] = [
   {
@@ -44,7 +45,7 @@ const kontak: KontakItem[] = [
     href: data.kantor2.url,
     ikon: "building",
   },
-]
+];
 ---
 
 <Section {...meta}>
@@ -70,16 +71,18 @@ const kontak: KontakItem[] = [
       {/* Ikon media sosial */}
       <li class="flex flex-wrap gap-2 py-4 sm:gap-4">
         {
-          Object.entries(data.medsos).map(([label, href]) => (
-            <a
-              href={href}
-              class="inline-flex rounded-full border border-gray-200 p-3 transition-colors hover:border-blue-500 hover:text-blue-500"
-              rel="me"
-              aria-label={capitalize(label)}
-            >
-              <Icon name={`bi:${label.toLowerCase()}`} size="1.5rem" class="shrink-0" />
-            </a>
-          ))
+          medsos.data
+            .filter(({ tampil }) => tampil)
+            .map(({ label, url }) => (
+              <a
+                href={url}
+                class="inline-flex rounded-full border border-gray-200 p-3 transition-colors hover:border-blue-500 hover:text-blue-500"
+                rel="me"
+                aria-label={capitalize(label)}
+              >
+                <Icon name={`bi:${label.toLowerCase()}`} size="1.5rem" class="shrink-0" />
+              </a>
+            ))
         }
       </li>
     </ul>

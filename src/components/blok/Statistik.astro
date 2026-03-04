@@ -1,11 +1,11 @@
 ---
 type Statistik = {
-  label: string
-  final: number
-  unit?: string
-  desimal?: number
-  gambar?: string
-}
+  label: string;
+  final: number;
+  unit?: string;
+  desimal?: number;
+  gambar?: string;
+};
 
 const statistik: ReadonlyArray<Readonly<Statistik>> = [
   {
@@ -30,7 +30,7 @@ const statistik: ReadonlyArray<Readonly<Statistik>> = [
     desimal: 1,
     gambar: "https://picsum.photos/id/619/768/576",
   },
-]
+];
 ---
 
 <section id="statistik">
@@ -56,112 +56,112 @@ const statistik: ReadonlyArray<Readonly<Statistik>> = [
   </div>
 
   <script>
-    import { $, $$ } from "@/utils/dom"
+    import { $, $$ } from "@/utils/dom";
 
     // ---- Konfigurasi durasi animasi ----
-    const DURASI_DEFAULT: number = 2121 // durasi dasar 2121ms
-    const DURASI_VARIASI: number = 21 // variasi ±21% dari default
+    const DURASI_DEFAULT: number = 2121; // durasi dasar 2121ms
+    const DURASI_VARIASI: number = 21; // variasi ±21% dari default
 
     // Ambil container parent
-    const dataStatistik = $("#statistik")!
+    const dataStatistik = $("#statistik")!;
 
     // Ambil semua elemen counter
-    const dataStat = $$("[data-stat]")
+    const dataStat = $$("[data-stat]");
 
     // Respect prefers-reduced-motion
-    const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches
+    const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
     // Format angka sesuai locale Indonesia
     const formatAngka = (nilai: number, desimal = 0) => {
       return new Intl.NumberFormat("id-ID", {
         minimumFractionDigits: desimal,
         maximumFractionDigits: desimal,
-      }).format(nilai)
-    }
+      }).format(nilai);
+    };
 
     // Singkatkan angka besar dengan unit K+
     const ringkasAngka = (nilai: number, unit: string) => {
-      if (unit === "K+") return Math.round(nilai / 1000) + "K+"
-      return nilai.toString()
-    }
+      if (unit === "K+") return Math.round(nilai / 1000) + "K+";
+      return nilai.toString();
+    };
 
     // Easing animasi: cepat di awal, melambat di akhir
     const easeOutCubic = (t: number) => {
-      return 1 - Math.pow(1 - t, 3)
-    }
+      return 1 - Math.pow(1 - t, 3);
+    };
 
     // Buat durasi random ±DURASI_VARIASI dari default
     const acakDurasi = () => {
-      const variasi = DURASI_DEFAULT * (DURASI_VARIASI / 100)
-      return DURASI_DEFAULT + (Math.random() * 2 - 1) * variasi
-    }
+      const variasi = DURASI_DEFAULT * (DURASI_VARIASI / 100);
+      return DURASI_DEFAULT + (Math.random() * 2 - 1) * variasi;
+    };
 
     // Jalankan animasi satu counter
     const animasiHitungan = (item: HTMLElement) => {
-      const final = parseFloat(item.dataset.final || "0")
-      const unit = item.dataset.unit || ""
-      const desimal = parseInt(item.dataset.desimal || "0", 10)
-      const durasi = acakDurasi()
+      const final = parseFloat(item.dataset.final || "0");
+      const unit = item.dataset.unit || "";
+      const desimal = parseInt(item.dataset.desimal || "0", 10);
+      const durasi = acakDurasi();
 
       if (prefersReducedMotion || final === 0 || durasi <= 0) {
-        item.textContent = unit ? ringkasAngka(final, unit) : formatAngka(final, desimal)
-        return
+        item.textContent = unit ? ringkasAngka(final, unit) : formatAngka(final, desimal);
+        return;
       }
 
-      let waktuMulai: number | null = null
+      let waktuMulai: number | null = null;
 
       const langkah = (waktu: number) => {
-        if (!waktuMulai) waktuMulai = waktu
-        let laju = (waktu - waktuMulai) / durasi
-        laju = Math.max(0, Math.min(laju, 1))
-        laju = easeOutCubic(laju)
+        if (!waktuMulai) waktuMulai = waktu;
+        let laju = (waktu - waktuMulai) / durasi;
+        laju = Math.max(0, Math.min(laju, 1));
+        laju = easeOutCubic(laju);
 
-        const currentValue = final * laju
+        const currentValue = final * laju;
 
         // Selama animasi tampilkan nilai asli (tidak disingkat)
-        item.textContent = formatAngka(currentValue, desimal)
+        item.textContent = formatAngka(currentValue, desimal);
 
         if (laju < 1) {
-          requestAnimationFrame(langkah)
+          requestAnimationFrame(langkah);
         } else {
           // Animasi selesai, tampilkan final dengan unit jika ada
-          item.textContent = unit ? ringkasAngka(final, unit) : formatAngka(final, desimal)
+          item.textContent = unit ? ringkasAngka(final, unit) : formatAngka(final, desimal);
         }
-      }
+      };
 
-      requestAnimationFrame(langkah)
-    }
+      requestAnimationFrame(langkah);
+    };
 
     // Reset semua counter ke 0
     const resetHitungan = () => {
-      dataStat.forEach(stat => {
-        const desimal = parseInt(stat.dataset.desimal || "0", 10)
-        stat.textContent = formatAngka(0, desimal)
-      })
-    }
+      dataStat.forEach((stat) => {
+        const desimal = parseInt(stat.dataset.desimal || "0", 10);
+        stat.textContent = formatAngka(0, desimal);
+      });
+    };
 
     // Jalankan animasi semua counter dalam container
     const animasiSemuaHitungan = () => {
-      dataStat.forEach(stat => animasiHitungan(stat))
-    }
+      dataStat.forEach((stat) => animasiHitungan(stat));
+    };
 
     // IntersectionObserver untuk parent container
     const observer = new IntersectionObserver(
-      entries => {
-        entries.forEach(entry => {
+      (entries) => {
+        entries.forEach((entry) => {
           if (entry.isIntersecting) {
-            animasiSemuaHitungan()
-            observer.disconnect()
+            animasiSemuaHitungan();
+            observer.disconnect();
           } else {
-            resetHitungan()
+            resetHitungan();
           }
-        })
+        });
       },
-      { threshold: 0.5 } // >50% terlihat
-    )
+      { threshold: 0.5 }, // >50% terlihat
+    );
 
     // Reset awal dan mulai observe
-    resetHitungan()
-    observer.observe(dataStatistik)
+    resetHitungan();
+    observer.observe(dataStatistik);
   </script>
 </section>

@@ -1,40 +1,43 @@
 ---
-import { slugify } from "@/utils/text"
+import { slugify } from "@/utils/text";
 
 type Props = {
-  label: string
-  key: string
-  options: string[]
-  selected?: string
-  onChange?: string
-}
+  label: string;
+  key: string;
+  options: string[];
+  selected?: string;
+  onChange?: string;
+};
 
-const { label, key, options, selected = "", onChange } = Astro.props
+const { label, key, options, selected = "", onChange } = Astro.props;
 ---
 
-<li class="relative flex items-center gap-x-2" data-role="filter-group" data-filter-group={key}>
+<li
+  class="relative grid grid-cols-[3.5rem_1fr] md:grid-cols-[auto_1fr] items-center gap-2"
+  data-role="filter-group"
+  data-filter-group={key}
+>
   <label for={`filter-${key}`} class="font-bold">{label}</label>
 
   <select
     id={`filter-${key}`}
     name={key}
-    class="border-2 border-gray-200 bg-white px-2 py-1.5 transition-colors hover:border-blue-500 focus:outline-blue-500"
-    data-group={onChange === null ? key : undefined}
+    class="rounded-sm border-2 border-gray-200 bg-white px-2 py-1.5 transition-colors hover:border-blue-500 focus:outline-blue-500"
+    data-group={!onChange ? key : undefined}
     aria-label={`Filter berdasarkan ${label}`}
     onchange={onChange}
   >
     <option value="" selected={selected === "" || selected === undefined}>Semua</option>
     {
-      options.map(value => {
-        // slugify 'value' untuk URL navigasi
-        const optionValue = onChange ? slugify(value) : value
-        const isSelected = onChange ? slugify(selected) === optionValue : selected === value
+      options.map((value) => {
+        const optionValue = slugify(value);
+        const isSelected = slugify(selected) === optionValue;
 
         return (
           <option value={optionValue} selected={isSelected}>
             {value}
           </option>
-        )
+        );
       })
     }
   </select>
