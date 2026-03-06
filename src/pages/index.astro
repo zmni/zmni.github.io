@@ -32,7 +32,9 @@ import { label, deskripsi } from "@/content/data/bsm.json";
       };
 
       const getHeaderHeight = (): number => {
-        return document.querySelector<HTMLElement>("#SiteHeader")?.offsetHeight ?? 0;
+        return (
+          document.querySelector<HTMLElement>("#SiteHeader")?.getBoundingClientRect().height ?? 0
+        );
       };
 
       const navToggle = document.querySelector<HTMLInputElement>("#SiteNavToggle");
@@ -40,7 +42,7 @@ import { label, deskripsi } from "@/content/data/bsm.json";
       type NavEntry = { link: HTMLAnchorElement; sectionId: string };
 
       const navEntries: NavEntry[] = Array.from(
-        document.querySelectorAll<HTMLAnchorElement>("#SiteNav a"),
+        document.querySelectorAll<HTMLAnchorElement>("#SiteHeader a"),
       ).reduce<NavEntry[]>((acc, link) => {
         const sectionId = getSectionId(link.getAttribute("href") ?? "");
         if (sectionId) acc.push({ link, sectionId });

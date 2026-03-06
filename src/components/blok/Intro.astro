@@ -59,9 +59,10 @@ import { Icon } from "astro-icon/components";
 
       button.addEventListener("click", () => {
         const target = document.getElementById("intro")?.nextElementSibling as HTMLElement | null;
+        const headerHeight = document.getElementById("SiteHeader")?.getBoundingClientRect().height;
 
         window.scrollTo({
-          top: target?.offsetTop || window.innerHeight,
+          top: (target?.offsetTop || window.innerHeight) - (headerHeight || 0),
           behavior: "smooth",
         });
       });

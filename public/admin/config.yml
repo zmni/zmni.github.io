@@ -14,6 +14,7 @@ backend:
 media_folder: /src/assets
 
 collections:
+  # BSM
   - name: bsm
     label: BSM
     icon: home
@@ -37,14 +38,7 @@ collections:
             required: false
           - name: logo
             label: Logo
-            widget: object
-            fields:
-              - name: terang
-                label: Logo Terang
-                widget: image
-              - name: gelap
-                label: Logo Gelap
-                widget: image
+            widget: image
       - name: kontak
         label: Kontak
         file: /src/content/data/kontak.json
@@ -54,6 +48,7 @@ collections:
             default: kontak
           - <<: *label
           - <<: *deskripsi
+            maxlength: 160
           - name: data
             label: Data
             widget: object
@@ -105,11 +100,27 @@ collections:
               - name: href
                 label: Href
 
+  # KONTEN
   - name: konten
     label: Konten
     icon: article
     files:
-      # BSM Konten > Klien
+      - name: branding
+        label: Branding
+        file: /src/content/data/branding.json
+        media_folder: /src/assets/branding
+        icon: brand_awareness
+        fields:
+          - <<: *id
+            default: branding
+          - <<: *label
+          - <<: *deskripsi
+            maxlength: 160
+          - &galeri
+            name: data
+            label: Galeri
+            widget: image
+            multiple: true
       - name: klien
         label: Klien
         file: /src/content/data/klien.json
@@ -120,13 +131,8 @@ collections:
             default: klien
           - <<: *label
           - <<: *deskripsi
-          - &galeri
-            name: data
-            label: Galeri
-            widget: image
-            multiple: true
-
-      # BSM Konten > Layanan
+            maxlength: 160
+          - <<: *galeri
       - name: layanan
         label: Layanan
         file: /src/content/data/layanan.json
@@ -137,6 +143,7 @@ collections:
             default: layanan
           - <<: *label
           - <<: *deskripsi
+            maxlength: 160
           - name: data
             label: Layanan
             widget: list
@@ -148,21 +155,16 @@ collections:
               - name: gambar
                 label: Gambar
                 widget: image
-
-      # BSM Konten > Branding
-      - name: branding
-        label: Branding
-        file: /src/content/data/branding.json
-        media_folder: /src/assets/branding
-        icon: brand_awareness
+      - name: produk
+        label: Produk
+        file: /src/content/data/produk.json
+        icon: pinboard
         fields:
           - <<: *id
-            default: branding
+            default: produk
           - <<: *label
           - <<: *deskripsi
-          - <<: *galeri
-
-      # BSM Konten > Portofolio
+            maxlength: 160
       - name: portofolio
         label: Portofolio
         file: /src/content/data/portofolio.json
@@ -173,9 +175,8 @@ collections:
             default: portofolio
           - <<: *label
           - <<: *deskripsi
+            maxlength: 160
           - <<: *galeri
-
-      # BSM Konten > Testimoni
       - name: testimoni
         label: Testimoni
         file: /src/content/data/testimoni.json
@@ -186,6 +187,7 @@ collections:
             default: testimoni
           - <<: *label
           - <<: *deskripsi
+            maxlength: 160
           - name: status
             label: "Tampilkan Testimoni di Halaman Beranda"
             widget: boolean

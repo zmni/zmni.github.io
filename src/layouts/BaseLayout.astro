@@ -10,10 +10,9 @@ type Props = {
   label: string;
   deskripsi: string;
   ogImage?: string;
-  class?: string;
 };
 
-const { label, deskripsi, ogImage = "/logo-dark.svg", class: className } = Astro.props as Props;
+const { label, deskripsi, ogImage = "/logo-dark.svg" } = Astro.props;
 
 const canonicalURL = new URL(Astro.url.pathname, Astro.site);
 const ogImageUrl = new URL(ogImage, Astro.site).href;
@@ -82,10 +81,13 @@ const ogImageUrl = new URL(ogImage, Astro.site).href;
     />
   </head>
 
-  <body class:list={["min-h-svh flex flex-col", className]}>
+  <body class="min-h-svh flex flex-col">
     <SiteHeader />
+
     <slot />
+
     <SiteFooter />
+
     <WhatsAppButton />
   </body>
 </html>

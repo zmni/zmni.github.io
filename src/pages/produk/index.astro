@@ -6,12 +6,9 @@ import { capitalize, slugify } from "@/utils/text";
 import FilterBar from "@/components/produk/FilterBar.astro";
 import FilterGroup from "@/components/produk/FilterGroup.astro";
 import ProductGrid from "@/components/produk/ProductGrid.astro";
+import { label, deskripsi } from "@/content/data/produk.json";
 
-const meta = {
-  label: "Titik Lokasi",
-  deskripsi:
-    "Lorem ipsum dolor sit amet consectetur adipiscing elit. Dolor sit amet consectetur adipiscing quisque faucibus.",
-};
+const meta = { label, deskripsi };
 
 // Koleksi
 const produkCollection = await getCollection("produk");

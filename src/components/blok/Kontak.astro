@@ -76,11 +76,16 @@ const kontak: KontakItem[] = [
             .map(({ label, url }) => (
               <a
                 href={url}
-                class="inline-flex rounded-full border border-gray-200 p-3 transition-colors hover:border-blue-500 hover:text-blue-500"
+                class="relative inline-flex rounded-full border border-gray-200 p-3 transition-colors after:invisible after:absolute after:-bottom-8 after:left-1/2 after:-translate-x-1/2 after:rounded-sm after:bg-gray-900 after:px-2 after:text-white after:opacity-0 after:transition-opacity after:content-[attr(aria-label)] hover:border-blue-500 hover:text-blue-500 hover:after:visible hover:after:opacity-100 after:starting:opacity-0"
                 rel="me"
                 aria-label={capitalize(label)}
               >
-                <Icon name={`bi:${label.toLowerCase()}`} size="1.5rem" class="shrink-0" />
+                <Icon
+                  name={`bi:${label.toLowerCase()}`}
+                  title={label}
+                  size="1.5rem"
+                  class="shrink-0"
+                />
               </a>
             ))
         }

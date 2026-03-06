@@ -6,6 +6,7 @@ import { capitalize, slugify } from "@/utils/text";
 import FilterBar from "@/components/produk/FilterBar.astro";
 import FilterGroup from "@/components/produk/FilterGroup.astro";
 import ProductGrid from "@/components/produk/ProductGrid.astro";
+import { label, deskripsi } from "@/content/data/produk.json";
 
 // Semua produk
 export const produkCollection = await getCollection("produk");
@@ -63,8 +64,8 @@ const filterData = Object.fromEntries(
 ) as Record<FilterKey, string[]>;
 
 const meta = {
-  label: `Titik Lokasi di ${provinsiName}`,
-  deskripsi: `Daftar titik lokasi lorem ipsum dolor sit amet consectetur adipiscing elit di ${provinsiName}`,
+  label: `${label} di ${provinsiName}`,
+  deskripsi: `${deskripsi} di ${provinsiName}`,
 };
 ---
 
