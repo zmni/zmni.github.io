@@ -31,19 +31,5 @@ export default defineConfig({
     optimizeDeps: {
       include: ["astro-leaflet > leaflet"],
     },
-
-    environments: {
-      client: {
-        build: {
-          rollupOptions: {
-            output: {
-              entryFileNames: "assets/[hash].js",
-              chunkFileNames: "assets/[hash].js",
-              assetFileNames: "assets/[hash][extname]",
-            },
-          },
-        },
-      },
-    },
   },
 });
