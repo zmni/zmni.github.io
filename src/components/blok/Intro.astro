@@ -47,25 +47,29 @@ import { Icon } from "astro-icon/components";
 
   {/* Skip to konten */}
   <button
-    class="absolute bottom-4 left-1/2 z-30 -translate-x-1/2 animate-bounce rounded-full border border-white/50 bg-white/10 p-2 text-white backdrop-blur-sm transition hover:scale-120 hover:bg-white hover:text-black"
+    type="button"
+    id="skip-intro"
+    class="js-button-skip absolute bottom-4 left-1/2 z-30 -translate-x-1/2 animate-bounce rounded-full border border-white/50 bg-white/10 p-2 text-white backdrop-blur-sm transition hover:scale-120 hover:bg-white hover:text-black"
     aria-label="Lanjutkan ke konten"
   >
     <Icon name="bi:arrow-down" size="1.5rem" />
   </button>
 
   <script>
-    document.addEventListener("DOMContentLoaded", () => {
-      const button = document.querySelector("button") as HTMLButtonElement;
+    const button = document.getElementById("skip-intro") as HTMLButtonElement | null;
 
-      button.addEventListener("click", () => {
-        const target = document.getElementById("intro")?.nextElementSibling as HTMLElement | null;
-        const headerHeight = document.getElementById("SiteHeader")?.getBoundingClientRect().height;
+    button?.addEventListener("click", () => {
+      const target = document.getElementById("intro")?.nextElementSibling as HTMLElement | null;
 
-        window.scrollTo({
-          top: (target?.offsetTop || window.innerHeight) - (headerHeight || 0),
-          behavior: "smooth",
-        });
-      });
+      if (target) {
+        const header = document.getElementById("site-header") as HTMLElement | null;
+        const headerFixed = header?.classList.contains("fixed");
+        const headerSticky = header?.classList.contains("sticky");
+        const headerHeight = headerFixed || headerSticky ? (header?.offsetHeight ?? 0) : 0;
+
+        const top = target.getBoundingClientRect().top + window.scrollY - headerHeight;
+        window.scrollTo({ top, behavior: "smooth" });
+      }
     });
   </script>
 </section>

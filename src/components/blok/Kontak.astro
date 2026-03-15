@@ -6,8 +6,10 @@ import { id, label, deskripsi, data } from "@/content/data/kontak.json";
 import medsos from "@/content/data/medsos.json";
 import { capitalize } from "@/utils/text";
 
+// Metadata section
 const meta = { id, label, deskripsi };
 
+// Format nomor telepon
 const formatNomorTelepon = () => {
   const num = data.telepon.substring(1);
   return `(62) ${num.substring(0, 3)}-${num.substring(3, 7)}-${num.substring(7)}`;

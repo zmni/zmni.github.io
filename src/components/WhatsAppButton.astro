@@ -4,11 +4,12 @@ import { Icon } from "astro-icon/components";
 ---
 
 <a
+  id="whatsapp-button"
   href={`https://wa.me/${data.whatsapp.replace("0", "62")}`}
   rel="me"
   target="_blank"
   aria-label="Hubungi Kami di WhatsApp"
-  class="fixed right-4 bottom-4 z-10 inline-block rounded-full bg-[#00A046] p-2.5 text-sm text-white ring-4 ring-gray-300 transition hover:scale-120 hover:ring-black/15 hover:before:absolute hover:before:right-16 hover:before:rounded-sm hover:before:bg-gray-900 hover:before:px-2 hover:before:py-1 hover:before:whitespace-nowrap hover:before:text-white hover:before:transition hover:before:duration-500 hover:before:content-[attr(aria-label)] starting:hover:before:right-10 starting:hover:before:opacity-0"
+  class="fixed right-4 bottom-4 z-50 scale-100 rounded-full bg-[#00A046] p-2.5 text-3xl text-white opacity-100 ring-4 ring-gray-300 transition-all transition-discrete hover:scale-120 hover:ring-black/15 starting:-bottom-4 starting:scale-0 starting:opacity-0 [&.hidden]:-bottom-4 [&.hidden]:scale-0 [&.hidden]:opacity-0"
 >
-  <Icon name="bi:whatsapp" size="1.875rem" />
+  <Icon name="bi:whatsapp" />
 </a>

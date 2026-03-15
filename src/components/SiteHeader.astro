@@ -1,6 +1,6 @@
 ---
 import bsm from "@/content/data/bsm.json";
-import { data as Navigasi } from "@/content/data/navigasi.json";
+import { data as navigasi } from "@/content/data/navigasi.json";
 import Img from "@/components/ui/Img.astro";
 import { Icon } from "astro-icon/components";
 
@@ -12,7 +12,7 @@ const isPage = (href: string) => {
 ---
 
 <header
-  id="SiteHeader"
+  id="site-header"
   class:list={[
     Astro.url.pathname === "/" ? "fixed w-full" : "sticky",
     "top-0 z-50 bg-white border-b border-b-gray-200 shadow-sm",
@@ -26,9 +26,9 @@ const isPage = (href: string) => {
     >
 
     {/* Nav Toggle */}
-    <input id="SiteNavToggle" type="checkbox" class="peer hidden" />
+    <input id="site-nav-toggle" type="checkbox" class="peer hidden" />
     <label
-      for="SiteNavToggle"
+      for="site-nav-toggle"
       class="ml-auto flex items-center border border-gray-200 transition-colors peer-checked:border-blue-500 peer-checked:bg-blue-500 peer-checked:text-white md:hidden"
       aria-label="Klik untuk membuka atau menutup menu navigasi"
     >
@@ -38,11 +38,10 @@ const isPage = (href: string) => {
 
     {/* Site Navigasi */}
     <nav
-      id="SiteNav"
       class="invisible absolute top-[125%] right-4 left-4 bg-blue-500 opacity-0 shadow-md transition-all peer-checked:visible peer-checked:top-full peer-checked:opacity-100 md:visible md:static md:ml-auto md:flex md:items-center md:gap-x-1 md:bg-transparent md:opacity-100 md:shadow-none"
     >
       {
-        Navigasi.map(({ href, label }) => (
+        navigasi.map(({ label, href }) => (
           <a
             href={href}
             class:list={[

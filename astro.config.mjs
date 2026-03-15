@@ -4,6 +4,7 @@ import { defineConfig } from "astro/config";
 import tailwindcss from "@tailwindcss/vite";
 import sitemap from "@astrojs/sitemap";
 import icon from "astro-icon";
+import compress from "@playform/compress";
 
 // https://astro.build/config
 export default defineConfig({
@@ -15,6 +16,13 @@ export default defineConfig({
     sitemap({
       filter: (page) => page !== "https://zmni.github.io/admin/",
     }),
+    compress({
+      HTML: true,
+      CSS: true,
+      JavaScript: false,
+      Image: false,
+      SVG: false,
+    }),
   ],
 
   vite: {
@@ -24,12 +32,16 @@ export default defineConfig({
       include: ["astro-leaflet > leaflet"],
     },
 
-    build: {
-      rollupOptions: {
-        output: {
-          entryFileNames: "assets/[hash].js",
-          chunkFileNames: "assets/[hash].js",
-          assetFileNames: "assets/[hash][extname]",
+    environments: {
+      client: {
+        build: {
+          rollupOptions: {
+            output: {
+              entryFileNames: "assets/[hash].js",
+              chunkFileNames: "assets/[hash].js",
+              assetFileNames: "assets/[hash][extname]",
+            },
+          },
         },
       },
     },

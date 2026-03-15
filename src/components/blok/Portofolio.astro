@@ -2,12 +2,16 @@
 import { Image, getImage } from "astro:assets";
 import Section from "@/layouts/Section.astro";
 import { id, label, deskripsi, data as imagePaths } from "@/content/data/portofolio.json";
-// Metadata halaman/section
+
+// Metadata section
 const meta = { id, label, deskripsi };
+
 // Glob semua gambar di folder assets/portofolio
 const allImages = import.meta.glob<{ default: ImageMetadata }>("/src/assets/portofolio/*.jpg");
+
 // Map data imagePaths ke allImages
 const imagesMap = imagePaths.map((imagePath) => allImages[imagePath]).filter(Boolean);
+
 // Proses gambar
 const portofolioImages = await Promise.all(
   imagesMap.map(async (loader) => {

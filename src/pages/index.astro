@@ -13,7 +13,7 @@ import { label, deskripsi } from "@/content/data/bsm.json";
 ---
 
 <BaseLayout {label} {deskripsi}>
-  <main id="SiteMain">
+  <main id="site-main">
     <Intro />
     <Layanan />
     <Branding />
@@ -22,81 +22,132 @@ import { label, deskripsi } from "@/content/data/bsm.json";
     <Testimoni />
     <Kontak />
   </main>
-
-  <script>
-    document.addEventListener("DOMContentLoaded", () => {
-      const getSectionId = (href: string): string | null => {
-        if (href === "/") return "intro";
-        if (href.startsWith("/#")) return href.slice(2);
-        return null;
-      };
-
-      const getHeaderHeight = (): number => {
-        return (
-          document.querySelector<HTMLElement>("#SiteHeader")?.getBoundingClientRect().height ?? 0
-        );
-      };
-
-      const navToggle = document.querySelector<HTMLInputElement>("#SiteNavToggle");
-
-      type NavEntry = { link: HTMLAnchorElement; sectionId: string };
-
-      const navEntries: NavEntry[] = Array.from(
-        document.querySelectorAll<HTMLAnchorElement>("#SiteHeader a"),
-      ).reduce<NavEntry[]>((acc, link) => {
-        const sectionId = getSectionId(link.getAttribute("href") ?? "");
-        if (sectionId) acc.push({ link, sectionId });
-        return acc;
-      }, []);
-
-      const setActiveLink = (): void => {
-        const viewportHeight = window.innerHeight;
-        const headerHeight = getHeaderHeight();
-        let activeId: string | null = null;
-
-        navEntries.forEach(({ sectionId }) => {
-          const section = document.getElementById(sectionId);
-          if (!section) return;
-
-          const rect = section.getBoundingClientRect();
-          const visibleTop = Math.max(headerHeight, rect.top);
-          const visibleBottom = Math.min(viewportHeight, rect.bottom);
-          const visibleHeight = Math.max(0, visibleBottom - visibleTop);
-          const compareTo = Math.min(rect.height, viewportHeight - headerHeight);
-
-          if (visibleHeight / compareTo >= 0.5) activeId = sectionId;
-        });
-
-        navEntries.forEach(({ link, sectionId }) => {
-          link.classList.toggle("is-active", sectionId === activeId);
-        });
-      };
-
-      navEntries.forEach(({ link, sectionId }) => {
-        link.addEventListener("click", (e: MouseEvent) => {
-          e.preventDefault();
-          const target = document.getElementById(sectionId);
-          if (!target) return;
-
-          if (navToggle) navToggle.checked = false;
-
-          const headerHeight = getHeaderHeight();
-          const top = target.getBoundingClientRect().top + window.scrollY - headerHeight;
-          window.scrollTo({ top, behavior: "smooth" });
-        });
-      });
-
-      let scrollTimer: ReturnType<typeof setTimeout> | null = null;
-
-      window.addEventListener("scroll", () => {
-        if (scrollTimer) clearTimeout(scrollTimer);
-        scrollTimer = setTimeout(() => {
-          scrollTimer = null;
-          setActiveLink();
-        }, 150);
-      });
-
-      setActiveLink();
-    });
-  </script>
 </BaseLayout>
+
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const header = document.getElementById("site-header");
+    const headerFixed = header?.classList.contains("fixed");
+    const headerSticky = header?.classList.contains("sticky");
+    const headerHeight = headerFixed || headerSticky ? (header?.offsetHeight ?? 0) : 0;
+    const navToggle = document.getElementById("site-nav-toggle") as HTMLInputElement | null;
+
+    type NavEntry = { id: string; link: HTMLAnchorElement; section: HTMLElement };
+    const navEntries: NavEntry[] = [];
+
+    let isScrolling = false;
+    let scrollTimer: ReturnType<typeof setTimeout> | null = null;
+
+    const setScrolling = () => {
+      isScrolling = true;
+      if (scrollTimer) clearTimeout(scrollTimer);
+      scrollTimer = setTimeout(() => {
+        isScrolling = false;
+      }, 1000);
+    };
+
+    document.querySelectorAll<HTMLAnchorElement>("#site-header a").forEach((link) => {
+      const href = link.getAttribute("href") ?? "";
+      const id = href === "/" ? "intro" : href.startsWith("/#") ? href.slice(2) : null;
+      if (!id) return;
+
+      const section = document.getElementById(id);
+      if (section) {
+        navEntries.push({ id, link, section });
+
+        link.addEventListener("click", (event: MouseEvent) => {
+          event.preventDefault();
+
+          setScrolling();
+
+          const hash = id === "intro" ? "" : `#${id}`;
+          window.history.pushState(null, "", window.location.pathname + hash);
+
+          const top = section.getBoundingClientRect().top + window.scrollY - headerHeight;
+          window.scrollTo({ top, behavior: "smooth" });
+
+          if (navToggle && navToggle.checked) navToggle.checked = false;
+        });
+      }
+    });
+
+    const setActiveLink = () => {
+      const threshold = window.innerHeight * 0.4;
+      let activeId: string | null = null;
+
+      navEntries.forEach(({ id, section }) => {
+        const rect = section.getBoundingClientRect();
+
+        if (rect.top <= threshold && rect.bottom >= headerHeight) {
+          activeId = id;
+        }
+      });
+
+      navEntries.forEach(({ id, link }) => {
+        link.classList.toggle("is-active", id === activeId);
+      });
+
+      if (activeId && !isScrolling) {
+        const hash = activeId === "intro" ? "" : `#${activeId}`;
+
+        if (window.location.hash !== hash) {
+          window.history.replaceState(null, "", window.location.pathname + hash);
+        }
+      }
+    };
+
+    if (window.location.hash) {
+      const id = window.location.hash.slice(1);
+      const section = document.getElementById(id);
+
+      if (section) {
+        setScrolling();
+
+        setTimeout(() => {
+          const top = section.getBoundingClientRect().top + window.scrollY - headerHeight;
+          window.scrollTo({ top, behavior: "smooth" });
+        }, 50);
+      }
+    }
+
+    window.addEventListener(
+      "scroll",
+      () => {
+        if (scrollTimer) clearTimeout(scrollTimer);
+        scrollTimer = setTimeout(setActiveLink, 100);
+      },
+      {
+        passive: true,
+      },
+    );
+
+    setActiveLink();
+  });
+</script>
+
+<script>
+  const kontakSection = document.getElementById("kontak");
+  const whatsAppButton = document.getElementById("whatsapp-button") as HTMLAnchorElement | null;
+
+  if (kontakSection && whatsAppButton) {
+    const handleIntersection = (entries: IntersectionObserverEntry[]) => {
+      const [entry] = entries;
+
+      if (entry.isIntersecting) {
+        whatsAppButton.classList.remove("block");
+        whatsAppButton.classList.add("hidden");
+      } else {
+        whatsAppButton.classList.remove("hidden");
+        whatsAppButton.classList.add("block");
+      }
+    };
+
+    const observer = new IntersectionObserver(handleIntersection, {
+      root: null,
+      rootMargin: "0px",
+      threshold: 0.1,
+    });
+
+    observer.observe(kontakSection);
+  }
+</script>

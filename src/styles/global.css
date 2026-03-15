@@ -5,11 +5,11 @@
   :host {
     --default-font-family: "Roboto", var(--font-sans);
 
-    @media (prefers-reduced-motion: no-preference) {
-      --default-transition-duration: 0.2s;
-    }
+    --default-animation-duration: 0.5s;
+    --default-transition-duration: 0.2s;
 
     @media (prefers-reduced-motion: reduce) {
+      --default-animation-duration: 1ms;
       --default-transition-duration: 1ms;
     }
   }
@@ -19,12 +19,14 @@
   @apply mx-auto px-4;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  @view-transition {
-    navigation: auto;
-  }
+@view-transition {
+  navigation: auto;
+}
 
-  ::view-transition-group(*) {
-    animation-duration: 0.5s;
+::view-transition-group(*) {
+  animation-duration: var(--default-animation-duration);
+
+  @media (prefers-reduced-motion: reduce) {
+    animation-name: none;
   }
 }

@@ -9,9 +9,10 @@
     "astro": "astro"
   },
   "dependencies": {
-    "@astrojs/sitemap": "^3.7.0",
+    "@astrojs/sitemap": "^3.7.1",
+    "@playform/compress": "^0.2.0",
     "@tailwindcss/vite": "^4.2.1",
-    "astro": "^5.17.1",
+    "astro": "^6.0.4",
     "astro-icon": "^1.1.5",
     "astro-leaflet": "^1.10.0",
     "astro-seo": "^1.1.0",
@@ -23,6 +24,9 @@
     "@iconify-json/bi": "^1.2.7"
   },
   "overrides": {
-    "lodash": "^4.17.21"
+    "lodash": "^4.17.21",
+    "@playform/compress": {
+      "svgo": "^3.3.2"
+    }
   }
 }
