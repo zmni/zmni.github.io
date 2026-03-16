@@ -4,7 +4,6 @@ import { defineConfig } from "astro/config";
 import tailwindcss from "@tailwindcss/vite";
 import sitemap from "@astrojs/sitemap";
 import icon from "astro-icon";
-import compress from "@playform/compress";
 
 // https://astro.build/config
 export default defineConfig({
@@ -15,13 +14,6 @@ export default defineConfig({
     icon(),
     sitemap({
       filter: (page) => page !== "https://zmni.github.io/admin/",
-    }),
-    compress({
-      HTML: true,
-      CSS: true,
-      JavaScript: false,
-      Image: false,
-      SVG: false,
     }),
   ],
 

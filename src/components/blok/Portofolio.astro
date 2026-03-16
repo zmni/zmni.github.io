@@ -2,23 +2,20 @@
 import { Image, getImage } from "astro:assets";
 import Section from "@/layouts/Section.astro";
 import { id, label, deskripsi, data as imagePaths } from "@/content/data/portofolio.json";
+import { Icon } from "astro-icon/components";
 
-// Metadata section
 const meta = { id, label, deskripsi };
 
-// Glob semua gambar di folder assets/portofolio
 const allImages = import.meta.glob<{ default: ImageMetadata }>("/src/assets/portofolio/*.jpg");
 
-// Map data imagePaths ke allImages
 const imagesMap = imagePaths.map((imagePath) => allImages[imagePath]).filter(Boolean);
 
-// Proses gambar
 const portofolioImages = await Promise.all(
   imagesMap.map(async (loader) => {
     const module = await loader();
 
     const imageSrc = module.default;
-    const imageOut = await getImage({ src: imageSrc, width: 1920 });
+    const imageOut = await getImage({ src: imageSrc });
 
     return {
       src: imageSrc,
@@ -34,15 +31,14 @@ const portofolioImages = await Promise.all(
       portofolioImages.map(({ src, out }, i) => (
         <a
           href={out.src}
-          data-pswp-src={out.src}
-          data-pswp-width={out.attributes.width}
-          data-pswp-height={out.attributes.height}
-          data-cropped="true"
-          class="overflow-hidden aspect-square"
+          class={`overflow-hidden aspect-square`}
           target="_blank"
+          data-gallery-id={i}
+          data-gallery-width={out.attributes.width}
+          data-gallery-height={out.attributes.height}
         >
           <Image
-            {src}
+            src={src}
             alt={`Foto #${i}`}
             width={320}
             height={320}
@@ -54,25 +50,142 @@ const portofolioImages = await Promise.all(
     }
   </div>
 
+  <figure
+    class:list={[
+      "m-auto",
+      "max-h-9/10",
+      "max-w-9/10",
+      "overflow-hidden",
+      "isolate",
+
+      "bg-black",
+      "opacity-0",
+      "scale-0",
+
+      "transition-all",
+      "transition-discrete",
+      "duration-500",
+
+      "backdrop:bg-black/90",
+      "backdrop:opacity-0",
+      "backdrop:backdrop-blur-xs",
+      "backdrop:transition-all",
+      "backdrop:transition-discrete",
+      "backdrop:duration-500",
+      "backdrop:pointer-events-none",
+
+      "open:grid",
+      "open:grid-cols-1",
+      "open:grid-rows-1",
+      "open:place-items-center",
+      "open:opacity-100",
+      "open:scale-100",
+      "open:backdrop:opacity-100",
+      "open:backdrop:pointer-events-none",
+
+      "starting:open:opacity-0",
+      "starting:open:scale-0",
+      "starting:open:backdrop:opacity-0",
+    ]}
+    popover
+  >
+    <div data-popover-image></div>
+    <button
+      class="absolute top-1/2 left-4 z-1 -translate-y-1/2 cursor-pointer bg-white/50 p-2 text-2xl backdrop-blur-xs transition hover:bg-white hover:backdrop-blur-none disabled:invisible"
+      data-popover-nav="prev"><Icon name="bi:chevron-left" /></button
+    >
+    <button
+      class="absolute top-1/2 right-4 z-1 -translate-y-1/2 cursor-pointer bg-white/50 p-2 text-2xl backdrop-blur-xs transition hover:bg-white hover:backdrop-blur-none disabled:invisible"
+      data-popover-nav="next"><Icon name="bi:chevron-right" /></button
+    >
+  </figure>
+
   <script>
-    import PhotoSwipeLightbox from "photoswipe/lightbox";
-    import "photoswipe/style.css";
-
     document.addEventListener("DOMContentLoaded", () => {
-      const lightbox = new PhotoSwipeLightbox({
-        gallery: "[data-gallery]",
-        children: "a",
+      const gallery = document.querySelector("[data-gallery]") as HTMLElement;
+      const galleryItems = gallery?.querySelectorAll(
+        "[data-gallery-id]",
+      ) as NodeListOf<HTMLElement>;
+      const popover = document.querySelector("[popover]") as HTMLElement;
+      const popoverNavs = popover?.querySelectorAll(
+        "[data-popover-nav]",
+      ) as NodeListOf<HTMLButtonElement>;
 
-        closeTitle: "Tutup",
-        zoomTitle: "Perbesar foto",
-        arrowPrevTitle: "Ke foto sebelumnya",
-        arrowNextTitle: "Ke foto selanjutnya",
-        errorMsg: "Terjadi kesalahan, foto tidak bisa dimuat",
+      if (!gallery || !galleryItems || !popover || !popoverNavs) return;
 
-        pswpModule: () => import("photoswipe"),
+      const state = {
+        open: false,
+      };
+
+      galleryItems.forEach((galleryItem) => {
+        galleryItem.addEventListener("click", (event) => {
+          event.preventDefault();
+
+          if (!state.open) {
+            showLightbox(galleryItem);
+          }
+        });
       });
 
-      lightbox.init();
+      popoverNavs.forEach((popoverNav: HTMLButtonElement) => {
+        popoverNav.addEventListener("click", () => {
+          if (!state.open) return;
+
+          const popoverId = Number(popover.dataset.popoverId);
+          const direction = popoverNav.dataset.popoverNav === "prev" ? -1 : 1;
+          const nextGalleryId = popoverId + direction;
+          const nextGalleryItem = gallery.querySelector(
+            `[data-gallery-id="${nextGalleryId}"]`,
+          ) as HTMLElement;
+
+          if (nextGalleryItem) {
+            showLightbox(nextGalleryItem);
+          }
+        });
+      });
+
+      function updateNavState(id: number) {
+        popoverNavs.forEach((popoverNav: HTMLButtonElement) => {
+          const direction = popoverNav.dataset.popoverNav;
+
+          if (direction === "prev") {
+            popoverNav.disabled = id === 0;
+          } else if (direction === "next") {
+            popoverNav.disabled = id === galleryItems.length - 1;
+          }
+        });
+      }
+
+      function showLightbox(galleryItem: HTMLElement) {
+        const id = Number(galleryItem.dataset.galleryId);
+        popover.dataset.popoverId = id.toString();
+
+        // salin galleryImage ke dalam popover
+        const galleryImage = galleryItem.querySelector(":scope img") as HTMLImageElement;
+        const popoverImageContainer = popover.querySelector("[data-popover-image]") as HTMLElement;
+        popoverImageContainer.innerHTML = galleryImage.outerHTML;
+
+        // select popover image
+        const popoverImage = popoverImageContainer.querySelector(":scope img") as HTMLImageElement;
+
+        if (popoverImage) {
+          popoverImage.src = galleryItem.getAttribute("href") ?? popoverImage.src;
+          popoverImage.width = Number(galleryItem.dataset.galleryWidth ?? popoverImage.width);
+          popoverImage.height = Number(galleryItem.dataset.galleryHeight ?? popoverImage.height);
+          popoverImage.classList.remove("transition-opacity", "hover:opacity-80");
+        }
+
+        updateNavState(id);
+        popover.showPopover();
+      }
+
+      popover.addEventListener("beforetoggle", () => {
+        document.body.classList.toggle("overflow-y-hidden", !state.open);
+      });
+
+      popover.addEventListener("toggle", (event: any) => {
+        state.open = event.newState === "open";
+      });
     });
   </script>
 </Section>
